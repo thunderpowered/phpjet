@@ -31,11 +31,11 @@
 
     <link rel="shortcut icon" href="<?php echo $this->widget->widgetLogotype->getFavicon(); ?>" type="image/x-icon">
 
-    <!-- STYLESHEETS -->
+    <!-- WEBSITE STYLESHEETS -->
     <?php echo $this->includeCSS('css/theme.css'); ?>
     <?php echo $this->includeCSS('css/page.css'); ?>
 
-    <!-- BOOTSTRAP -->
+    <!-- BOOTSTRAP/CSS -->
     <?php echo $this->includeCSS('libs/bootstrap-5.0.0-beta1/css/bootstrap.min.css'); ?>
 
     <!-- ANALYTICS -->
@@ -58,7 +58,7 @@
 <!-- BODY -->
 <body>
 
-<!-- MMENU PLUGIN -->
+<!-- ROOT DIV -->
 <div class="theme__background-color" id="root">
 
     <!-- HEADER -->
@@ -68,18 +68,16 @@
 
     <!-- MAIN CONTENT -->
     <?php echo $this->view; ?>
-    <!-- END MAIN CONTENT -->
 
 </div>
+<!-- END ROOT DIV -->
 
-<!-- JAVASCRIPT -->
+<!-- BOOTSTRAP/JS -->
 <?php echo $this->includeJS('libs/bootstrap-5.0.0-beta1/js/bootstrap.bundle.min.js'); ?>
 
-<!-- REACT -->
-<script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+<!-- REACT APPLICATION -->
+<?php echo $this->includeJS('react/dist/js/app.js'); ?>
 
 </body>
 <!-- END BODY -->
-
 </html>

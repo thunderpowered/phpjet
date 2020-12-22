@@ -3,7 +3,7 @@
     <p>Запрашиваемой страницы не существует</p>
     <hr>
     <p>
-        <a href="<?= CloudStore\App\Engine\Core\Router::getHost() ?>" class="btn">Продолжить покупку</a>
+        <a href="<?= CloudStore\App\Engine\Core\Router::getHost() ?>" class="btn">Вернуться на главную</a>
     </p>
 </div>
 

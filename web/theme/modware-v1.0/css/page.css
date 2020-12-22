@@ -1,18 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@100;300;400;500;700;900&family=Rubik+Mono+One&display=swap');
+
 /**
     CUSTOM STYLES
  */
-html, body {
-    padding:0;
-    font-size:14px;
-}
-
 #my-page {
     width:100%;
 }
 
+.header__middle {
+    width:100%;
+}
+
+.header__menu-nav a {
+    /*font-family: 'Press Start 2P', cursive !important;*/
+    font-size:0.8rem;
+}
+
 .header__banner {
     width:100%;
-    height:170px;
+    height:350px;
 }
 
 .header__banner-image {
@@ -21,4 +27,60 @@ html, body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+html body .header__logotype-wrapper {
+    position: relative;
+    opacity: 0.85;
+
+    transition-property: opacity;
+    transition-duration: 0.5s;
+
+    padding-left:0 !important;
+}
+
+
+
+.header__logotype-wrapper:hover {
+    opacity: 1;
+}
+
+.header__logotype-image {
+    width:180px;
+    height:19px;
+    background-position-x: left;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.header__logotype-link {
+    display:block;
+    position:absolute;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    margin:auto;
+    width:100%;
+    height:100%;
+}
+
+/**
+    DEFAULTS
+ */
+html, body {
+    padding:0;
+}
+
+body * {
+    font-family: 'Roboto', sans-serif;
+}
+
+body a {
+    text-decoration: none;
+    cursor: pointer;
+
+    transition-property: color;
+    transition-duration: 0.2s;
 }

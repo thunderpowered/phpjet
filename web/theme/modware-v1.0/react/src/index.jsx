@@ -1,3 +1,8 @@
-import { render } from 'react-dom';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {Banner} from './components/banner/Banner';
 
-render(<h1>Hello world!</h1>, document.getElementById('root'));
+ReactDOM.render(
+    <Banner/>,
+    document.getElementById('Banner')
+);

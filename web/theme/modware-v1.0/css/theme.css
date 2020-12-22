@@ -5,3 +5,13 @@
 .theme__background-color {
     background-color:#000;
 }
+
+.theme__link-color {
+    color:#fff;
+}
+
+.theme__link-background-color:hover {
+    /*color:#9c0202;*/
+    color:#d20000;
+    /*background-color:#9c0202;*/
+}

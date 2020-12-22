@@ -130,7 +130,7 @@ class Utils
         if ($fileName !== "" && file_exists(IMAGES . $fileName) && !is_dir(IMAGES . $fileName)) {
             $img_path = CloudStore::$app->router->getHost() . '/' . IMAGES . $fileName;
         } else {
-            $img_path = "/common/no_image.png";
+            $img_path = CloudStore::$app->router->getHost() . "/common/no_image.png";
         }
 
         return $img_path;
@@ -146,7 +146,7 @@ class Utils
         if ($fileName !== "" && file_exists(THUMBNAILS . $fileName) && !is_dir(THUMBNAILS . $fileName)) {
             $img_path = CloudStore::$app->router->getHost() . '/' . THUMBNAILS . $fileName;
         } else {
-            $img_path = "/common/no_image.png";
+            $img_path = CloudStore::$app->router->getHost() . "/common/no_image.png";
         }
 
         return $img_path;
