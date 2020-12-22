@@ -11,7 +11,9 @@ use CloudStore\CloudStore;
  */
 class WidgetTheme extends Widget
 {
-
+    /**
+     * @var string
+     */
     public $style;
 
     /**
@@ -20,15 +22,27 @@ class WidgetTheme extends Widget
     public function __construct()
     {
         parent::__construct();
-        $this->style = '';
 
-        // @todo json string instead of serialize()
-        $theme = CloudStore::$app->store->loadOne("settings", ["settings_name" => "theme_colors"], false);
+        $this->style = '';
+        $this->loadTheme();
+    }
+
+    /**
+     * @return string
+     */
+    public function getWidget(): string
+    {
+        return $this->style;
+    }
+
+    private function loadTheme(): void
+    {
+
+        $theme = CloudStore::$app->system->settings->getContext('theme');
         if (!$theme) {
-            return false;
+            return;
         }
 
-        $theme = $theme["settings_value"];
         $theme = unserialize($theme);
 
         //Header background
@@ -114,15 +128,5 @@ class WidgetTheme extends Widget
         if ($theme['theme__link_color-footer']) {
             $this->style .= ".site-footer a{color: {$theme['theme__link_color-footer']} !important} ";
         }
-
-        return $this->style;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWidget(): string
-    {
-        return $this->style;
     }
 }

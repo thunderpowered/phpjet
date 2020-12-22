@@ -95,7 +95,7 @@ class Store
     /**
      * @var string
      */
-    private $postfix = "_view";
+    private $postfix = "";
 
     public function __construct()
     {

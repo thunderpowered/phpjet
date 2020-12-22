@@ -53,6 +53,16 @@ class System
     public $settings;
 
     /**
+     * @var array
+     */
+    private $versionStages = [
+        'Alpha',
+        'Beta',
+        'Pre-release',
+        'Stable'
+    ];
+
+    /**
      * System constructor.
      */
     public function __construct()
@@ -73,32 +83,12 @@ class System
     public function getMVCPath(string $rootURL): string
     {
         return MVC . Config\Config::$urlRules[$rootURL] . '/';
-
-//        // deprecated
-//        // step 0: get the url
-//        $routePart = CloudStore::$app->router->getRoutePart(1);
-//
-//        // step 1: proceed url rules
-//        $urlRules = Config\Config::$urlRules;
-//        if ($routePart && !empty($urlRules[$routePart])) {
-//            return MVC . $urlRules[$routePart];
-//        }
-//        return MVC . $urlRules[''];
-//
-//        // modules are not available at the moment
-//        if (!isset(Config\Config::$config["module"])) {
-//            return ENGINE;
-//        }
-//
-//        $controller = "Controller" . CloudStore::$app->router->getControllerName(false);
-//        $controller_file = MVC . 'modules/' . Config\Config::$config["module"] . '/controllers/' . $controller . '.php';
-//
-//        return file_exists($controller_file) ? MVC . 'modules/' . Config\Config::$config["module"] . '/' : ENGINE;
     }
 
     /**
      * @param string $setting_name
      * @return bool|mixed
+     * @deprecated
      */
     public static function getSettingsSingle(string $setting_name)
     {
@@ -108,6 +98,7 @@ class System
     /**
      * @param string $section
      * @return bool|mixed
+     * @deprecated
      */
     public static function getSettingsSection(string $section)
     {
@@ -116,6 +107,7 @@ class System
 
     /**
      * @return array|bool
+     * @deprecated
      */
     public static function getAllSettings()
     {
@@ -124,6 +116,7 @@ class System
 
     /**
      * @param string $controllerName
+     * @param string $rootURL
      * @return bool
      */
     public function isControllerActive(string $controllerName, string $rootURL): bool
@@ -132,24 +125,6 @@ class System
             return true;
         }
 
-        // First of all we need to check module
-        // Because module can has different list of controllers
-        $directory = self::getMVCPath($rootURL);
-
-        // If module
-        // Modules are not available at the moment!
-        if ($directory !== ENGINE AND file_exists($directory . "config.php") && false) {
-            require_once $directory . "config.php";
-            if (!empty($controllers) AND is_array($controllers)) {
-                foreach ($controllers as $controller) {
-                    if (!in_array($controller, Config\Config::$config['controllers'])) {
-                        Config\Config::$config['controllers'][] = $controller;
-                    }
-                }
-            }
-        }
-
-        // Check controllers
         $this->controllerActive = in_array($controllerName, Config\Config::$config['controllers']);
         return $this->controllerActive;
     }
@@ -161,7 +136,7 @@ class System
     public function getEngineVersion(bool $includeName = false): string
     {
         // global.func.stage:dev
-        $version = ENGINE_VER_GLOBAL . '.' . ENGINE_VER_FUNC . '.' . ENGINE_VER_STAGE . ':' . ENGINE_VER_DEV;
+        $version = ENGINE_VER_GLOBAL . '.' . ENGINE_VER_FUNC . '.' . ENGINE_VER_DEV . ' ' . $this->versionStages[ENGINE_VER_STAGE];
         if ($includeName) {
             $version = $version . ' (' . ENGINE_VER_RELEASE_NAME . ')';
         }

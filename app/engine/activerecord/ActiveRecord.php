@@ -51,9 +51,9 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
-     * @return static
+     * @return static|void
      */
-    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array()): ActiveRecord
+    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array())
     {
         /**
          * Call hooks
@@ -68,7 +68,12 @@ abstract class ActiveRecord
 
         $table = self::convertClassNameIntoTableName($class);
         $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit);
-        return self::convertRowIntoObject($rows[0], $class, true);
+        if (isset($rows[0])) {
+            return self::convertRowIntoObject($rows[0], $class, true);
+        }
+
+        // just return, if nothing found - nothing to return. perfection
+        return;
     }
 
     /**
@@ -211,6 +216,7 @@ abstract class ActiveRecord
     /**
      * @param array $row
      * @param string $class
+     * @param bool $loaded
      * @return static
      */
     private static function convertRowIntoObject(array $row, string $class, bool $loaded = true): ActiveRecord

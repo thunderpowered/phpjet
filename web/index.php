@@ -11,8 +11,8 @@ $start = microtime(true);
 $version = phpversion();
 
 // Checking version should in somewhere in the engine
-if ((float)$version < 7.0) {
-    echo 'Version required: 7.0, but installed: ' . $version;
+if ((float)$version < 7.3) {
+    echo 'Version required: 7.3, but installed: ' . $version;
     exit();
 }
 
@@ -52,9 +52,9 @@ require_once ENGINE . 'config/version.php';
 $result = \CloudStore\CloudStore::$app->start();
 echo $result;
 
-// Debug only
-if (\CloudStore\CloudStore::$app->router->getControllerName() !== 'ajax') {
-    echo '<span style="display:none" class="debug-info">Generation time: ' . (microtime(true) - $start) . ' s.</span>';
-    echo '<span style="display:none" class="debug-info">Number of queries: ' . \CloudStore\CloudStore::$app->store->getNumberOfQueries() . '</span>';
-    echo '<span style="display:none" class="debug-info">Engine Version: ' . \CloudStore\CloudStore::$app->system->getEngineVersion() . '</span>';
+if (\CloudStore\App\Engine\Config\Config::$dev['debug']) {
+    echo '<!-- Generation time: ' .  (microtime(true) - $start) . ' s. -->';
+    echo '<!-- SQL-queries: ' .  \CloudStore\CloudStore::$app->store->getNumberOfQueries() . ' -->';
 }
+    // Just for Fun!
+    echo '<!-- ModWare Version ' .  \CloudStore\CloudStore::$app->system->getEngineVersion() . ' -->';

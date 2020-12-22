@@ -14,31 +14,37 @@ use CloudStore\App\Engine\Core\Widget;
 class WidgetSEO extends Widget
 {
 
-    private $codeFields = ["google_analytics", "google_searchconsole", "yandex_webmaster", "yandex_metrika"];
+    /**
+     * @var array
+     */
+    private $codeFields = [
+        "google_analytics",
+        "google_searchconsole",
+        "yandex_webmaster",
+        "yandex_metrika"
+    ];
 
-    public function getAnalytics()
+    /**
+     * @return string
+     */
+    public function getAnalytics(): string
     {
-
         $codes = $this->getCodes();
-
-        $this->render("widget_seo_analytics", ["codes" => $codes, "codeFields" => $this->codeFields]);
+        return $this->render("widget_seo_analytics", [
+            "codes" => $codes,
+            "codeFields" => $this->codeFields
+        ]);
     }
 
-    private function getCodes()
+    /**
+     * @return array
+     */
+    private function getCodes(): array
     {
-
         $codes = [];
-
         foreach ($this->codeFields as $name) {
-
-            // Code or false
-            $codes[$name] = CloudStore::$app->store->loadOne("settings", ["settings_name" => $name]);
-            if ($codes[$name]) {
-
-                $codes[$name] = $codes[$name]["settings_value"];
-            }
+            $codes[$name] = CloudStore::$app->system->settings->getContext($name);
         }
-
         return $codes;
     }
 }

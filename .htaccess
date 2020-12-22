@@ -1,13 +1,10 @@
-AuthType Basic
-AuthName "That's protected Area!"
-AuthUserFile /var/www/client.cloudstore.app/protected/.htpasswd
-Require valid-user
-<Files .htpasswd>
-   deny from all  #запрет доступа из браузера к .htpasswd
-</Files>
-
 <IfModule mod_rewrite.c>
-Options +FollowSymLinks
+
+# disallow listing of directory
+Options -Indexes
+
+# redirect all queries to /web/
 RewriteEngine on
 RewriteRule ^(.+)?$ /web/$1
+
 </IfModule>

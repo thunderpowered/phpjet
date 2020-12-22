@@ -152,114 +152,40 @@ class View
         $partPath = VIEW_PATH . 'parts/' . $partName . '.php';
         if (file_exists($partPath)) {
             // Nested buffer
-//            $this->buffer->createBuffer();
+            $this->buffer->createBuffer();
             require_once $partPath;
-//            return $this->buffer->returnBuffer();
+            return $this->buffer->returnBuffer();
         }
 
         return '';
     }
 
     /**
-     * @param string|null $type
-     */
-    public function getSystemCSS(string $type = null)
-    {
-
-        // TEMPORARY!
-        // todo: remove this, it's way better to connect this shit using common files. Echo controller should be removed.
-
-        switch ($type) {
-
-            case "checkout":
-                echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . Router::getHost() . '/echo/css/checkout.css' . "\">";
-                echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . Router::getHost() . '/echo/css/input.css' . "\">";
-                echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . Router::getHost() . '/echo/css/custom.css' . "\">";
-                break;
-
-            default:
-                echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . Router::getHost() . '/echo/css/shopengine.libs.css' . "\">";
-                break;
-        }
-    }
-
-    /**
-     * @param string|null $type
-     */
-    public function getSystemJS(string $type = null)
-    {
-
-        // Build-it JS. Includes:
-        // 1. Bootstrap v3
-        // 2. jQuery v1.9.1
-        // 3. Magnific-popup
-        // 4. liCover.js
-        // 5. touchSwipe.js
-        // 6. jquery.cookie.js
-        // 7. easing.js
-        // 8. jQuery UI
-        // 9. ftellipsis.js
-        // TEMPORARY!
-
-        if (!$this->host) {
-            $this->host = CloudStore::$app->router->getHost();
-            echo "<script>var shopengineSystemHost = '" . $this->host . "'</script>";
-        }
-
-
-        switch ($type) {
-
-            case "checkout":
-                echo "<script src=\"" . Router::getHost() . '/echo/js/shopengine.libs.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/jquery.cookie.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/checkout.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/easing.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/shopengine.all.js' . "\"></script>";
-                break;
-
-            case "libsonly":
-                echo "<script src=\"" . Router::getHost() . '/echo/js/shopengine.libs.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/jquery.cookie.js' . "\"></script>";
-                break;
-
-            default:
-                echo "<script src=\"" . Router::getHost() . '/echo/js/shopengine.libs.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/jquery.cookie.js' . "\"></script>";
-                echo "<script src=\"" . Router::getHost() . '/echo/js/shopengine.all.js' . "\"></script>";
-                break;
-        }
-    }
-
-    /**
      * @param string $jsPath
-     * @return bool
+     * @param bool $reload
+     * @return string
      */
-    public static function includeJS(string $jsPath)
+    public static function includeJS(string $jsPath, $reload = true): string
     {
         if (file_exists(WEB . 'theme/' . Config::$theme['static'] . '/' . $jsPath)) {
-            echo "<script src=\"" . THEME_STATIC_URL . $jsPath . "?time=" . time() . "\"></script>";
+            return "<script src=\"" . THEME_STATIC_URL . $jsPath . "?time=" . time() . "\"></script>";
         } else {
-
-            return false;
+            return '';
         }
-
-        return true;
     }
 
     /**
      * @param string $cssPath
+     * @param bool reload
      * @return bool
      */
-    public static function includeCSS(string $cssPath)
+    public static function includeCSS(string $cssPath, $reload = true)
     {
         if (file_exists(WEB . 'theme/' . Config::$theme['static'] . '/' . $cssPath)) {
-            echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . THEME_STATIC_URL . $cssPath . "?time=" . time() . "\">";
+            return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . THEME_STATIC_URL . $cssPath . "?time=" . time() . "\">";
         } else {
-
-            return false;
+            return '';
         }
-
-        return true;
     }
 
     /**

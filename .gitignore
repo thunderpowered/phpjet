@@ -1,14 +1,8 @@
-/app/engine/config/engine.cloudstore.app/*
 /app/engine/config/default/*
-/web/uploads/*
-/web/plugins/*
-/__old_content/*
-/__old_engine/*
 /vendor/*
 /web/theme/**/node_modules/
 /.idea/
 /.git/
-/gitignore/
 
 # JPEG
 *.jpg

@@ -150,12 +150,12 @@ class Router
      */
     public function errorPage404(): string
     {
-        header("HTTP/1.1 404 Not Found");
-
         // Create new View object
         $view = $this->getViewObject(new Controller());
         $view->setLayout("404");
         $view->buffer->destroyBuffer();
+
+        header("HTTP/1.1 404 Not Found");
         return $view->render();
     }
     /**
@@ -164,11 +164,11 @@ class Router
      */
     public function errorPage500(string $message = ''): string
     {
-        header("HTTP/1.1 500 Internal Server Error");
-
         $view = $this->getViewObject(new Controller());
         $view->setLayout("error");
         $view->buffer->destroyBuffer();
+
+        header("HTTP/1.1 500 Internal Server Error");
         return $view->render();
     }
     /**
@@ -179,20 +179,20 @@ class Router
      */
     public function errorPage(string $code = '500', string $message = 'Internal Server Error', string $layout = 'error'): string
     {
-        header("HTTP/1.1 {$code} {$message}");
-
         $view = $this->getViewObject(new Controller());
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
+
+        header("HTTP/1.1 {$code} {$message}");
         return $view->render();
     }
     /**
      * @param int $part
-     * @param bool $lowerCase
-     * @param bool $cut
+     * @param bool $toLowerCase
+     * @param bool $cutToDelimiter
      * @return string
      */
-    public function getRoutePart(int $part = 1, bool $lowerCase = true, bool $cut = true): string
+    public function getRoutePart(int $part = 1, bool $toLowerCase = true, bool $cutToDelimiter = true): string
     {
         $route = $this->getRoute(false);
         if (empty($route[$part])) {
@@ -202,14 +202,15 @@ class Router
 
         // Using delimiters
         $delimiterPosition = CloudStore::$app->tool->utils->strpos($part, $this->delimiter);
-        if ($delimiterPosition !== false && $cut) {
+        if ($delimiterPosition !== false && $cutToDelimiter) {
             $part = substr($part, 0, $delimiterPosition);
         }
 
-        if (!$lowerCase) {
-            return $part;
+        if ($toLowerCase) {
+            $part = mb_strtolower($part);
         }
-        return strtolower($part);
+
+        return $part;
     }
     /**
      * @param bool $removeSpecialChars
@@ -217,15 +218,6 @@ class Router
      */
     public function getRoute(bool $removeSpecialChars = true): array
     {
-
-        // I really don't know is it really needed
-        // It can't be cause of SQL injection or something because of using PDO and prepared queries
-        // Route is using mostly for controller and action
-        // So if wrong url is given, controller just not included and user sees 404 page
-        // And the same time URL is used for finding products or categories or something else
-        // But in this case, the string is sending to PDO that handles it
-        // So i think it's not important
-
         if ($this->route) {
             return $this->route;
         }

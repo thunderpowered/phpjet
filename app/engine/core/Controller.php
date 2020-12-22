@@ -22,37 +22,37 @@ class Controller
     /**
      * @var App\App
      */
-    private App\App $app;
+    private $app;
 
     /**
      * @var Model
      */
-    protected Model $model;
+    protected $model;
 
     /**
      * @var View
      */
-    protected View $view;
+    protected $view;
 
     /**
      * @var string
      */
-    protected string $title;
+    protected $title;
 
     /**
      * @var null|string
      */
-    protected string $name;
+    protected $name;
 
     /**
      * @var bool
      */
-    protected bool $noIndex;
+    protected $noIndex;
 
     /**
      * @var array
      */
-    protected array $SEO;
+    protected $SEO;
 
     /**
      * Controller constructor.

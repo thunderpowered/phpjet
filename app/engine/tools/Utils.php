@@ -120,32 +120,33 @@ class Utils
     }
 
     /**
-     * @param string $row
+     * @param string $fileName
      * @return string
+     * @todo deny direct access to images folder, do it through some controller or something
      */
-    public static function getImageLink($row = "")
+    public static function getImageLink(string $fileName = "")
     {
         // Creating link of image
-        if ($row !== "" && file_exists(IMAGES . $row) && !is_dir(IMAGES . $row)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . IMAGES . $row;
+        if ($fileName !== "" && file_exists(IMAGES . $fileName) && !is_dir(IMAGES . $fileName)) {
+            $img_path = CloudStore::$app->router->getHost() . '/' . IMAGES . $fileName;
         } else {
-            $img_path = "/common/no_image.gif";
+            $img_path = "/common/no_image.png";
         }
 
         return $img_path;
     }
 
     /**
-     * @param string $row
+     * @param string $fileName
      * @return string
      */
-    public static function getThumbnailLink($row = "")
+    public static function getThumbnailLink(string $fileName = "")
     {
         // Creating link of thumbnail
-        if ($row !== "" && file_exists(THUMBNAILS . $row) && !is_dir(THUMBNAILS . $row)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . THUMBNAILS . $row;
+        if ($fileName !== "" && file_exists(THUMBNAILS . $fileName) && !is_dir(THUMBNAILS . $fileName)) {
+            $img_path = CloudStore::$app->router->getHost() . '/' . THUMBNAILS . $fileName;
         } else {
-            $img_path = "/common/no_image.gif";
+            $img_path = "/common/no_image.png";
         }
 
         return $img_path;
@@ -156,6 +157,7 @@ class Utils
      * @param string|null $class
      * @param string|null $title
      * @return string
+     * @deprecated
      */
     public static function getThumbnail(string $row = "", string $class = null, string $title = null)
     {
@@ -176,6 +178,7 @@ class Utils
      * @param string|null $class
      * @param string|null $title
      * @return string
+     * @deprecated
      */
     public static function getImage(string $row = "", string $class = null, string $title = null)
     {

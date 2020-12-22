@@ -15,7 +15,7 @@ class ControllerMain extends Controller
     /**
      * @var array
      */
-    protected array $SEO = [
+    protected $SEO = [
         'description' => '',
         'title' => ''
     ];

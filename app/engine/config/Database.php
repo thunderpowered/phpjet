@@ -12,15 +12,15 @@ class Database
     /**
      * @var array
      */
-    public static array $tables;
+    public static $tables;
     /**
      * @var \PDO
      */
-    private static \PDO $_db;
+    private static $_db;
     /**
      * @var array
      */
-    private static array $opt = array(
+    private static $opt = array(
         \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
         \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
         \PDO::ATTR_EMULATE_PREPARES => false
@@ -28,7 +28,7 @@ class Database
     /**
      * @var array
      */
-    private static array $config;
+    private static $config;
     /**
      * Database constructor.
      */
