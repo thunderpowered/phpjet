@@ -66,7 +66,11 @@ class Buffer
      */
     public function destroyBuffer(bool $return = false): string
     {
-        return ob_end_clean();
+        $output = '';
+        if (ob_get_length()) {
+            $output = ob_end_clean();
+        }
+        return $output;
     }
 
     public function createCompressedBuffer()

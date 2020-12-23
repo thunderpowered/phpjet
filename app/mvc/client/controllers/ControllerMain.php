@@ -27,6 +27,8 @@ class ControllerMain extends Controller
         // load from settings
         $this->SEO['description'] = CloudStore::$app->system->settings->getContext('site_description');
         $this->SEO['title'] = CloudStore::$app->system->settings->getContext('site_name');
+
+        CloudStore::$app->system->tracker->trackEverythingYouFind();
     }
 
     /**

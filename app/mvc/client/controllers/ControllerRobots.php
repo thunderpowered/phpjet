@@ -10,8 +10,12 @@ namespace CloudStore\App\Engine\Controllers;
 
 use CloudStore\App\Engine\Core\Controller;
 use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\System;
 
+/**
+ * Class ControllerRobots
+ * @package CloudStore\App\Engine\Controllers
+ * @deprecated
+ */
 class ControllerRobots extends Controller
 {
     public function actionBasic()

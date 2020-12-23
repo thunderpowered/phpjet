@@ -17,6 +17,10 @@ class WidgetBanner extends Widget
      * @var string
      */
     private $banner;
+    /**
+     * @var bool
+     */
+    private $bannerState;
 
     /**
      * WidgetBanner constructor.
@@ -36,9 +40,24 @@ class WidgetBanner extends Widget
         return $this->banner;
     }
 
+    public function getWidget(): string
+    {
+        if (!$this->bannerState) {
+            return '<!-- BANNER IS DISABLED -->';
+        }
+
+        return $this->render('widget_banner', [
+            'bannerImageURL' => $this->banner
+        ]);
+    }
+
     private function loadBanner(): void
     {
-        $this->banner = CloudStore::$app->system->settings->getContext('banner');
-        $this->banner = CloudStore::$app->tool->utils->getImageLink($this->banner);
+        $this->bannerState = CloudStore::$app->system->settings->getContext('banner_state');
+
+        if ($this->bannerState) {
+            $this->banner = CloudStore::$app->system->settings->getContext('banner');
+            $this->banner = CloudStore::$app->tool->utils->getImageLink($this->banner);
+        }
     }
 }

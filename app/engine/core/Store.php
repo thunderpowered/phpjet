@@ -241,13 +241,6 @@ class Store
      */
     public function execSet(string $sql, array $params = array()): bool
     {
-
-        // Temporary
-        if (strpos($sql, "store") === false) {
-
-            return false;
-        }
-
         if (empty($params) OR empty($sql) OR !is_string($sql)) {
 
             return false;

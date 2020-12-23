@@ -9,6 +9,7 @@ use CloudStore\App\Engine\System\Mail;
 use CloudStore\App\Engine\System\Request;
 use CloudStore\App\Engine\System\Settings;
 use CloudStore\App\Engine\System\Token;
+use CloudStore\App\Engine\System\Tracker;
 use CloudStore\CloudStore;
 
 /**
@@ -51,6 +52,10 @@ class System
      * @var Settings
      */
     public $settings;
+    /**
+     * @var Tracker
+     */
+    public $tracker;
 
     /**
      * @var array
@@ -72,6 +77,7 @@ class System
         $this->token = new Token();
         $this->request = new Request();
         $this->settings = new Settings();
+        $this->tracker = new Tracker();
 
         $this->controllerActive = false;
     }

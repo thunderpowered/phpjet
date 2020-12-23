@@ -6,12 +6,41 @@
     background-color:#000;
 }
 
-.theme__link-color {
-    color:#fff;
+.theme__text-color {
+    color: #e6e6e6;
 }
 
-.theme__link-background-color:hover {
-    /*color:#9c0202;*/
+.theme__link-color {
+    color:#e6e6e6;
+}
+
+.theme__link-color--hover:hover {
     color:#d20000;
-    /*background-color:#9c0202;*/
+}
+
+.theme__input-bar__format {
+    width:100%;
+    border-radius: 0 !important;
+    border: 1px solid;
+    outline:none !important;
+    font-size:0.8rem;
+}
+
+.theme__input-bar__border-color {
+    border-color:#4a4a4a;
+}
+
+.theme__form-format {
+    position:relative;
+}
+
+.theme__fa-wrapper {
+    position:absolute;
+    opacity: 0.7;
+    width:21px;
+    height:21px;
+}
+
+.theme__skew-45 {
+    transform: skew(45deg);
 }

@@ -3,9 +3,6 @@
     <head>
         <title>Ошибка на сайте</title>
 
-        <?php $this->includeCSS("css/theme.libs.css"); ?>
-        <?php $this->includeCSS("css/shopengine.all.css"); ?>
-
         <style>
             .text-center {
                 padding:15px;

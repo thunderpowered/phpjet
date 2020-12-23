@@ -1,1 +1,1 @@
-export const csrfToken = document.querySelector("meta[name=csrf_token]").getAttribute("content");
+export const Token = document.querySelector("meta[name=csrf_token]").getAttribute("content");

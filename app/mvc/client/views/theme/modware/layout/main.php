@@ -53,6 +53,9 @@
     <?= $this->widget->getStyles(); ?>
     <?= $this->widget->getScripts(); ?>
     <!-- END WIDGET STYLES -->
+
+    <!-- FONT AWESOME -->
+    <script src="https://kit.fontawesome.com/ad0c58f10d.js" crossorigin="anonymous"></script>
 </head>
 
 <!-- BODY -->

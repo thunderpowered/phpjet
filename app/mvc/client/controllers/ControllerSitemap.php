@@ -9,6 +9,11 @@ use CloudStore\App\Engine\Core\Controller;
 use CloudStore\App\Engine\Core\Router;
 use CloudStore\App\Engine\Core\System;
 
+/**
+ * Class ControllerSitemap
+ * @package CloudStore\App\Engine\Controllers
+ * @deprecated
+ */
 class ControllerSitemap extends Controller
 {
 
