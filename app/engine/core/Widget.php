@@ -45,6 +45,11 @@ class Widget
     protected $staticFiles = [];
 
     /**
+     * @var bool
+     */
+    protected $cacheOutput;
+
+    /**
      * Widget constructor.
      * @param Widget|null $widget
      */

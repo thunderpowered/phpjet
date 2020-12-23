@@ -52,7 +52,7 @@ export class Search extends Component {
         return <form id={'SearchForm'} action={this.action} className={'header__search-form theme__form-format'}
                      style={{opacity: this.state.opacity}}>
             <input
-                className={'p-1 header__search-input theme__text-color theme__background-color theme__input-bar__format theme__input-bar__border-color'}
+                className={'p-1 header__search-input theme__text-color theme__background-color3 theme__input-bar__format theme__input-bar__border-color'}
                 type={'text'}
                 name={'input_header_search'}
                 autoComplete={false}

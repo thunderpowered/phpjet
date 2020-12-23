@@ -75,11 +75,22 @@
 </div>
 <!-- END ROOT DIV -->
 
+<!-- OLD GOOD JQUERY, ACTUALLY USELESS FOR THIS PROJECT -->
+<!-- THE ONLY ONE PLUGIN USING JQUERY IS NICESCROLL -->
+<!-- TODO: FIND WORKAROUND -->
+<?php echo $this->includeJS('libs/jquery-3.5.1/jquery-3.5.1.min.js')?>
+
 <!-- BOOTSTRAP/JS -->
 <?php echo $this->includeJS('libs/bootstrap-5.0.0-beta1/js/bootstrap.bundle.min.js'); ?>
 
+<!-- NICESCROLL.JS -->
+<?php echo $this->includeJS('libs/jquery.nicescroll-3.7.6/jquery.nicescroll.min.js'); ?>
+
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('react/dist/js/app.js'); ?>
+
+<!-- JQUERY PLUGIN ACTIVATION -->
+<?php echo $this->includeJS('js/plugins.js'); ?>
 
 </body>
 <!-- END BODY -->
