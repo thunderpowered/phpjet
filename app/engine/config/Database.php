@@ -29,6 +29,7 @@ class Database
      * @var array
      */
     private static $config;
+
     /**
      * Database constructor.
      */
@@ -36,6 +37,7 @@ class Database
     {
 
     }
+
     /**
      * @param array $config
      */
@@ -43,6 +45,7 @@ class Database
     {
         Database::$config = $config;
     }
+
     /**
      * @return array
      */
@@ -57,9 +60,10 @@ class Database
         foreach ($temp as $key => $value) {
             $tables[] = $value["Tables_in_" . Database::$config['database']];
         }
-        
+
         return $tables;
     }
+
     /**
      * @return \PDO
      */
@@ -69,7 +73,12 @@ class Database
 
             try {
 
-                Database::$_db = new \PDO("mysql:host=" . Database::$config['host'] . ";dbname=" . Database::$config['database'] . ";charset=utf8", Database::$config['username'], Database::$config['password'], Database::$opt);
+                Database::$_db = new \PDO(
+                    "mysql:host=" . Database::$config['host'] . ";dbname=" . Database::$config['database'] . ";charset=utf8mb4",
+                    Database::$config['username'],
+                    Database::$config['password'],
+                    self::$opt
+                );
             } catch (\Exception $e) {
 
                 die("Unable to connect to Database");
@@ -78,10 +87,12 @@ class Database
 
         return Database::$_db;
     }
+
     private function __clone()
     {
 
     }
+
     private function __wakeup()
     {
 

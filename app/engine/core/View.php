@@ -255,14 +255,13 @@ class View
     }
 
     /**
-     * It's pretty simple
-     * @param bool $status
+     * @param bool $success
      * @param array $data
      * @return string
      */
-    public function returnJsonOutput(bool $status = false, array $data = []): string
+    public function returnJsonOutput(bool $success = false, array $data = []): string
     {
-        $data['success'] = (string)$status;
+        $data['success'] = $success;
         return json_encode($data);
     }
 }

@@ -3,6 +3,7 @@
 
 namespace CloudStore\App\Engine\Core;
 
+use CloudStore\App\Engine\Tools\Cache;
 use CloudStore\App\Engine\Tools\ClientManager;
 use CloudStore\App\Engine\Tools\Paginator;
 use CloudStore\App\Engine\Tools\SEO;
@@ -17,6 +18,8 @@ use CloudStore\App\Engine\Tools\Utils;
  * @property ClientManager $clientManager
  * @property SEO $SEO
  * @property Paginator $paginator
+ * @property Formatter $formatter
+ * @property Cache $cache
  */
 class Tool
 {
@@ -40,6 +43,10 @@ class Tool
      * @var Formatter
      */
     private $formatter;
+    /**
+     * @var Cache
+     */
+    private $cache;
 
     /**
      * Tool constructor.

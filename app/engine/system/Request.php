@@ -36,6 +36,10 @@ class Request
      * @var array
      */
     private $cookie;
+    /**
+     * @var array
+     */
+    private $json;
 
     // 60*60*24*30*6 = 180 days = ~half a year;
     private $cookieDefaultExpires = 15552000;
@@ -86,6 +90,17 @@ class Request
         // well session and cookie technically available even without this class, but it'd be good to still use it
         $this->session = $_SESSION;
         $this->cookie = $_COOKIE;
+
+        // Proceed JSON, if JSON exists -> replace POST with it
+        $this->json = file_get_contents('php://input');
+        $this->json = json_decode($this->json, true);
+        if ($this->json) {
+            $this->post = $this->json;
+        }
+        // if JSON is empty, json_decode() returns NULL
+        // just to unambiguity convert in to bool
+        // and of course if we expect JSON input, use function $this->getJSON()
+        $this->json = (bool)$this->json;
     }
 
     /**
@@ -131,8 +146,8 @@ class Request
         }
 
         // mostly temp, need better solution
-        $token = $this->post[$this->CSRFTokenKey];
-        if (!CloudStore::$app->system->token->validateToken($token)) {
+        $token = $this->post[$this->CSRFTokenKey] ?? null;
+        if (!$token || !CloudStore::$app->system->token->validateToken($token)) {
             return [];
         }
 
@@ -150,6 +165,20 @@ class Request
         }
 
         return $result;
+    }
+
+    /**
+     * @param string $name
+     * @param bool $removeSpecialChars
+     * @return array|string
+     */
+    public function getJSON(string $name = '', $removeSpecialChars = false)
+    {
+        if (!$this->json) {
+            return [];
+        }
+
+        return $this->getPOST($name, $removeSpecialChars);
     }
 
     /**

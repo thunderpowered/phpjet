@@ -26,8 +26,8 @@
                     <a class="p-3 theme__link-color theme__link-color--hover header__menu-item--developers">Разработчикам</a>
                 </nav>
             </div>
-            <div class="col-3 flex-nowrap justify-content-end align-baseline header__search">
-                <div class="header__search-wrapper p-3" id="Search">
+            <div class="col-3 flex-nowrap justify-content-end align-baseline header__search p-0">
+                <div class="header__search-wrapper p-0 pt-3 pb-3" id="Search">
                     <!-- SEARCH -->
                 </div>
             </div>

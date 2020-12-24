@@ -79,7 +79,7 @@
 }
 
 .theme__box-shadow {
-    box-shadow: 0 0 7px 2px rgba(0,0,0,.555);
+    box-shadow: 0 4px 7px -2px rgba(0,0,0,.555);
     position: relative;
     z-index:10;
 }

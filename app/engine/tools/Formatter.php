@@ -36,4 +36,35 @@ class Formatter
         $resultString = @number_format($number, intval($priceTemplate['decimals']), $priceTemplate['decimal_delimiter'], $priceTemplate['thousands_delimiter']) . ' ' . $priceTemplate['price_currency'];
         return $resultString;
     }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public function anyStringToSearchString(string $string): string
+    {
+        // trim it
+        $string = trim($string);
+        // remove multiple spaces
+        $string = preg_replace('/\s+/', ' ', $string);
+        // remove all symbols except latin/cyrillic letters and numbers
+        $string = preg_replace('/[^A-Za-zА-Яа-яЁё0-9-]/u', ' ', $string);
+        return $string;
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public function anyStringToURLString(string $string): string
+    {
+        $string = trim($string);
+        // replace all spaces with score
+        $string = preg_replace('/\s+/', '-', $string);
+        // remove all characters that not comply with regex (A-z, 0-9, _, -)
+        $string = preg_replace('/[^A-Za-z0-9_-]/', '', $string);
+        // cast to lowercase
+        $string = strtolower($string);
+        return $string;
+    }
 }

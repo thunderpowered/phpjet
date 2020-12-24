@@ -52,9 +52,12 @@ require_once ENGINE . 'config/version.php';
 $result = \CloudStore\CloudStore::$app->start();
 echo $result;
 
-if (\CloudStore\App\Engine\Config\Config::$dev['debug']) {
-    echo '<!-- Generation time: ' .  (microtime(true) - $start) . ' s. -->';
-    echo '<!-- SQL-queries: ' .  \CloudStore\CloudStore::$app->store->getNumberOfQueries() . ' -->';
-}
+// Some debug info (temporary)
+if (!\CloudStore\CloudStore::$app->system->request->getPOST()) {
+    if (\CloudStore\App\Engine\Config\Config::$dev['debug']) {
+        echo '<!-- Generation time: ' .  (microtime(true) - $start) . ' s. -->';
+        echo '<!-- SQL-queries: ' .  \CloudStore\CloudStore::$app->store->getNumberOfQueries() . ' -->';
+    }
     // Just for Fun!
     echo '<!-- ModWare Version ' .  \CloudStore\CloudStore::$app->system->getEngineVersion() . ' -->';
+}

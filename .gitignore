@@ -3,6 +3,7 @@
 /web/theme/**/node_modules/
 /.idea/
 /.git/
+/cache/*
 
 # JPEG
 *.jpg

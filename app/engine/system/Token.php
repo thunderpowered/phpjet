@@ -3,8 +3,6 @@
 
 namespace CloudStore\App\Engine\System;
 
-use CloudStore\App\Engine\Components\Request;
-
 /**
  * Class Token
  * @package CloudStore\App\Engine\System
@@ -12,47 +10,41 @@ use CloudStore\App\Engine\Components\Request;
 class Token
 {
     /**
+     * @var string
+     */
+    private $csrfToken;
+    /**
+     * @var string
+     */
+    private $hashingAlgorithm = 'sha512';
+
+    /**
+     * Token constructor.
+     */
+    public function __construct()
+    {
+        $this->csrfToken = $_SESSION['token'] ?? null;
+    }
+
+    /**
      * @return string
      */
-    public static function generateToken(): string
+    public function generateToken(): string
     {
-        // Generate CSRF-token. If you want to protect some action, write \CloudStore\App\Engine\Components\Utils::generate_token(), then use validate to check it.
-        // This method will be improved in next version of SE.
-        // After every action, the token will die and generate again.
-        // It'll get more security for application.
-        // Current solution is very simple, but it works in most cases.
-
-        if (!isset($_SESSION['token'])) {
-            $_SESSION['token'] = hash("sha256", uniqid(rand(), true));
+        if (!$this->csrfToken) {
+            $_SESSION['token'] = $this->csrfToken = $this->generateHash();
         }
-        return $_SESSION['token'];
+
+        return $this->csrfToken;
     }
 
     /**
      * @param $token
      * @return bool
      */
-    public static function validateToken($token): bool
+    public function validateToken(string $token): bool
     {
-        // This method check the token
-        if (isset($_SESSION['token']) AND $_SESSION['token'] === $token) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $token
-     * @return bool
-     */
-    public static function validateAction($token): bool
-    {
-        // This method crashes the application if something wrong
-        // It's more simple to use. Just write Utils::validate_action();
-        if (empty($token)) {
-            $token = Request::get('token');
-        }
-        if (isset($_SESSION['token']) AND $_SESSION['token'] === $token) {
+        if ($token && $this->csrfToken && $token === $this->csrfToken) {
             return true;
         }
 
@@ -62,33 +54,8 @@ class Token
     /**
      * @return string
      */
-    public static function generateCheckoutToken(): string
+    public function generateHash(): string
     {
-        // Separate method for checkout
-        // I have no idea why i did it
-        if (!isset($_SESSION['checkout_token'])) {
-            $_SESSION['checkout_token'] = hash("sha256", uniqid(rand(), true));
-        }
-        return $_SESSION['checkout_token'];
-    }
-
-    /**
-     * @param $token
-     * @return bool
-     */
-    public static function validateCheckoutToken($token): bool
-    {
-        if (!empty($_SESSION['checkout_token']) AND $_SESSION['checkout_token'] === $token) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @return string
-     */
-    public static function generateHash(): string
-    {
-        return hash("sha256", uniqid(rand(), true));
+        return hash($this->hashingAlgorithm, uniqid(rand(), true));
     }
 }
