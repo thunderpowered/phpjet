@@ -44,7 +44,8 @@ class ModelSearch extends Model
         }
 
         // check cache
-        $cacheIdentifier = CloudStore::$app->tool->formatter->anyStringToURLString($searchValue);
+//        $cacheIdentifier = CloudStore::$app->tool->formatter->anyStringToURLString($searchValue);
+        $cacheIdentifier = mb_strtolower(trim($searchValue));
         $cachePage = 'quicksearch';
         $cache = CloudStore::$app->tool->cache->getCache($cachePage, $cacheIdentifier);
         if ($cache) {
@@ -54,6 +55,9 @@ class ModelSearch extends Model
         $result =  $this->searchInAllTables2($searchValue, $limit);
         foreach ($result as $key => $value) {
             $result[$key]['typeRU'] = $this->typeRU[$value['type']];
+            if ($value['icon']) {
+                $result[$key]['icon'] = CloudStore::$app->tool->utils->getThumbnailLink($value['icon']);
+            }
         }
 
         // save into cache
@@ -65,35 +69,11 @@ class ModelSearch extends Model
      * @param string $searchValue
      * @param int $limit
      * @return array
-     * @deprecated
      */
     public function searchInAllTables(string $searchValue, int $limit = 10): array
     {
-        // i dont like using SQL instead of ActiveRecord of Store
-        // todo expand ActiveRecord functionality to support Unions and SubQueries
-        $sql = "
-            select * from (
-                -- SEARCH AMONG GAMES
-                select id, 'games' as type, url, name from games where name like CONCAT('%', :placeholder1, '%')
-                union all
-                -- SEARCH AMONG MODS
-                select id, 'mods' as type, url, name from mods where name like CONCAT('%', :placeholder2, '%')
-                union all
-                -- SEARCH AMONG USERS
-                select id, 'users' as type, username as url, username as name from users where username like CONCAT('%', :placeholder3, '%')
-            ) as TableUnion LIMIT 0, {$limit}
-        ";
-
-        // trim and remove chars to make search easier
-        $searchValue = CloudStore::$app->tool->formatter->anyStringToSearchString($searchValue);
-
-        $result = CloudStore::$app->store->execGet($sql, [
-            ':placeholder1' => $searchValue,
-            ':placeholder2' => $searchValue,
-            ':placeholder3' => $searchValue
-        ]);
-
-        return (array)$result;
+        // @todo
+        return [];
     }
 
     /**
@@ -107,13 +87,11 @@ class ModelSearch extends Model
         $searchValue = CloudStore::$app->tool->formatter->anyStringToSearchString($searchValue);
         $searchArray = explode(' ', $searchValue);
 
-        // here we go...
         $gamesSQL  = '';
         $modsSQL   = '';
         $delimiter = '';
         $parameters = [];
 
-        // OK, i need to do some explanation...
         // initial idea was to create fuzzy search in multiple tables
         // to allow users to search among ALL site content
         // i came to this solution:
@@ -132,7 +110,7 @@ class ModelSearch extends Model
             }
 
             $placeHolderGames = ':placeholderGames' . $key;
-            $gamesSQL .= $delimiter . " select id, 'games' as type, url, name from games where name like CONCAT('%', {$placeHolderGames}, '%')";
+            $gamesSQL .= $delimiter . " select id, 'games' as type, url, name, icon from games where name like CONCAT('%', {$placeHolderGames}, '%')";
             $parameters[$placeHolderGames] = $value;
 
             $placeHolderMods = ':placeholderMods' . $key;
@@ -142,12 +120,12 @@ class ModelSearch extends Model
 
         $sql = "select * from 
                     (
-                            select count(*) as relevance, id, name, url, type from 
+                            select count(*) as relevance, id, name, url, type, icon from 
                             (
                                 {$gamesSQL}
-                            ) as games group by id, name, url, type having relevance = :relevance1
+                            ) as games group by id, name, url, type, icon having relevance = :relevance1
                             union all
-                            select count(*) as relevance, id, name, url, type from 
+                            select count(*) as relevance, id, name, url, type, '' as icon from 
                             (
                                 {$modsSQL}
                             ) as mods group by id, name, url, type having relevance = :relevance2

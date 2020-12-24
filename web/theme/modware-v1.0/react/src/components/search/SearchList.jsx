@@ -21,8 +21,11 @@ export class SearchList extends Component {
                             // yep, just crop it
                             item.name = item.name.substring(0, this.maxNameStringLength - 3) + '...';
                         }
-                        return <li className={'header__search-list d-block p-4 pb-0'}>
-                            <a className={'theme__link-color theme__link-color--hover fw-regular fs-10'}
+                        return <li className={'header__search-list__item d-flex flex-row p-4 pb-0'}>
+                            {item.icon &&
+                                <div style={{backgroundImage: `url(${item.icon})`}} className={"header__search-list__item-icon"}></div>
+                            }
+                            <a className={'theme__link-color theme__link-color--hover fw-regular fs-10 d-block'}
                                href={globalSystemHost + '/' + item.type + '/' + item.url}>[{item.typeRU}] {item.name}</a>
                         </li>
                     })
