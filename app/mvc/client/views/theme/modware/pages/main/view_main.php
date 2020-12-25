@@ -6,7 +6,7 @@
                 <div class="p-3 pt-4 pb-2 theme__border-color theme__border-bottom">
                     <span class="text-left fs-6 fw-bold">Список игр</span>
                 </div>
-                <div class="p-3 pt-6 pb-2 theme__border-color">
+                <div class="p-3 pt-0 pb-2 theme__border-color">
                     <?php echo $this->widget->widgetMenu->getGameList(); ?>
                 </div>
             </div>
@@ -21,7 +21,7 @@
                 <div class="p-3 pt-4 pb-2 theme__border-color theme__border-bottom">
                     <span class="text-left fs-6 fw-bold">Новинки</span>
                 </div>
-                <div class="p-3 pt-6 pb-2 theme__border-color theme__border-bottom">
+                <div class="p-3 pt-0 pb-2 theme__border-color theme__border-bottom">
                     <?php echo $this->widget->widgetHot->getNewMods(); ?>
                 </div>
                 <div class="p-3 pt-4 pb-2 theme__border-color theme__border-bottom">

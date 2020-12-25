@@ -19,12 +19,7 @@
                 </div>
             </div>
             <div class="col-6 flex-nowrap justify-content-start align-items-baseline header__menu-wrapper">
-                <nav class="nav d-flex justify-content-start header__menu-nav">
-                    <a class="p-3 theme__link-color theme__link-color--hover header__menu-item--gamers">Игры</a>
-                    <a class="p-3 theme__link-color theme__link-color--hover header__menu-item--gamers">Моды</a>
-                    <a class="p-3 theme__link-color theme__link-color--hover header__menu-item--gamers">Обзоры</a>
-                    <a class="p-3 theme__link-color theme__link-color--hover header__menu-item--developers">Разработчикам</a>
-                </nav>
+                <?php echo $this->widget->widgetMenu->getHeaderMenu(); ?>
             </div>
             <div class="col-3 flex-nowrap justify-content-end align-baseline header__search p-0">
                 <div class="header__search-wrapper p-0 pt-3 pb-3" id="Search">

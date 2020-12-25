@@ -34,6 +34,25 @@ class WidgetMenu extends Widget
     /**
      * @return string
      */
+    public function getHeaderMenu(): string
+    {
+        $menu = CloudStore::$app->system->settings->getContext('menu_header', false);
+        if (!$menu) {
+            return '';
+        }
+
+        $menu = json_decode($menu, true);
+        foreach ($menu as $key => $item) {
+            $menu[$key]['url'] = CloudStore::$app->router->getHost() . $item['url'];
+        }
+        return $this->render('widget_menu_header', [
+            'menu' => $menu
+        ]);
+    }
+
+    /**
+     * @return string
+     */
     public function getGameList(): string
     {
         $games = Games::get([], ['name' => 'ASC']);

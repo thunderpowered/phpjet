@@ -65,6 +65,11 @@ class Cache
      */
     public function setCache(string $page, string $identifier, string $data)
     {
+        $cacheDir = $this->getCacheDirectory($page);
+        if (!file_exists($cacheDir)) {
+            mkdir($cacheDir);
+        }
+
         $cacheLocation = $this->getCacheLocation($page, $identifier);
         return file_put_contents($cacheLocation, $data);
     }
@@ -93,6 +98,16 @@ class Cache
         return true;
     }
 
+    /**
+     * @param string $page
+     * @return string
+     */
+    private function getCacheDirectory(string $page)
+    {
+        $dirName = $this->hashName($page);
+        return $this->cacheDirectory . '/' . $dirName;
+    }
+
     private function getCacheLocation(string $page, string $identifier): string
     {
         // dir structure:
@@ -100,14 +115,7 @@ class Cache
         // /root/page
         // /root/page/parameter.cache
 
-        $dirName = $this->hashName($page);
-        $dirPath = $this->cacheDirectory . '/' . $dirName;
-
-        // that's not good
-        if (!file_exists($dirPath)) {
-            mkdir($dirPath);
-        }
-
+        $dirPath = $this->getCacheDirectory($page);
         $fileName = $this->getCacheFileName($identifier);
         return $dirPath . '/' . $fileName;
     }

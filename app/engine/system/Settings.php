@@ -34,17 +34,17 @@ class Settings
 
     /**
      * @param string $name
-     * @return string;
-     * @todo use ActiveRecord
+     * @param bool $removeSpecialChars
+     * @return string
      */
-    public function getContext(string $name): string
+    public function getContext(string $name, bool $removeSpecialChars = true): string
     {
         if (!empty($this->settings[$name])) {
             // if it's not empty there is no way that this element does not exist
             return $this->settings[$name]->value;
         }
 
-        $this->settings[$name] = Context::getOne(['name' => $name]);
+        $this->settings[$name] = Context::getOne(['name' => $name], [], [], $removeSpecialChars);
         if (!$this->settings[$name]) {
             return '';
         } else {

@@ -3,7 +3,7 @@
 namespace CloudStore\App\MVC\Client\Controllers;
 
 use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Client\Models\ModelProducts;
+use CloudStore\App\MVC\Client\Models\ModelMods;
 use CloudStore\CloudStore;
 
 /**
@@ -12,6 +12,10 @@ use CloudStore\CloudStore;
  */
 class ControllerMain extends Controller
 {
+    /**
+     * @var ModelMods
+     */
+    private $modelMods;
     /**
      * @var array
      */
@@ -29,6 +33,8 @@ class ControllerMain extends Controller
         $this->SEO['title'] = CloudStore::$app->system->settings->getContext('site_name');
 
         CloudStore::$app->system->tracker->trackEverythingYouFind();
+
+        $this->modelMods = new ModelMods();
     }
 
     /**
@@ -40,6 +46,11 @@ class ControllerMain extends Controller
         if ($this->SEO['title']) {
             $this->title = $this->SEO['title'];
         }
-        return $this->view->render($this->view->getTemplateName());
+
+        $bestLastMods = $this->modelMods->getModsLastMonth();
+
+        return $this->view->render('view_main', [
+            'bestLastMods' => $bestLastMods
+        ]);
     }
 }

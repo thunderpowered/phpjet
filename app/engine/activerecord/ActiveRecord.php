@@ -51,9 +51,10 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
-     * @return static|void
+     * @param bool $removeSpecialChars
+     * @return ActiveRecord|void
      */
-    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array())
+    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true)
     {
         /**
          * Call hooks
@@ -67,7 +68,7 @@ abstract class ActiveRecord
         $class = get_called_class();
 
         $table = self::convertClassNameIntoTableName($class);
-        $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit);
+        $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
         if (isset($rows[0])) {
             return self::convertRowIntoObject($rows[0], $class, true);
         }

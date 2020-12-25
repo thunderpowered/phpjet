@@ -46,8 +46,7 @@ class ModelSearch extends Model
         // check cache
 //        $cacheIdentifier = CloudStore::$app->tool->formatter->anyStringToURLString($searchValue);
         $cacheIdentifier = mb_strtolower(trim($searchValue));
-        $cachePage = 'quicksearch';
-        $cache = CloudStore::$app->tool->cache->getCache($cachePage, $cacheIdentifier);
+        $cache = CloudStore::$app->tool->cache->getCache(__FUNCTION__, $cacheIdentifier);
         if ($cache) {
             return json_decode($cache, true);
         }
@@ -61,7 +60,7 @@ class ModelSearch extends Model
         }
 
         // save into cache
-        CloudStore::$app->tool->cache->setCache($cachePage, $cacheIdentifier, json_encode($result));
+        CloudStore::$app->tool->cache->setCache(__FUNCTION__, $cacheIdentifier, json_encode($result));
         return $result;
     }
 
