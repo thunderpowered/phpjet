@@ -48,7 +48,7 @@ class WidgetHot extends Widget
         $mods = Mods::getJoin([
             ['LEFT', 'games', ['id' => 'games_id']],
             ['LEFT', 'users', ['id' => 'users_id']]
-        ], [], ['since' => 'DESC'], [0, 20]);
+        ], [], ['since' => 'DESC'], [0, 30]);
         $currentTime = time();
         foreach ($mods as $key => $mod) {
 

@@ -74,6 +74,14 @@
     border-bottom:1px solid;
 }
 
+.theme__border-color--accent {
+    border-color: #9b0000;
+}
+
+.theme__border--thicker {
+    border-width: 2px;
+}
+
 .theme__border-color {
     border-color: #2b3136;
 }

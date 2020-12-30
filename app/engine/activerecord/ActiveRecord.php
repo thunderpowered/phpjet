@@ -24,11 +24,14 @@ abstract class ActiveRecord
      * @var bool
      */
     protected $_loaded;
-
     /**
      * @var string
      */
     protected $_primaryKey;
+    /**
+     * @var int
+     */
+    protected $_config_id;
 
     /**
      * ActiveRecord constructor.

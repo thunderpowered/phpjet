@@ -91,11 +91,10 @@ class Store
     private $queries = "";
 
     /* SELECT FROM DATABASE */
-
     /**
      * @var string
      */
-    private $postfix = "";
+    private $postfix = "_view";
 
     public function __construct()
     {

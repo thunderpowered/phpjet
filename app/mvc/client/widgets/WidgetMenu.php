@@ -3,7 +3,7 @@
 
 namespace CloudStore\App\MVC\Client\Widgets;
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Games;
+use CloudStore\App\Engine\ActiveRecord\Tables\Soft;
 use CloudStore\App\Engine\Core\Widget;
 use CloudStore\CloudStore;
 
@@ -55,9 +55,10 @@ class WidgetMenu extends Widget
      */
     public function getGameList(): string
     {
-        $games = Games::get([], ['name' => 'ASC']);
+        $games = Soft::get([], ['name' => 'ASC']);
         foreach ($games as $key => $game) {
             $games[$key]->url = $this->getGameFullURL($game->url);
+            $games[$key]->icon = CloudStore::$app->tool->utils->getThumbnailLink($game->icon);
         }
         return $this->render('widget_menu_games', [
             'games' => $games

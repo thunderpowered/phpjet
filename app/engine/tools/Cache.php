@@ -58,6 +58,15 @@ class Cache
     }
 
     /**
+     * @return bool
+     * @todo
+     */
+    public function manageCache(): bool
+    {
+        return true;
+    }
+
+    /**
      * @param string $page
      * @param string $identifier
      * @param string $data
