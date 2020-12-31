@@ -58,4 +58,13 @@ class Token
     {
         return hash($this->hashingAlgorithm, uniqid(rand(), true));
     }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    public function hashString(string $string): string
+    {
+        return hash($this->hashingAlgorithm, $string);
+    }
 }

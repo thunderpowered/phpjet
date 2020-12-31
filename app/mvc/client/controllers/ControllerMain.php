@@ -3,7 +3,7 @@
 namespace CloudStore\App\MVC\Client\Controllers;
 
 use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Client\Models\ModelMods;
+use CloudStore\App\MVC\Client\Models\ModelItems;
 use CloudStore\CloudStore;
 
 /**
@@ -13,9 +13,9 @@ use CloudStore\CloudStore;
 class ControllerMain extends Controller
 {
     /**
-     * @var ModelMods
+     * @var ModelItems
      */
-    private $modelMods;
+    private $modelItems;
     /**
      * @var array
      */
@@ -34,7 +34,7 @@ class ControllerMain extends Controller
 
         CloudStore::$app->system->tracker->trackEverythingYouFind();
 
-        $this->modelMods = new ModelMods();
+        $this->modelItems = new ModelItems();
     }
 
     /**
@@ -47,10 +47,10 @@ class ControllerMain extends Controller
             $this->title = $this->SEO['title'];
         }
 
-        $bestLastMods = $this->modelMods->getModsLastMonth();
+        $bestLastItems = $this->modelItems->getItemsGroupedByDateWithASingleParent('month', 'rating', 'desc');
 
         return $this->view->render('view_main', [
-            'bestLastMods' => $bestLastMods
+            'bestLastItems' => $bestLastItems
         ]);
     }
 }

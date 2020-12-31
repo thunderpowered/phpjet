@@ -28,26 +28,26 @@ class Widget
      * @var array
      */
     protected $styles = [];
-
     /**
      * @var array
      */
     protected $scripts = [];
-
     /**
      * @var Widget
      */
     protected $parent;
-
     /**
      * @var array
      */
     protected $staticFiles = [];
-
     /**
      * @var bool
      */
     protected $cacheOutput;
+    /**
+     * @var Controller
+     */
+    protected $controller;
 
     /**
      * Widget constructor.
@@ -57,6 +57,14 @@ class Widget
     {
         $this->parent = $widget;
         $this->setStaticFiles();
+    }
+
+    /**
+     * @param Controller $controller
+     */
+    public function setController (Controller $controller)
+    {
+        $this->controller = $controller;
     }
 
     /**

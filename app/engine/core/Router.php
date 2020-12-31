@@ -4,6 +4,7 @@ namespace CloudStore\App\Engine\Core;
 
 use CloudStore\App\Engine\Ajax\AjaxRouter;
 use CloudStore\App\Engine\Config;
+use CloudStore\App\MVC\Client\Controllers\ControllerPage;
 use CloudStore\CloudStore;
 
 /**
@@ -53,6 +54,21 @@ class Router
         'model' => 'main'
     ];
     /**
+     * @var array
+     */
+    private $httpErrorCodes = [
+        '500' => 'Internal Server Error',
+        '404' => 'Not Found'
+    ];
+    /**
+     * @var int
+     */
+    private $defaultControllerRoutePart = 1;
+    /**
+     * @var int
+     */
+    private $defaultActionRoutePart = 2;
+    /**
      * Router constructor.
      */
     public function __construct()
@@ -68,6 +84,10 @@ class Router
         $route = $this->getRoutePart(1);
         if ($route && !empty(Config\Config::$urlRules[$route])) {
             $this->rootURL = Config\Config::$urlRules[$route];
+
+            // if route is set, controller and action shift to the right by one part
+            $this->defaultActionRoutePart++;
+            $this->defaultControllerRoutePart++;
         }
         $this->MVCSector = $this->rootURL ? ucfirst($this->rootURL) : ucfirst(Config\Config::$urlRules['']);
 
@@ -78,14 +98,21 @@ class Router
         define('MVC_PATH', CloudStore::$app->system->getMVCPath($this->rootURL));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
-        // CloudStore has a list of controller that may be included and executed
-        // List of controllers is in the config
-        if (!CloudStore::$app->system->isControllerActive($this->getControllerName(true), $this->rootURL)) {
-            return $this->errorPage404();
-        }
+        if (Config\Config::$activeTheme['pagebuilder']) {
+            // Proceed with page builder
+            $this->controller = new ControllerPage();
+        } else {
+            // Default way
+            // CloudStore has a list of controller that may be included and executed
+            // List of controllers is in the config
+            $controllerName = $this->getControllerName(true);
+            if (!CloudStore::$app->system->isControllerActive($controllerName, $this->rootURL)) {
+                return $this->errorPage404();
+            }
 
-        // Getting and including controller object
-        $this->controller = $this->getControllerObject();
+            // Getting and including controller object
+            $this->controller = $this->getControllerObject();
+        }
 
         // If there is no such controller
         if (!$this->controller) {
@@ -96,44 +123,23 @@ class Router
     }
     /**
      * @param $controller
-     * @return bool
+     * @return string
      */
-    public function startAction(Controller $controller)
+    public function startAction(Controller $controller): string
     {
-        // If AJAX
-        // It's not good i guess, but at this moment i don't want to change architecture of project
-        if ($controller->getName() === "ControllerAjax") {
-
-            // todo create proper AJAX routing
-            require_once ENGINE . 'ajax/AjaxRouter.php';
-            AjaxRouter::start();
-
-            // Don't need to execute next code
-            // I found out that this method of ajax can be cause of some security problems
-            // For example, if user send http query to ajax-handler with existing method of parent-class
-            // In this case, ajax method will not be found, but because of running next code, some methods can be executed
-            // ControllerAjax have no methods but it is inherited from Controller
-            // I think it can be dangerous in some cases
-            // To prevent it, just close next application
-            // If ajax method executed, we don't need something more
-            // Yes, it may be placed in AjaxRouter file, but i think this is more patently
-            CloudStore::$app->exit();
-        }
-
-        // Execute action
+        // Dynamically get action
         $action = $this->getAction(true);
         if ($action && method_exists($controller, $action)) {
             return $controller->$action();
         }
 
-        // Or basic action
+        // Or use basic action
         $action = $this->actionBasic;
         if (method_exists($controller, $action)) {
             return $controller->$action();
         }
 
-        $this->errorPage404();
-        return false;
+        return $this->errorPage404();
     }
     /**
      * @return string
@@ -145,45 +151,52 @@ class Router
         $view->buffer->destroyBuffer();
         return $view->render();
     }
-    /**
-     * @return string
-     */
-    public function errorPage404(): string
-    {
-        // Create new View object
-        $view = $this->getViewObject(new Controller());
-        $view->setLayout("404");
-        $view->buffer->destroyBuffer();
 
-        header("HTTP/1.1 404 Not Found");
-        return $view->render();
-    }
     /**
-     * @param string $message
+     * @param bool $forceRedirect and forget about anything else
      * @return string
+     * Just a shortcut for errorPage()
      */
-    public function errorPage500(string $message = ''): string
+    public function errorPage404(bool $forceRedirect = false): string
     {
-        $view = $this->getViewObject(new Controller());
-        $view->setLayout("error");
-        $view->buffer->destroyBuffer();
-
-        header("HTTP/1.1 500 Internal Server Error");
-        return $view->render();
+        return $this->errorPage('404', 'Not Found', 'error', $forceRedirect);
     }
+
+    /**
+     * @param bool $forceRedirect
+     * @return string
+     * Just a shortcut for errorPage()
+     */
+    public function errorPage500(bool $forceRedirect = false): string
+    {
+        return $this->errorPage('500', 'Internal Server Error', 'error', $forceRedirect);
+    }
+
+
     /**
      * @param string $code
      * @param string $message
      * @param string $layout
+     * @param bool $forceRedirect
      * @return string
      */
-    public function errorPage(string $code = '500', string $message = 'Internal Server Error', string $layout = 'error'): string
+    public function errorPage(string $code = '500', string $message = 'Internal Server Error', string $layout = 'error', bool $forceRedirect = false): string
     {
+        if (!$message) {
+            $message = $this->httpErrorCodes[$code] ?? null;
+        }
+
         $view = $this->getViewObject(new Controller());
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
 
         header("HTTP/1.1 {$code} {$message}");
+        $result = $view->render();
+        if ($forceRedirect) {
+            // it's not a redirect technically, it just stops any further actions
+            echo $result;
+            CloudStore::$app->exit();
+        }
         return $view->render();
     }
     /**
@@ -262,7 +275,7 @@ class Router
     /**
      * @return string
      */
-    public static function getDomain(): string
+    public function getDomain(): string
     {
         if (!empty(Config\Config::$config['domain'])) {
             return Config\Config::$config["domain"];
@@ -374,7 +387,7 @@ class Router
      */
     public function getControllerName(bool $low = true): string
     {
-        $routePart = $this->getRoutePart(1, true);
+        $routePart = $this->getRoutePart($this->defaultControllerRoutePart, true);
 
         $controllerName = $this->default['controller'];
         if ($routePart) {
@@ -438,7 +451,7 @@ class Router
      */
     public function getAction(bool $full = false, bool $cut = true): string
     {
-        $action = $this->getRoutePart(2, true, $cut);
+        $action = $this->getRoutePart($this->defaultActionRoutePart, true, $cut);
         if ($action && $full) {
             $action = 'action' . ucfirst($action);
         }

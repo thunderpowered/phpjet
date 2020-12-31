@@ -47,11 +47,12 @@ class Database
     }
 
     /**
+     * @param string $tableType
      * @return array
      */
-    public static function showTables(): array
+    public static function showTables(string $tableType = 'BASE TABLE'): array
     {
-        $stmt = Database::getInstance()->query("show full tables where Table_Type = 'BASE TABLE'");
+        $stmt = Database::getInstance()->query("show full tables where Table_Type = '{$tableType}'");
         $stmt->execute();
         $temp = $stmt->fetchAll();
 

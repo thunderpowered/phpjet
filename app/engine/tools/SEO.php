@@ -7,7 +7,6 @@ use CloudStore\App\Engine\Core\Controller;
 /**
  * Class SEO
  * @package CloudStore\App\Engine\Tools
- * @desctiption: Generating meta-information for page
  */
 class SEO
 {

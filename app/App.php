@@ -12,6 +12,7 @@ namespace CloudStore\App;
 use CloudStore\App\Engine\Config\Config;
 use CloudStore\App\Engine\Config\Filler;
 use CloudStore\App\Engine\Config\Database;
+use CloudStore\App\Engine\Core\PageBuilder;
 use CloudStore\App\Engine\Core\Router;
 use CloudStore\App\Engine\Core\Store;
 use CloudStore\App\Engine\Core\Selector;
@@ -47,6 +48,10 @@ class App
      */
     public $error;
     /**
+     * @var PageBuilder
+     */
+    public $pageBuilder;
+    /**
      * @var Filler
      */
     private $configManager;
@@ -68,6 +73,7 @@ class App
         $this->system = new System();
         $this->tool = new Tool();
         $this->configManager = new Filler();
+        $this->pageBuilder = new PageBuilder();
 
         // Set up the error handler
         $this->error = new Error();
@@ -85,7 +91,8 @@ class App
         // prepare class Store
         Database::setConfig(Config::$db);
         $this->store->setDB(Database::getInstance());
-        $this->store->setTables(Database::showTables());
+        $this->store->setTables(Database::showTables('BASE TABLE'));
+        $this->store->setViews(Database::showTables('VIEW'));
 
         // Set the config
         // All data for config is usually loading from database
@@ -100,6 +107,7 @@ class App
      */
     public function exit(string $message = '')
     {
+        CloudStore::$app->system->buffer->clearBuffer();
         if ($message) {
             $message = "\n\r" . 'CloudStore Engine Shutdown Message: ' . $message . "\n\r";
         }

@@ -2,6 +2,7 @@
 
 # disallow listing of directory
 Options -Indexes
+Options -MultiViews
 
 # redirect all queries to /web/
 RewriteEngine on

@@ -7,18 +7,21 @@ namespace CloudStore\App\Engine\ActiveRecord\Tables;
 use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
 
 /**
- * Class Games
+ * Class Items
  * @package CloudStore\App\Engine\ActiveRecord\Tables
- * @deprecated
  */
-class Soft extends ActiveRecord
+class Items extends ActiveRecord
 {
     /**
      * @var int
      */
     public $id;
     /**
-     * @var string
+     * @var int
+     */
+    public $parent;
+    /**
+     * @var int
      */
     public $name;
     /**

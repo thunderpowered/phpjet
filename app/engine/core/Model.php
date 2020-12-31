@@ -12,7 +12,7 @@ namespace CloudStore\App\Engine\Core;
  * Class Model
  * @package CloudStore\App\Engine\Core
  */
-class Model extends System
+class Model
 {
     /**
      * @var string
@@ -36,6 +36,9 @@ class Model extends System
         return $this->name;
     }
 
+    /**
+     * @deprecated
+     */
     public function getPagination()
     {
 

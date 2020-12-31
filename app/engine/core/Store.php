@@ -2,6 +2,7 @@
 
 namespace CloudStore\App\Engine\Core;
 
+use CloudStore\App\Engine\Config\Config;
 use CloudStore\CloudStore;
 
 /**
@@ -11,11 +12,14 @@ use CloudStore\CloudStore;
  */
 class Store
 {
-
     /**
      * @var array
      */
     private $tables = [];
+    /**
+     * @var array
+     */
+    private $views = [];
     /**
      * @var array
      */
@@ -95,6 +99,14 @@ class Store
      * @var string
      */
     private $postfix = "_view";
+    /**
+     * @var string
+     */
+    private $partitionColumnName = '_config_id';
+    /**
+     * @var string
+     */
+    private $partitionFunction = 'getConfigID';
 
     public function __construct()
     {
@@ -167,6 +179,49 @@ class Store
         }
     }
 
+    /* INSERT INTO DATABASE */
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @param bool $linked
+     * @return bool
+     */
+    public function collect(string $table, array $condition = array(), $linked = true): bool
+    {
+        if (empty($condition)) {
+            return false;
+        }
+
+        $condition = $this->prepareCondition($table, $condition);
+        $sql = $this->drawInsert($table, $condition);
+        if (empty($sql)) {
+            return false;
+        }
+
+        $value = $this->makeValue($condition);
+        $params = $this->setEmpty($table, $value);
+
+        return $this->execSet($sql, $params);
+    }
+
+    /**
+     * @param string $sql
+     * @param array $params
+     * @return bool
+     */
+    public function execSet(string $sql, array $params = array()): bool
+    {
+        $this->counter++;
+        $this->queries .= "\n" . $sql;
+
+        try {
+            return $this->db->prepare($sql)->execute($params);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * @param string $sql
      * @param array $params
@@ -207,55 +262,13 @@ class Store
         return $result;
     }
 
-    /* INSERT INTO DATABASE */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param bool $linked
-     * @return bool
-     */
-    public function collect(string $table, array $condition = array(), $linked = true): bool
-    {
-        if (empty($condition)) {
-            return false;
-        }
-
-        $condition = $this->prepareCondition($table, $condition);
-        $sql = $this->drawInsert($table, $condition);
-        if (empty($sql)) {
-            return false;
-        }
-
-        $value = $this->makeValue($condition);
-        $params = $this->setEmpty($table, $value);
-
-        return $this->execSet($sql, $params);
-    }
-
     /**
      * @param string $sql
-     * @param array $params
      * @return bool
      */
-    public function execSet(string $sql, array $params = array()): bool
+    public function dangerouslySendQueryWithoutPreparation(string $sql): bool
     {
-        if (empty($params) OR empty($sql) OR !is_string($sql)) {
-
-            return false;
-        }
-
-        $this->counter++;
-        $this->queries .= "\n" . $sql;
-
-        try {
-
-            return $this->db->prepare($sql)->execute($params);
-        } catch (\Exception $e) {
-
-            // Just return false, it means that something not good happened
-            return false;
-        }
+        return (bool)$this->db->query($sql);
     }
 
     /* UPDATE */
@@ -374,6 +387,22 @@ class Store
         $this->tables = $tables;
     }
 
+    /**
+     * @param array $views
+     */
+    public function setViews(array $views)
+    {
+        $this->views = $views;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPartitionColumnName()
+    {
+        return $this->partitionColumnName;
+    }
+
     private function setDate()
     {
 
@@ -474,13 +503,38 @@ class Store
      * @param string $table
      * @return string
      */
-    private function prepareTable(string $table): string
+    public function prepareTable(string $table): string
     {
+        // check table itself
         if (!in_array($table, $this->tables)) {
-            CloudStore::$app->exit("Table $table doesn't exist.");
+            // i decided not to put name of the table
+            if (Config::$dev['debug']) {
+                CloudStore::$app->exit("Table {$table} does not exist.");
+            }
+
+            CloudStore::$app->exit('Database error. See logs for information.');
         }
 
-        return $table . $this->postfix;
+        // check view
+        $viewName = $table . $this->postfix;
+        if (!in_array($viewName, $this->views)) {
+            // if view does not exist -> let's try to create it
+            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}();";
+            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+            if (!$result) {
+                if (Config::$dev['debug']) {
+                    CloudStore::$app->exit("View {$viewName} does not exist and it's impossible to create one.");
+                }
+
+                CloudStore::$app->exit("Database error. See logs for information.");
+            }
+
+            // everything is fine
+            $this->views[] = $viewName;
+        }
+
+        // maybe just view does not exist? let's try to create view
+        return $viewName;
     }
 
     /**
@@ -723,7 +777,7 @@ class Store
                 if (array_key_exists($field, $fields)) {
                     $field = $field . ' AS ' . $joinTable . '_' . $field;
                 }
-                $result .= $joinTablePrepared . '.' .$field . $delimiter;
+                $result .= $joinTablePrepared . '.' . $field . $delimiter;
             }
             $fields = array_merge($fields, $joinFields);
         }

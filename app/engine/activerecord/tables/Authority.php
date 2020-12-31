@@ -3,15 +3,13 @@
 
 namespace CloudStore\App\Engine\ActiveRecord\Tables;
 
-
 use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
 
 /**
- * Class Games
+ * Class Authority
  * @package CloudStore\App\Engine\ActiveRecord\Tables
- * @deprecated
  */
-class Soft extends ActiveRecord
+class Authority extends ActiveRecord
 {
     /**
      * @var int
@@ -20,27 +18,27 @@ class Soft extends ActiveRecord
     /**
      * @var string
      */
-    public $name;
+    public $username;
     /**
      * @var string
      */
-    public $url;
+    public $email;
     /**
      * @var string
      */
-    public $icon;
+    public $password;
+    /**
+     * @var bool
+     */
+    public $two_factor_auth;
     /**
      * @var string
      */
-    public $cover;
+    public $session_token;
     /**
      * @var string
      */
-    public $description;
-    /**
-     * @var string
-     */
-    public $since;
+    public $last_login;
     /**
      * @var string
      */

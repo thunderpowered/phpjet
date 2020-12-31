@@ -9,6 +9,7 @@ use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
 /**
  * Class Mods
  * @package CloudStore\App\Engine\ActiveRecord\Tables
+ * @deprecated
  */
 class Mods extends ActiveRecord
 {

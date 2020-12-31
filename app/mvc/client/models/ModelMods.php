@@ -10,6 +10,7 @@ use CloudStore\CloudStore;
 /**
  * Class ModelMods
  * @package CloudStore\App\MVC\Client\Models
+ * @deprecated
  */
 class ModelMods extends Model
 {
@@ -53,80 +54,5 @@ class ModelMods extends Model
 
         CloudStore::$app->tool->cache->setCache(__CLASS__, __FUNCTION__, json_encode($result));
         return $result;
-    }
-
-    /**
-     * @return array
-     */
-    public function getModsBest(): array
-    {
-
-    }
-
-    /**
-     * @param string $group
-     * @param string $orderBy
-     * @param string $orderHow
-     * @return array
-     */
-    public function getMods(string $group, string $orderBy, string $orderHow): array
-    {
-        $groupDays = $this->groupDaysDefault;
-        if (isset($this->groupDays[$group])) {
-            $groupDays = $this->groupDays[$group];
-        }
-
-        $sql = "
-            select mods.id, games_id, games.name as game_name, games.url as game_url, users_id, mods.name as mod_name, mods.url as mod_url, mods.icon as mod_icon, rating, truncate(rating, 1) as rating_display, reviews, datediff(now(), mods.since) div {$groupDays} as date_order from mods 
-            left join
-                (
-                    select COUNT(*) as reviews, AVG(rating) as rating, item_id, item_table from reviews group by item_id, item_table
-                ) as rating 
-                on mods.id = rating.item_id and rating.item_table = 'mods'
-            left join games on mods.games_id = games.id
-            order by date_order, {$orderBy} {$orderHow}, reviews desc, mods.name desc";
-
-        $result = CloudStore::$app->store->execGet($sql);
-        if (!$result) {
-            return [];
-        }
-
-        foreach ($result as $key => $mod) {
-            if ($mod['mod_icon']) {
-                $result[$key]['mod_icon'] = CloudStore::$app->tool->utils->getThumbnailLink($mod['mod_icon']);
-            }
-            $result[$key]['mod_url'] = $this->getModFullUrl($mod['mod_url']);
-        }
-
-        $result = $this->convertRowsToGroupedArray($result, 'date_order');
-        return $result;
-    }
-
-    /**
-     * @param array $rows
-     * @param string $groupKey
-     * @param bool $unsetInitialKey
-     * @return array
-     */
-    private function convertRowsToGroupedArray(array $rows, string $groupKey, bool $unsetInitialKey = false): array
-    {
-        $result = [];
-        foreach ($rows as $key => $value) {
-            if (!isset($result[$value[$groupKey]])) {
-                $result[$value[$groupKey]] = [];
-            }
-
-            if ($unsetInitialKey) {
-                unset($value[$groupKey]);
-            }
-
-            $result[$value[$groupKey]][] = $value;
-        }
-        return $result;
-    }
-
-    private function getModFullUrl(string $url)
-    {
-        return CloudStore::$app->router->getHost() . '/' . $url;
     }
 }

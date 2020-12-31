@@ -4,8 +4,7 @@
 namespace CloudStore\App\Engine\Core;
 
 use CloudStore\App\Engine\Tools\Cache;
-use CloudStore\App\Engine\Tools\ClientManager;
-use CloudStore\App\Engine\Tools\Paginator;
+use CloudStore\App\Engine\Tools\JSONOutput;
 use CloudStore\App\Engine\Tools\SEO;
 use CloudStore\App\Engine\Tools\Formatter;
 use CloudStore\App\Engine\Tools\Utils;
@@ -15,11 +14,10 @@ use CloudStore\App\Engine\Tools\Utils;
  * @package CloudStore\App\Engine\Core
  * @description Tool is the class that contains other classes from directory "Tools"
  * @property Utils $utils
- * @property ClientManager $clientManager
  * @property SEO $SEO
- * @property Paginator $paginator
  * @property Formatter $formatter
  * @property Cache $cache
+ * @property JSONOutput $jsonOutput
  */
 class Tool
 {
@@ -28,17 +26,9 @@ class Tool
      */
     private $utils;
     /**
-     * @var ClientManager
-     */
-    private $clientManager;
-    /**
      * @var SEO
      */
     private $SEO;
-    /**
-     * @var Paginator
-     */
-    private $paginator;
     /**
      * @var Formatter
      */
@@ -47,6 +37,10 @@ class Tool
      * @var Cache
      */
     private $cache;
+    /**
+     * @var JSONOutput
+     */
+    private $jsonOutput;
 
     /**
      * Tool constructor.

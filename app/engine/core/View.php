@@ -75,6 +75,7 @@ class View
 
         $this->controller = $controller;
         $this->widget = new Widget();
+        $this->widget->setController($controller);
 
         $this->buffer = CloudStore::$app->system->buffer;
     }
@@ -99,15 +100,9 @@ class View
         // Create compressed buffer
         $this->buffer->createBuffer();
 
-        // Including layout
-        // Layout can be located out of module
-        // Modules are not available, but will be
-//        if (MVC_PATH !== ENGINE AND file_exists(VIEW_PATH . 'layout/' . THEME_LAYOUT . $this->layout . '.php')) {
-        if (false) {
-            // for module, temporarily disabled
-            require_once VIEW_PATH . 'layout/' . THEME_LAYOUT . $this->layout . '.php';
-        } else {
-            require_once VIEW_PATH . 'layout/' . $this->layout . '.php';
+        $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
+        if (file_exists($filePath)) {
+            require_once $filePath;
         }
 
         return $this->buffer->returnBuffer();
@@ -167,7 +162,7 @@ class View
      */
     public static function includeJS(string $jsPath, $reload = true): string
     {
-        if (file_exists(WEB . 'theme/' . Config::$theme['static'] . '/' . $jsPath)) {
+        if (file_exists(WEB . 'theme/' . Config::$activeTheme['static'] . '/' . $jsPath)) {
             return "<script src=\"" . THEME_STATIC_URL . $jsPath . "?time=" . time() . "\"></script>";
         } else {
             return '';
@@ -181,7 +176,7 @@ class View
      */
     public static function includeCSS(string $cssPath, $reload = true)
     {
-        if (file_exists(WEB . 'theme/' . Config::$theme['static'] . '/' . $cssPath)) {
+        if (file_exists(WEB . 'theme/' . Config::$activeTheme['static'] . '/' . $cssPath)) {
             return "<link rel=\"stylesheet\" type=\"text/css\" href=\"" . THEME_STATIC_URL . $cssPath . "?time=" . time() . "\">";
         } else {
             return '';
@@ -217,15 +212,15 @@ class View
 
         //Creating constants
         // todo: think about the way it used to be. seems like it was a bit effective than now
-        define("THEME_LAYOUT", Config::$theme['layout'] . '/');
-        define("THEME_PARTS", Config::$theme['parts'] . '/');
-        define("THEME_VIEWS", Config::$theme['views'] . '/');
-        define("THEME_MAIL", Config::$theme['mail'] . '/');
+        define("THEME_LAYOUT", Config::$activeTheme['layout'] . '/');
+        define("THEME_PARTS", Config::$activeTheme['parts'] . '/');
+        define("THEME_VIEWS", Config::$activeTheme['views'] . '/');
+        define("THEME_MAIL", Config::$activeTheme['mail'] . '/');
 
-        define("THEME", Config::$theme['layout'] . '/');
+        define("THEME", Config::$activeTheme['layout'] . '/');
         //Creating constant for "static" directory
-        define("THEME_STATIC_URL", $host . '/theme/' . Config::$theme['static'] . '/');
-        define("THEME_STATIC", WEB . 'theme/' . Config::$theme['static'] . '/');
+        define("THEME_STATIC_URL", $host . '/theme/' . Config::$activeTheme['static'] . '/');
+        define("THEME_STATIC", WEB . 'theme/' . Config::$activeTheme['static'] . '/');
         define("COMMON", WEB . 'common/');
         define("COMMON_URL", $host . '/common/');
         define("VIEW_PATH", MVC_PATH . "views/theme/" . THEME);

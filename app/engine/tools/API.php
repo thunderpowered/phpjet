@@ -9,7 +9,7 @@ use CloudStore\App\Engine\Config\Config;
 /**
  * Class API
  * @package CloudStore\App\Engine\Tools
- * @todo move all API functions here
+ * @deprecated
  */
 class API
 {
