@@ -30,8 +30,7 @@ class ControllerMain extends Controller
      */
     public function actionBasic(): string
     {
-        return $this->view->render('view_desktop', [
-
-        ]);
+        $this->title = 'ModWare Admin Desktop';
+        return $this->view->render('view_desktop', []);
     }
 }

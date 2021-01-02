@@ -10,7 +10,7 @@ namespace CloudStore\App;
  */
 
 use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Config\Filler;
+use CloudStore\App\Engine\Config\ConfigManager;
 use CloudStore\App\Engine\Config\Database;
 use CloudStore\App\Engine\Core\PageBuilder;
 use CloudStore\App\Engine\Core\Router;
@@ -52,7 +52,7 @@ class App
      */
     public $pageBuilder;
     /**
-     * @var Filler
+     * @var ConfigManager
      */
     private $configManager;
 
@@ -72,7 +72,7 @@ class App
         $this->store = new Store();
         $this->system = new System();
         $this->tool = new Tool();
-        $this->configManager = new Filler();
+        $this->configManager = new ConfigManager();
         $this->pageBuilder = new PageBuilder();
 
         // Set up the error handler
@@ -91,8 +91,7 @@ class App
         // prepare class Store
         Database::setConfig(Config::$db);
         $this->store->setDB(Database::getInstance());
-        $this->store->setTables(Database::showTables('BASE TABLE'));
-        $this->store->setViews(Database::showTables('VIEW'));
+        $this->store->prepareTables();
 
         // Set the config
         // All data for config is usually loading from database

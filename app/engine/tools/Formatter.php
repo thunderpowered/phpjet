@@ -67,4 +67,13 @@ class Formatter
         $string = strtolower($string);
         return $string;
     }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public function validateEmail(string $email): bool
+    {
+        return (bool)filter_var($email, FILTER_VALIDATE_EMAIL);
+    }
 }

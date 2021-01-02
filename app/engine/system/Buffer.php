@@ -54,7 +54,9 @@ class Buffer
      */
     public function clearBuffer(bool $create = false)
     {
-        ob_clean();
+        if (ob_get_length()) {
+            ob_clean();
+        }
         if ($create) {
             $this->createCompressedBuffer();
         }

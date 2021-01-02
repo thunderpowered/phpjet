@@ -18,10 +18,10 @@ class ControllerPage extends Controller
     public function __construct(string $name = "")
     {
         parent::__construct($name);
+        CloudStore::$app->system->tracker->trackEverythingYouFind();
     }
 
     /**
-     * @param string $url
      * @return string
      */
     public function actionBasic(): string

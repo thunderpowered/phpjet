@@ -10,6 +10,10 @@ namespace CloudStore\App\Engine\Core;
 class PageBuilder
 {
     /**
+     * @var bool
+     */
+    private $active;
+    /**
      * @var array
      */
     private $chunks = [
@@ -49,12 +53,12 @@ class PageBuilder
     ];
     /**
      * @var array
-     * url => function
+     * url => [class, function]
      */
     private $exceptions = [
         'api/quickSearch' => [
             'class' => 'ControllerSearch',
-            'actionAJAXQuickSearch'
+            'function' => 'actionAJAXQuickSearch'
         ]
     ];
 
@@ -73,6 +77,6 @@ class PageBuilder
      */
     public function getPageData(string $url): array
     {
-        // search in db and return array
+        return [];
     }
 }

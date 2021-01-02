@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]><html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
-<!--[if IE 7]><html lang="ru" class="lt-ie9 lt-ie8"><![endif]-->
-<!--[if IE 8]><html lang="ru" class="lt-ie9"><![endif]-->
+<!--[if lt IE 7]>
+<html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]>
+<html lang="ru" class="lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]>
+<html lang="ru" class="lt-ie9"><![endif]-->
 <!--[if gt IE 8]><!-->
 <html lang="ru">
 <!--<![endif]-->
@@ -78,7 +81,7 @@
 <!-- OLD GOOD JQUERY, ACTUALLY USELESS FOR THIS PROJECT -->
 <!-- THE ONLY ONE PLUGIN USING JQUERY IS NICESCROLL -->
 <!-- TODO: FIND WORKAROUND -->
-<?php echo $this->includeJS('libs/jquery-3.5.1/jquery-3.5.1.min.js')?>
+<?php echo $this->includeJS('libs/jquery-3.5.1/jquery-3.5.1.min.js') ?>
 
 <!-- BOOTSTRAP/JS -->
 <?php echo $this->includeJS('libs/bootstrap-5.0.0-beta1/js/bootstrap.bundle.min.js'); ?>

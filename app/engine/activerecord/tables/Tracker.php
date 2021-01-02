@@ -31,6 +31,10 @@ class Tracker extends ActiveRecord
     /**
      * @var string
      */
+    public $user_agent;
+    /**
+     * @var string
+     */
     public $datetime;
     /**
      * @var string

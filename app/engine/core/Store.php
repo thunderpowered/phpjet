@@ -3,6 +3,7 @@
 namespace CloudStore\App\Engine\Core;
 
 use CloudStore\App\Engine\Config\Config;
+use CloudStore\App\Engine\Config\Database;
 use CloudStore\CloudStore;
 
 /**
@@ -20,6 +21,10 @@ class Store
      * @var array
      */
     private $views = [];
+    /**
+     * @var array
+     */
+    private $triggers = [];
     /**
      * @var array
      */
@@ -102,14 +107,53 @@ class Store
     /**
      * @var string
      */
+    private $triggerPostfix = '_trigger';
+    /**
+     * @var string
+     */
     private $partitionColumnName = '_config_id';
     /**
      * @var string
      */
     private $partitionFunction = 'getConfigID';
 
-    public function __construct()
+    public function prepareTables()
     {
+        $this->tables = $this->showTables('BASE TABLE');
+        $this->views = $this->showTables('VIEW');
+        $this->triggers = $this->showTriggers();
+    }
+
+    /**
+     * @param string $tableType
+     * @return array
+     */
+    private function showTables(string $tableType = 'BASE TABLE'): array
+    {
+        $rows = $this->execGet("show full tables where Table_Type = :tableType", [':tableType' => $tableType]);
+
+        // prepare
+        $tables = [];
+        foreach ($rows as $key => $value) {
+            $tables[] = $value["Tables_in_" . Config::$db['database']];
+        }
+
+        return $tables;
+    }
+
+    /**
+     * @return array
+     */
+    private function showTriggers(): array
+    {
+        $rows = $this->execGet("show triggers");
+
+        $triggers = [];
+        foreach ($rows as $key => $value) {
+            $triggers[] = $value['Trigger'];
+        }
+
+        return $triggers;
     }
 
     /**
@@ -169,8 +213,6 @@ class Store
             return [];
         }
 
-        $value = $this->makeValue($condition);
-
         if ($condition) {
             $value = $this->makeValue($condition);
             return $this->execGet($sql, $value, $removeSpecialChars);
@@ -184,10 +226,9 @@ class Store
     /**
      * @param string $table
      * @param array $condition
-     * @param bool $linked
      * @return bool
      */
-    public function collect(string $table, array $condition = array(), $linked = true): bool
+    public function collect(string $table, array $condition = array()): bool
     {
         if (empty($condition)) {
             return false;
@@ -203,6 +244,68 @@ class Store
         $params = $this->setEmpty($table, $value);
 
         return $this->execSet($sql, $params);
+    }
+
+    /* UPDATE */
+
+    /**
+     * @param string $table
+     * @param array $fields
+     * @param array $condition
+     * @param bool $linked
+     * @return bool
+     */
+    public function update(string $table, array $fields = array(), array $condition = array(), $linked = true): bool
+    {
+        if (empty($fields) OR empty($condition)) {
+            return false;
+        }
+        $sql = $this->drawUpdate($table, $fields, $condition);
+        if (empty($sql)) {
+            return false;
+        }
+        $value = array_merge($this->makeValue($condition), $this->makeValue($fields, "set"));
+        $value = $this->setEmpty($table, $value);
+        return $this->execSet($sql, $value);
+    }
+
+    /* DELETE */
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @param bool $linked
+     * @return bool
+     */
+    public function delete(string $table, array $condition = array(), $linked = true): bool
+    {
+        if (empty($table) OR empty($condition)) {
+            return false;
+        }
+        $sql = $this->drawDelete($table, $condition);
+        if (empty($sql)) {
+            return false;
+        }
+        $value = $this->makeValue($condition);
+        return $this->execSet($sql, $value);
+    }
+
+    /* COUNT */
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @return int
+     */
+    public function count(string $table, array $condition = array()): int
+    {
+        $sql = $this->drawSelect($table, $condition, array(), array(), true);
+        if ($condition) {
+            $value = $this->makeValue($condition);
+            return (int)$this->execGet($sql, $value)[0]["COUNT"];
+        } else {
+            return (int)$this->execGet($sql)[0]["COUNT"];
+        }
     }
 
     /**
@@ -268,88 +371,7 @@ class Store
      */
     public function dangerouslySendQueryWithoutPreparation(string $sql): bool
     {
-        return (bool)$this->db->query($sql);
-    }
-
-    /* UPDATE */
-
-    /**
-     * @param string $table
-     * @param array $fields
-     * @param array $condition
-     * @param bool $linked
-     * @return bool
-     */
-    public function update(string $table, array $fields = array(), array $condition = array(), $linked = true): bool
-    {
-        if (empty($fields) OR empty($condition)) {
-
-            return false;
-        }
-
-        $sql = $this->drawUpdate($table, $fields, $condition);
-
-        if (empty($sql)) {
-
-            return false;
-        }
-
-        $value = array_merge($this->makeValue($condition), $this->makeValue($fields, "set"));
-
-        // Be careful!
-        $value = $this->setEmpty($table, $value);
-        //
-
-        return $this->execSet($sql, $value);
-    }
-
-    /* DELETE */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param bool $linked
-     * @return bool
-     */
-    public function delete(string $table, array $condition = array(), $linked = true): bool
-    {
-        if (empty($table) OR empty($condition)) {
-
-            return false;
-        }
-
-        $sql = $this->drawDelete($table, $condition);
-
-        if (empty($sql)) {
-
-            return false;
-        }
-
-        $value = $this->makeValue($condition);
-
-        return $this->execSet($sql, $value);
-    }
-
-    /* COUNT */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @return int
-     */
-    public function count(string $table, array $condition = array()): int
-    {
-        $sql = $this->drawSelect($table, $condition, array(), array(), true);
-
-        if ($condition) {
-
-            $value = $this->makeValue($condition);
-
-            return (int)$this->execGet($sql, $value)[0]["COUNT"];
-        } else {
-
-            return (int)$this->execGet($sql)[0]["COUNT"];
-        }
+        return $this->db->exec($sql);
     }
 
     /* DEBUG PURPOSE ONLY */
@@ -454,16 +476,12 @@ class Store
      */
     private function prepareCondition(string $table, array $param): array
     {
-
         if (!in_array($table, $this->fields)) {
-
             $this->setFields($table);
         }
 
         foreach ($this->fields[$table] as $key => $value) {
-
             if (!array_key_exists($key, $param)) {
-
                 $param[$key] = $value;
             }
         }
@@ -533,6 +551,23 @@ class Store
             $this->views[] = $viewName;
         }
 
+        // check triggers
+        $triggerName = $table . $this->triggerPostfix;
+        if (!in_array($triggerName, $this->triggers)) {
+            $sql = "CREATE TRIGGER {$triggerName}
+                      BEFORE INSERT ON {$table} 
+                      FOR EACH ROW
+                      SET new._config_id = {$this->partitionFunction}()";
+            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+            if (!$result) {
+                if (Config::$dev['debug']) {
+                    CloudStore::$app->exit("Trigger {$triggerName} does not exist and it's impossible to create one.");
+                }
+
+                CloudStore::$app->exit("Database error. See logs for information.");
+            }
+        }
+
         // maybe just view does not exist? let's try to create view
         return $viewName;
     }
@@ -577,11 +612,12 @@ class Store
             return array();
         }
 
+        if ($prefix) {
+            $prefix = $prefix . "_";
+        }
+
         $value = array();
         foreach ($condition as $field => $item) {
-            if ($prefix) {
-                $prefix = $prefix . "_";
-            }
 
             if (is_array($item)) {
                 foreach ($item as $key => $_item) {

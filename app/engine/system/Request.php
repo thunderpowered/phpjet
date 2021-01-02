@@ -44,33 +44,24 @@ class Request
     // 60*60*24*30*6 = 180 days = ~half a year;
     private $cookieDefaultExpires = 15552000;
 
-    // Important!
-    // List of ignored session keys in PostToSess function.
-    /**
-     * @var array
-     */
-    private static $ignored = [
-        "token",
-        "csrf",
-        "session_token",
-        "checkout_token",
-        "user_token"
-    ];
     /**
      * @var string
      * @todo important note: there's Form class that generates forms, should be agreed with it
      */
     private $CSRFTokenKey = '__csrf';
 
+    /**
+     * @var bool
+     */
+    private $CSRFAlreadyChecked = false;
+    /**
+     * @var string
+     */
+    private $method;
+
     // There are some problems with clearing post that contains json string
     // Another temporary solution
     // Only for POST
-    /**
-     * @var array
-     */
-    private static $doNotClear = [
-        "ControllerAjax"
-    ];
 
     /**
      * Request constructor.
@@ -101,6 +92,8 @@ class Request
         // just to unambiguity convert in to bool
         // and of course if we expect JSON input, use function $this->getJSON()
         $this->json = (bool)$this->json;
+
+        $this->method = $this->getSERVER('REQUEST_METHOD');
     }
 
     /**
@@ -145,10 +138,12 @@ class Request
             return [];
         }
 
-        // mostly temp, need better solution
-        $token = $this->post[$this->CSRFTokenKey] ?? null;
-        if (!$token || !CloudStore::$app->system->token->validateToken($token)) {
-            return [];
+        // Since Request owns POST-array, there's no need to check CSRF-token twice
+        // If it is already checked we assume that everything is correct
+        if (!$this->CSRFAlreadyChecked) {
+            if ($this->checkCSRFToken()) {
+                return [];
+            }
         }
 
         $result = [];
@@ -165,6 +160,16 @@ class Request
         }
 
         return $result;
+    }
+
+    /**
+     * @return bool
+     * It is also temporary solution
+     */
+    public function testPOST(): bool
+    {
+        $post = $this->getPOST($this->CSRFTokenKey);
+        return (bool)$post;
     }
 
     /**
@@ -231,107 +236,6 @@ class Request
     }
 
     /**
-     * @param $post
-     * @return bool
-     * @deprecated
-     */
-    public static function postToSession($post)
-    {
-        if (empty($post)) {
-            return false;
-        }
-
-        foreach ($post as $key => $value) {
-            // This can be insecure as SESSION contains CSRF-token.
-            // To prevent this action, use next construction:
-            $key = trim($key);
-            if (in_array($key, self::$ignored)) {
-                continue;
-            }
-            if (is_array($value)) {
-                continue;
-            }
-            try {
-                $_SESSION[$key] = CloudStore::$app->tool->utils->removeSpecialChars($value);
-            } catch (\Exception $e) {
-                // Who cares?..
-                continue;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param $name
-     * @param $value
-     * @return array|string
-     * @deprecated
-     */
-//    public static function setSession($name, $value)
-//    {
-//        return $_SESSION[$name] = CloudStore::$app->tool->utils->removeSpecialChars($value);
-//    }
-
-    /**
-     * @deprecated
-     */
-    public static function postUnset()
-    {
-        unset($_POST);
-    }
-
-    /**
-     * @return bool
-     * @deprecated
-     */
-    public static function eraseErrorSession()
-    {
-        $session = $_SESSION;
-        foreach ($session as $key => $value) {
-            if (strpos($key, "error") === 0) {
-                unset($_SESSION[$key]);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     * @deprecated
-     */
-    public static function eraseUserSession()
-    {
-        $session = self::getSession();
-        foreach ($session as $key => $value) {
-            if (strpos($key, "user") === 0) {
-                unset($_SESSION[$key]);
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param null $key
-     * @return array|bool|string
-     * @deprecated
-     */
-//    public static function getSession($key = null)
-//    {
-//        if ($key) {
-//            if (array_key_exists($key, ($_SESSION ?? []))) {
-//                return CloudStore::$app->tool->utils->removeSpecialChars($_SESSION[$key]);
-//            } else {
-//                return false;
-//            }
-//        } else {
-//            return $_SESSION;
-//        }
-//    }
-
-    /**
      * @return string
      */
     public function getUserIP(): string
@@ -365,21 +269,19 @@ class Request
     }
 
     /**
-     * @param bool $removeSpecialChars
+     * @param bool $dieOnFalse
      * @return bool
      */
-    private static function checkClear(bool $removeSpecialChars)
+    public function checkCSRFToken(bool $dieOnFalse = false): bool
     {
-        // Of course, if variable is set we don't need to change it
-        if ($removeSpecialChars) {
-            return $removeSpecialChars;
-        }
-
-        $controller = CloudStore::$app->router->getControllerObject()->getName();
-        if (in_array($controller, self::$doNotClear)) {
+        $token = $this->post[$this->CSRFTokenKey] ?? null;
+        if (!$token || !CloudStore::$app->system->token->validateToken($token)) {
+            if ($dieOnFalse) {
+                CloudStore::$app->exit('Invalid CSRF-Token.');
+            }
             return false;
         }
-
+        $this->CSRFAlreadyChecked = true;
         return true;
     }
 }

@@ -6,10 +6,10 @@ namespace CloudStore\App\Engine\System;
 /**
  * Class Mail
  * @package CloudStore\App\Engine\System
+ * @deprecated until fixed
  */
 class Mail
 {
-
     /**
      * @param string $mailTo
      * @param string $mailFrom

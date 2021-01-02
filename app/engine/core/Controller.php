@@ -53,6 +53,12 @@ class Controller
      * @var array
      */
     protected $SEO;
+    /**
+     * @var array
+     */
+    protected $methods = [
+        'POST', 'GET'
+    ];
 
     /**
      * Controller constructor.
@@ -65,6 +71,8 @@ class Controller
 
         global $app;
         $this->app = $app;
+
+        $this->checkQueryMethod();
     }
 
     /**
@@ -138,6 +146,19 @@ class Controller
     public function getURLCanonical(): string
     {
         return '<link rel="canonical" href="' . CloudStore::$app->router->getURL() . '">';
+    }
+
+    private function checkQueryMethod()
+    {
+        $method = CloudStore::$app->system->request->getSERVER('REQUEST_METHOD');
+        if (!in_array($method, $this->methods)) {
+            CloudStore::$app->exit("Only " . implode('/', $this->methods) .  " allowed.");
+        }
+
+        // POST queries should contain some data, at least only CSRF-token
+        if ($method === 'POST' && !CloudStore::$app->system->request->checkCSRFToken()) {
+            CloudStore::$app->exit('Empty POST-queries are not allowed.');
+        }
     }
 
     /**

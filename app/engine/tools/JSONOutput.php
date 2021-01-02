@@ -14,8 +14,11 @@ class JSONOutput
      * @var array
      */
     private $messageBoxStyles = [
-        'Warning',
-        'Success'
+        'success',
+        'warning',
+        'error',
+        'danger',
+        'info'
     ];
     /**
      * @var array
@@ -24,22 +27,23 @@ class JSONOutput
         // some default values
         'status' => false,
         'messageBox' => [
-            'style' => 'Warning',
-            'text' => 'Output is not specified'
+            'style' => 'info',
+            'text' => ''
         ],
+        'action' => '',
         'data' => []
     ];
-
-    public function setStatusFalse()
-    {
-        $this->JSONOutput['status'] = false;
-        $this->setMessageBoxStyle(0);
-    }
 
     public function setStatusTrue()
     {
         $this->JSONOutput['status'] = true;
-        $this->setMessageBoxStyle(1);
+        $this->setMessageBoxStyle(0);
+    }
+
+    public function setStatusFalse()
+    {
+        $this->JSONOutput['status'] = false;
+        $this->setMessageBoxStyle(2);
     }
 
     /**
@@ -65,6 +69,11 @@ class JSONOutput
     public function setData(array $data)
     {
         $this->JSONOutput['data'] = $data;
+    }
+
+    public function setAction(string $action)
+    {
+        $this->JSONOutput['action'] = $action;
     }
 
     /**

@@ -1,11 +1,5 @@
 <?php
 
-/*
- * 
- * ShopEngine
- * todo: create constants inside of one file
- */
-
 $start = microtime(true);
 
 $version = phpversion();
@@ -17,9 +11,6 @@ if ((float)$version < 7.3) {
 }
 
 // Defining some directory constants
-// Initially it was root.php file with the root namespace
-// But i temporary disabled it
-// So all constants define here in index.php
 
 // Root directory
 define('ROOT', __DIR__ . '/../');

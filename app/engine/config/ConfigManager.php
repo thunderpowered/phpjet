@@ -14,7 +14,7 @@ use CloudStore\CloudStore;
  * Class Filler
  * @package CloudStore\App\Engine\Config
  */
-class Filler
+class ConfigManager
 {
     public function prepareConfig(): void
     {
@@ -41,11 +41,7 @@ class Filler
         $sessionVariableName = CloudStore::$app->store->getPartitionColumnName();
         CloudStore::$app->store->execSet("SET @{$sessionVariableName} = :id", [':id' => Config::$config['site_id']]);
 
-        // load theme
-        $theme = CloudStore::$app->system->settings->getContext('theme');
-        if (!$theme) {
-            CloudStore::$app->exit('No theme to load. Open CloudStore Administrator Panel and select the theme.');
-        }
-        Config::$activeTheme = Config::$availableThemes[$theme];
+        // load page builder settings only for client
+        Config::$pageBuilder['client']['active'] = (bool)CloudStore::$app->system->settings->getContext('pagebuilder');
     }
 }

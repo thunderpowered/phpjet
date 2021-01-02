@@ -17,7 +17,7 @@ use CloudStore\App\Engine\Tools\Utils;
  * @property SEO $SEO
  * @property Formatter $formatter
  * @property Cache $cache
- * @property JSONOutput $jsonOutput
+ * @property JSONOutput $JSONOutput
  */
 class Tool
 {
@@ -40,7 +40,7 @@ class Tool
     /**
      * @var JSONOutput
      */
-    private $jsonOutput;
+    private $JSONOutput;
 
     /**
      * Tool constructor.

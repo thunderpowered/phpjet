@@ -55,7 +55,7 @@ abstract class ActiveRecord
      * @param array $orderBy
      * @param array $limit
      * @param bool $removeSpecialChars
-     * @return ActiveRecord|void
+     * @return static|void
      */
     public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true)
     {
@@ -156,7 +156,6 @@ abstract class ActiveRecord
          * If row was loaded from database, update it.
          * If not - create new
          */
-        $result = false;
         if ($this->_loaded) {
             /**
              * Hooks
@@ -166,7 +165,7 @@ abstract class ActiveRecord
              * Yeah, i haven't find better solution for this :)
              * So i guess it's temporary
              */
-            CloudStore::$app->store->update($table, $row, [$this->_primaryKey => $this->$this->primaryKey]);
+            $result = CloudStore::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
         } else {
             /**
              * Hooks

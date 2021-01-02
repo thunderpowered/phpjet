@@ -13,7 +13,7 @@ define("ENGINE_VER_FUNC", 1);
 // Development version
 // Increase only when significant changes not satisfying two points above
 // Example: significant bug fixed, function was rewritten etc.
-define("ENGINE_VER_DEV", 1);
+define("ENGINE_VER_DEV", 3);
 
 // Development stage
 // 0 - alpha

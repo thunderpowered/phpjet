@@ -47,25 +47,6 @@ class Database
     }
 
     /**
-     * @param string $tableType
-     * @return array
-     */
-    public static function showTables(string $tableType = 'BASE TABLE'): array
-    {
-        $stmt = Database::getInstance()->query("show full tables where Table_Type = '{$tableType}'");
-        $stmt->execute();
-        $temp = $stmt->fetchAll();
-
-        // prepare
-        $tables = [];
-        foreach ($temp as $key => $value) {
-            $tables[] = $value["Tables_in_" . Database::$config['database']];
-        }
-
-        return $tables;
-    }
-
-    /**
      * @return \PDO
      */
     public static function getInstance(): \PDO

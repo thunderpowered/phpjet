@@ -2,7 +2,6 @@
 
 namespace CloudStore\App\Engine\Core;
 
-use CloudStore\App\Engine\Components;
 use CloudStore\App\Engine\Config;
 use CloudStore\App\Engine\System\Buffer;
 use CloudStore\App\Engine\System\Mail;
@@ -122,16 +121,18 @@ class System
 
     /**
      * @param string $controllerName
-     * @param string $rootURL
+     * @param string $MVCSector
+     * @param bool $forceCheck
      * @return bool
      */
-    public function isControllerActive(string $controllerName, string $rootURL): bool
+    public function isControllerActive(string $controllerName, string $MVCSector, bool $forceCheck = false): bool
     {
-        if ($this->controllerActive) {
+        if ($this->controllerActive && !$forceCheck) {
             return true;
         }
 
-        $this->controllerActive = in_array($controllerName, Config\Config::$config['controllers']);
+        $MVCSector = strtolower($MVCSector);
+        $this->controllerActive = in_array($controllerName, Config\Config::$config['controllers'][$MVCSector]);
         return $this->controllerActive;
     }
 

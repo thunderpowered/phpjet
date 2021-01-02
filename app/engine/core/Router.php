@@ -10,7 +10,6 @@ use CloudStore\CloudStore;
 /**
  * Class Router
  * @package CloudStore\App\Engine\Core
- * TODO: Router does too many things. I think it's way better to create separated class for making other class - like Factory or something
  */
 class Router
 {
@@ -47,6 +46,10 @@ class Router
      */
     private $view;
     /**
+     * @varstring
+     */
+    private $controllerName;
+    /**
      * @var array
      */
     private $default = [
@@ -75,10 +78,11 @@ class Router
     {
         // There is nothing to see here, citizen...
     }
+
     /**
-     * @return bool
+     * @return string
      */
-    public function start()
+    public function start(): string
     {
         // prepare root URL (should not be in constructor for some reason)
         $route = $this->getRoutePart(1);
@@ -89,24 +93,22 @@ class Router
             $this->defaultActionRoutePart++;
             $this->defaultControllerRoutePart++;
         }
-        $this->MVCSector = $this->rootURL ? ucfirst($this->rootURL) : ucfirst(Config\Config::$urlRules['']);
+        $this->MVCSector = $this->rootURL ? $this->rootURL : Config\Config::$urlRules[''];
 
-        // Check the module
-        // If module is connected, open it
-        // Modules have priority
-        // UPD: modules are not available at the moment
+        define('MVC_SECTOR', $this->MVCSector);
         define('MVC_PATH', CloudStore::$app->system->getMVCPath($this->rootURL));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
-        if (Config\Config::$activeTheme['pagebuilder']) {
+        if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
             // Proceed with page builder
-            $this->controller = new ControllerPage();
+            $this->setControllerName('page');
+            $this->controller = $this->getControllerObject();
         } else {
             // Default way
             // CloudStore has a list of controller that may be included and executed
             // List of controllers is in the config
             $controllerName = $this->getControllerName(true);
-            if (!CloudStore::$app->system->isControllerActive($controllerName, $this->rootURL)) {
+            if (!CloudStore::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
                 return $this->errorPage404();
             }
 
@@ -135,7 +137,7 @@ class Router
 
         // Or use basic action
         $action = $this->actionBasic;
-        if (method_exists($controller, $action)) {
+        if (method_exists($controller, $action) && is_callable([$controller, $action])) {
             return $controller->$action();
         }
 
@@ -159,7 +161,7 @@ class Router
      */
     public function errorPage404(bool $forceRedirect = false): string
     {
-        return $this->errorPage('404', 'Not Found', 'error', $forceRedirect);
+        return $this->errorPage('404', 'Not Found', '404', $forceRedirect);
     }
 
     /**
@@ -197,7 +199,8 @@ class Router
             echo $result;
             CloudStore::$app->exit();
         }
-        return $view->render();
+
+        return $result;
     }
     /**
      * @param int $part
@@ -382,23 +385,39 @@ class Router
         return $controller;
     }
     /**
-     * @param bool $low
+     * @param bool $lowerCase
      * @return string
      */
-    public function getControllerName(bool $low = true): string
+    public function getControllerName(bool $lowerCase = true): string
     {
-        $routePart = $this->getRoutePart($this->defaultControllerRoutePart, true);
+        if (!$this->controllerName) {
+            $routePart = $this->getRoutePart($this->defaultControllerRoutePart, true);
 
-        $controllerName = $this->default['controller'];
-        if ($routePart) {
-            $controllerName = $routePart;
+            $this->controllerName = $this->default['controller'];
+            if ($routePart) {
+                $this->controllerName = $routePart;
+            }
         }
 
-        if (!$low) {
-            $controllerName = ucfirst($controllerName);
+        if (!$lowerCase) {
+            $this->controllerName = ucfirst($this->controllerName);
         }
 
-        return $controllerName;
+        return $this->controllerName;
+    }
+
+    /**
+     * @param string $controllerName
+     * @return bool
+     */
+    public function setControllerName(string $controllerName): bool
+    {
+        if (!CloudStore::$app->system->isControllerActive($controllerName, $this->MVCSector, true)) {
+            return false;
+        }
+
+        $this->controllerName = $controllerName;
+        return true;
     }
     /**
      * @return Model
