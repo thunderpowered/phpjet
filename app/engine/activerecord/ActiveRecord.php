@@ -48,6 +48,8 @@ abstract class ActiveRecord
 
         // _loaded means that row was loaded from database, not created by user
         $this->_loaded = $loaded;
+
+        set_exception_handler([$this, 'exceptionHandler']);
     }
 
     /**
@@ -55,7 +57,7 @@ abstract class ActiveRecord
      * @param array $orderBy
      * @param array $limit
      * @param bool $removeSpecialChars
-     * @return static|void
+     * @return ActiveRecord|void
      */
     public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true)
     {
@@ -71,7 +73,13 @@ abstract class ActiveRecord
         $class = get_called_class();
 
         $table = self::convertClassNameIntoTableName($class);
-        $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
+
+        try {
+            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
+        } catch (\Exception $e) {
+            self::exceptionHandler($e);
+        }
+
         if (isset($rows[0])) {
             return self::convertRowIntoObject($rows[0], $class, true);
         }
@@ -84,7 +92,7 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
-     * @return static[]
+     * @return array
      */
     public static function get(array $conditions = array(), array $orderBy = array(), array $limit = array()): array
     {
@@ -94,7 +102,11 @@ abstract class ActiveRecord
         self::beforeSelect();
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
-        $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit);
+        try {
+            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit);
+        } catch (\Exception $e) {
+            self::exceptionHandler($e);
+        }
 
         /**
          * Create an array of objects
@@ -112,14 +124,19 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
-     * @return static[]
+     * @return array
      */
     public static function getJoin(array $join = array(), array $conditions = array(), array $orderBy = array(), array $limit = array()): array
     {
         self::beforeSelect();
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
-        $rows = CloudStore::$app->store->loadNew($table, $join, $conditions, $orderBy, $limit);
+
+        try {
+            $rows = CloudStore::$app->store->load2($table, $join, $conditions, $orderBy, $limit);
+        } catch (\Exception $e) {
+            self::exceptionHandler($e);
+        }
 
         // Create an array of objects
         $result = [];
@@ -133,12 +150,19 @@ abstract class ActiveRecord
     /**
      * @param array $conditions
      * @return int
+     * @throws \Exception
      */
     public static function count(array $conditions = array()): int
     {
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
-        return CloudStore::$app->store->count($table, $conditions);
+        try {
+            $result = CloudStore::$app->store->count($table, $conditions);
+        } catch (\Exception $e) {
+            self::exceptionHandler($e);
+        }
+
+        return $result;
     }
 
     /**
@@ -165,13 +189,21 @@ abstract class ActiveRecord
              * Yeah, i haven't find better solution for this :)
              * So i guess it's temporary
              */
-            $result = CloudStore::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
+            try {
+                $result = CloudStore::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
+            } catch (\Exception $e) {
+                self::exceptionHandler($e);
+            }
         } else {
             /**
              * Hooks
              */
             $this->beforeInsert();
-            $result = CloudStore::$app->store->collect($table, $row);
+            try {
+                $result = CloudStore::$app->store->collect($table, $row);
+            } catch (\Exception $e) {
+                self::exceptionHandler($e);
+            }
         }
 
         return $result;
@@ -179,6 +211,7 @@ abstract class ActiveRecord
 
     /**
      * @return bool
+     * @throws \Exception
      */
     public function remove(): bool
     {
@@ -190,6 +223,14 @@ abstract class ActiveRecord
         $table = $this->convertClassNameIntoTableName($this->_class);
 
         return CloudStore::$app->store->delete($table, [$this->_primaryKey => $this->$this->primaryKey]);
+    }
+
+    /**
+     * @param \Exception $e
+     */
+    private static function exceptionHandler(\Exception $e)
+    {
+        CloudStore::$app->error->exceptionCatcher($e);
     }
 
     /**
@@ -277,6 +318,6 @@ abstract class ActiveRecord
      */
     private function mergeObjects(array $objects): object
     {
-
+        // todo
     }
 }

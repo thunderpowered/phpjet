@@ -1,15 +1,14 @@
 <?php
 
+
 namespace CloudStore\App\Engine\Core;
 
 use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Config\Database;
 use CloudStore\CloudStore;
 
 /**
- * Class Store
+ * Class Store2
  * @package CloudStore\App\Engine\Core
- *
  */
 class Store
 {
@@ -86,6 +85,13 @@ class Store
     ];
 
     /**
+     * @var array
+     */
+    private $orderTypes = [
+        'ASC', 'DESC'
+    ];
+
+    /**
      *  it's just NULL
      */
     private $null = "NULL";
@@ -116,265 +122,22 @@ class Store
      * @var string
      */
     private $partitionFunction = 'getConfigID';
-
-    public function prepareTables()
-    {
-        $this->tables = $this->showTables('BASE TABLE');
-        $this->views = $this->showTables('VIEW');
-        $this->triggers = $this->showTriggers();
-    }
+    /**
+     * @var bool
+     * If true, everything that passes to functions load(), loadOne(), update(), collect(), delete() and count() will be whitelisted
+     * If false, only tables will be whitelisted
+     * Recommended to keep as true on production
+     * Functions execGet() and execSet() will not be validated. It is up on developer.
+     */
+    private $validateEverything = true;
 
     /**
-     * @param string $tableType
-     * @return array
+     * @return string
      */
-    private function showTables(string $tableType = 'BASE TABLE'): array
+    public function getPartitionColumnName()
     {
-        $rows = $this->execGet("show full tables where Table_Type = :tableType", [':tableType' => $tableType]);
-
-        // prepare
-        $tables = [];
-        foreach ($rows as $key => $value) {
-            $tables[] = $value["Tables_in_" . Config::$db['database']];
-        }
-
-        return $tables;
+        return $this->partitionColumnName;
     }
-
-    /**
-     * @return array
-     */
-    private function showTriggers(): array
-    {
-        $rows = $this->execGet("show triggers");
-
-        $triggers = [];
-        foreach ($rows as $key => $value) {
-            $triggers[] = $value['Trigger'];
-        }
-
-        return $triggers;
-    }
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param bool $removeSpecialChars
-     * @param bool $linked
-     * @return bool
-     */
-    public function loadOne(string $table, array $condition = array(), bool $removeSpecialChars = true, $linked = true): array
-    {
-        $result = $this->load($table, $condition, array(), array(), $removeSpecialChars, $linked);
-        if ($result) {
-            return $result[0];
-        }
-        return array();
-    }
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param array $orderBy
-     * @param array $limit
-     * @param bool $removeSpecialChars
-     * @param bool $linked
-     * @return array
-     * @deprecated
-     */
-    public function load(string $table, array $condition = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true, $linked = true): array
-    {
-        $sql = $this->drawSelect($table, $condition, $orderBy, $limit);
-        if (empty($sql)) {
-            return array();
-        }
-
-        if ($condition) {
-            $value = $this->makeValue($condition);
-            return $this->execGet($sql, $value, $removeSpecialChars);
-        } else {
-            return $this->execGet($sql, array(), $removeSpecialChars);
-        }
-    }
-
-    /**
-     * @param string $table
-     * @param array $join
-     * @param array $condition
-     * @param array $orderBy
-     * @param array $limit
-     * @param bool $removeSpecialChars
-     * @return array
-     */
-    public function loadNew(string $table, array $join = array(), array $condition = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true): array
-    {
-        $sql = $this->drawSelectNew($table, $join, $condition, $orderBy, $limit);
-        if (!$sql) {
-            return [];
-        }
-
-        if ($condition) {
-            $value = $this->makeValue($condition);
-            return $this->execGet($sql, $value, $removeSpecialChars);
-        } else {
-            return $this->execGet($sql, array(), $removeSpecialChars);
-        }
-    }
-
-    /* INSERT INTO DATABASE */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @return bool
-     */
-    public function collect(string $table, array $condition = array()): bool
-    {
-        if (empty($condition)) {
-            return false;
-        }
-
-        $condition = $this->prepareCondition($table, $condition);
-        $sql = $this->drawInsert($table, $condition);
-        if (empty($sql)) {
-            return false;
-        }
-
-        $value = $this->makeValue($condition);
-        $params = $this->setEmpty($table, $value);
-
-        return $this->execSet($sql, $params);
-    }
-
-    /* UPDATE */
-
-    /**
-     * @param string $table
-     * @param array $fields
-     * @param array $condition
-     * @param bool $linked
-     * @return bool
-     */
-    public function update(string $table, array $fields = array(), array $condition = array(), $linked = true): bool
-    {
-        if (empty($fields) OR empty($condition)) {
-            return false;
-        }
-        $sql = $this->drawUpdate($table, $fields, $condition);
-        if (empty($sql)) {
-            return false;
-        }
-        $value = array_merge($this->makeValue($condition), $this->makeValue($fields, "set"));
-        $value = $this->setEmpty($table, $value);
-        return $this->execSet($sql, $value);
-    }
-
-    /* DELETE */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param bool $linked
-     * @return bool
-     */
-    public function delete(string $table, array $condition = array(), $linked = true): bool
-    {
-        if (empty($table) OR empty($condition)) {
-            return false;
-        }
-        $sql = $this->drawDelete($table, $condition);
-        if (empty($sql)) {
-            return false;
-        }
-        $value = $this->makeValue($condition);
-        return $this->execSet($sql, $value);
-    }
-
-    /* COUNT */
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @return int
-     */
-    public function count(string $table, array $condition = array()): int
-    {
-        $sql = $this->drawSelect($table, $condition, array(), array(), true);
-        if ($condition) {
-            $value = $this->makeValue($condition);
-            return (int)$this->execGet($sql, $value)[0]["COUNT"];
-        } else {
-            return (int)$this->execGet($sql)[0]["COUNT"];
-        }
-    }
-
-    /**
-     * @param string $sql
-     * @param array $params
-     * @return bool
-     */
-    public function execSet(string $sql, array $params = array()): bool
-    {
-        $this->counter++;
-        $this->queries .= "\n" . $sql;
-
-        try {
-            return $this->db->prepare($sql)->execute($params);
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * @param string $sql
-     * @param array $params
-     * @param bool $removeSpecialChars
-     * @return array
-     */
-    public function execGet(string $sql, array $params = array(), bool $removeSpecialChars = true): array
-    {
-        if (!$params) {
-            $stmt = $this->db->query($sql);
-            if (!$stmt) {
-                return array();
-            }
-            $result = $stmt->fetchAll();
-            if (!$result) {
-                return array();
-            }
-        } else {
-            $stmt = $this->db->prepare($sql);
-            $result = $stmt->execute($params);
-            if (!$result) {
-                return array();
-            }
-
-            $result = $stmt->fetchAll();
-            if (!$result) {
-                return array();
-            }
-        }
-
-        // dev
-        $this->counter++;
-        $this->queries .= "\n" . $sql;
-
-        if ($removeSpecialChars) {
-            $result = $this->removeSpecialChars($result);
-        }
-        return $result;
-    }
-
-    /**
-     * @param string $sql
-     * @return bool
-     */
-    public function dangerouslySendQueryWithoutPreparation(string $sql): bool
-    {
-        return $this->db->exec($sql);
-    }
-
-    /* DEBUG PURPOSE ONLY */
 
     /**
      * @return int
@@ -386,6 +149,7 @@ class Store
 
     /**
      * @return int
+     * @deprecated
      */
     public function getQueries(): int
     {
@@ -401,35 +165,9 @@ class Store
         $this->setDate();
     }
 
-    /**
-     * @param array $tables
-     */
-    public function setTables(array $tables)
-    {
-        $this->tables = $tables;
-    }
-
-    /**
-     * @param array $views
-     */
-    public function setViews(array $views)
-    {
-        $this->views = $views;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPartitionColumnName()
-    {
-        return $this->partitionColumnName;
-    }
-
     private function setDate()
     {
-
         if (!$this->timestamp) {
-
             $this->timestamp = time();
         }
 
@@ -449,198 +187,271 @@ class Store
      */
     public function now(): string
     {
-
         if (!$this->timestamp) {
-
             $this->timestamp = time();
         }
-
         $date = date("Y-m-d", $this->timestamp);
         $time = date("H:i:s", $this->timestamp);
-
         return $date . ' ' . $time;
     }
 
+    public function prepareTables()
+    {
+        $this->showTables();
+        $this->showTriggers();
+    }
+
     /**
+     * @param string $SQLString
+     * @param array $params
+     * @param bool $removeSpecialChars
      * @return array
      */
-    private function getTables(): array
+    public function execGet(string $SQLString, array $params = [], bool $removeSpecialChars = true): array
     {
-        return $this->tables;
+        $this->counter++;
+        if ($params) {
+            $PDOStatement = $this->db->prepare($SQLString);
+            if (!$PDOStatement) {
+                return [];
+            }
+
+            $executed = $PDOStatement->execute($params);
+            if (!$executed) {
+                return [];
+            }
+        } else {
+            $PDOStatement = $this->db->query($SQLString);
+            if (!$PDOStatement) {
+                return [];
+            }
+        }
+
+        $result = $PDOStatement->fetchAll();
+        if (!$result) {
+            return [];
+        }
+
+        if ($removeSpecialChars) {
+            $result = $this->removeSpecialChars($result);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $SQLString
+     * @param array $params
+     * @return bool
+     */
+    public function execSet(string $SQLString, array $params): bool
+    {
+        $this->counter++;
+        $PDOStatement = $this->db->prepare($SQLString);
+        if (!$PDOStatement) {
+            return false;
+        }
+
+        // returns true or false anyway
+        $result = $PDOStatement->execute($params);
+        return $result;
+    }
+
+    /**
+     * @param string $SQLString
+     * @return bool
+     */
+    public function dangerouslySendQueryWithoutPreparation(string $SQLString): bool
+    {
+        $this->counter++;
+        return $this->db->exec($SQLString);
     }
 
     /**
      * @param string $table
-     * @param array $param
-     * @return array
-     */
-    private function prepareCondition(string $table, array $param): array
-    {
-        if (!in_array($table, $this->fields)) {
-            $this->setFields($table);
-        }
-
-        foreach ($this->fields[$table] as $key => $value) {
-            if (!array_key_exists($key, $param)) {
-                $param[$key] = $value;
-            }
-        }
-
-        return $param;
-    }
-
-    /**
-     * @param string $table
-     */
-    private function setFields(string $table)
-    {
-        if (isset($this->fields[$table])) {
-            return;
-        }
-
-        $stmt = $this->db->prepare("SHOW FIELDS FROM " . $this->prepareTable($table));
-        $stmt->execute();
-
-        $temp = $stmt->fetchAll();
-
-        foreach ($temp as $key => $value) {
-            if ($value['Field'] === "id") {
-//                continue;
-            }
-
-            $type = strtolower($value['Type']);
-            if (($end = strpos($type, '(')) !== false) {
-                $type = substr($type, 0, $end);
-            }
-            $empty = array_key_exists($type, $this->types) ? $this->types[$type] : null;
-            $this->fields[$table][$value['Field']] = $empty;
-        }
-    }
-
-    /**
-     * @param string $table
-     * @return string
-     */
-    public function prepareTable(string $table): string
-    {
-        // check table itself
-        if (!in_array($table, $this->tables)) {
-            // i decided not to put name of the table
-            if (Config::$dev['debug']) {
-                CloudStore::$app->exit("Table {$table} does not exist.");
-            }
-
-            CloudStore::$app->exit('Database error. See logs for information.');
-        }
-
-        // check view
-        $viewName = $table . $this->postfix;
-        if (!in_array($viewName, $this->views)) {
-            // if view does not exist -> let's try to create it
-            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}();";
-            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
-            if (!$result) {
-                if (Config::$dev['debug']) {
-                    CloudStore::$app->exit("View {$viewName} does not exist and it's impossible to create one.");
-                }
-
-                CloudStore::$app->exit("Database error. See logs for information.");
-            }
-
-            // everything is fine
-            $this->views[] = $viewName;
-        }
-
-        // check triggers
-        $triggerName = $table . $this->triggerPostfix;
-        if (!in_array($triggerName, $this->triggers)) {
-            $sql = "CREATE TRIGGER {$triggerName}
-                      BEFORE INSERT ON {$table} 
-                      FOR EACH ROW
-                      SET new._config_id = {$this->partitionFunction}()";
-            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
-            if (!$result) {
-                if (Config::$dev['debug']) {
-                    CloudStore::$app->exit("Trigger {$triggerName} does not exist and it's impossible to create one.");
-                }
-
-                CloudStore::$app->exit("Database error. See logs for information.");
-            }
-        }
-
-        // maybe just view does not exist? let's try to create view
-        return $viewName;
-    }
-
-    /**
-     * @param string $table
-     * @param array $param
-     * @return array
-     */
-    private function setEmpty(string $table, array $param): array
-    {
-        if (!in_array($table, $this->fields)) {
-            $this->setFields($table);
-        }
-
-        foreach ($param as $key => $value) {
-            if ($value === $this->null) {
-                $param[$key] = null;
-                continue;
-            }
-            if (empty($value)) {
-                $key_clean = substr($key, 1);
-                if (strpos($key_clean, "set_") !== false) {
-                    $key_clean = substr($key_clean, 4);
-                }
-
-                $param[$key] = array_key_exists($key_clean, $this->fields[$table]) ? $this->fields[$table][$key_clean] : null;
-            }
-        }
-
-        return $param;
-    }
-
-    /**
      * @param array $condition
-     * @param string|null $prefix
+     * @param bool $removeSpecialChars
      * @return array
+     * @throws \Exception
      */
-    private function makeValue(array $condition, string $prefix = null): array
+    public function loadOne(string $table, array $condition = [], bool $removeSpecialChars = true): array
     {
-        if (empty($condition)) {
-            return array();
+        $result = $this->load($table, $condition, [], [0, 1], $removeSpecialChars);
+        if (!isset($result[0])) {
+            return [];
         }
-
-        if ($prefix) {
-            $prefix = $prefix . "_";
-        }
-
-        $value = array();
-        foreach ($condition as $field => $item) {
-
-            if (is_array($item)) {
-                foreach ($item as $key => $_item) {
-                    $value[":" . $prefix . $this->escape($field) . $key] = $_item;
-                }
-            } else {
-                if (strpos($item, "!") === 0) {
-                    $item = substr($item, 1);
-                }
-                $value[":" . $prefix . $this->escape($field)] = $item;
-            }
-        }
-
-        return $value;
+        return $result[0];
     }
 
     /**
-     * @param $string
-     * @return string
+     * @param string $table
+     * @param array $condition
+     * @param array $orderBy
+     * @param array $limit
+     * @param bool $removeSpecialChars
+     * @return array
+     * @throws \Exception
+     * @deprecated
      */
-    private function escape($string): string
+    public function load(string $table, array $condition = [], array $orderBy = [], array $limit = [], bool $removeSpecialChars = true): array
     {
-        return str_replace('\'', '', $this->db->quote($string));
+        $SQLString = $this->drawSQLString($table, [], [], $condition, $orderBy, $limit, 'select', false, $this->validateEverything);
+
+        if ($condition) {
+            $values = $this->makeValues($condition);
+            return $this->execGet($SQLString, $values, $removeSpecialChars);
+        } else {
+            return $this->execGet($SQLString, [], $removeSpecialChars);
+        }
+    }
+
+    /**
+     * @param string $table
+     * @param array $join
+     * @param array $condition
+     * @param array $orderBy
+     * @param array $limit
+     * @param bool $removeSpecialChars
+     * @return array
+     * @throws \Exception
+     */
+    public function load2(string $table, array $join = array(), array $condition = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true): array
+    {
+        $SQLString = $this->drawSQLString($table, $join, [], $condition, $orderBy, $limit, 'select', false, $this->validateEverything);
+
+        if ($condition) {
+            $values = $this->makeValues($condition);
+            return $this->execGet($SQLString, $values, $removeSpecialChars);
+        } else {
+            return $this->execGet($SQLString, [], $removeSpecialChars);
+        }
+    }
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @return bool
+     * @throws \Exception
+     */
+    public function collect(string $table, array $condition = []): bool
+    {
+        if (!$condition) {
+            return false;
+        }
+
+        $SQLString = $this->drawSQLString($table, [], [], $condition, [], [], 'insert', false, $this->validateEverything);
+
+        $values = $this->makeValues($condition);
+        $params = $this->setEmptyFields($table, $values);
+        return $this->execSet($SQLString, $params);
+    }
+
+    /**
+     * @param string $table
+     * @param array $fields
+     * @param array $condition
+     * @return bool
+     * @throws \Exception
+     */
+    public function update(string $table, array $fields, array $condition): bool
+    {
+        if (!$fields || !$condition) {
+            return false;
+        }
+
+        $SQLString = $this->drawSQLString($table, [], $fields, $condition, [], [], 'update', false, $this->validateEverything);
+        $valuesOfUpdateFields = $this->makeValues($fields, 'set');
+        $valuesOfCondition = $this->makeValues($condition);
+        $values = array_merge($valuesOfCondition, $valuesOfUpdateFields);
+        $values = $this->setEmptyFields($table, $values);
+        return $this->execSet($SQLString, $values);
+    }
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @return bool
+     * @throws \Exception
+     */
+    public function delete(string $table, array $condition): bool
+    {
+        if (!$condition) {
+            return false;
+        }
+
+        $SQLString = $this->drawSQLString($table, [], [], $condition, [], [], 'delete', false, $this->validateEverything);
+        $values = $this->makeValues($condition);
+        return $this->execSet($SQLString, $values);
+    }
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @return int
+     * @throws \Exception
+     */
+    public function count(string $table, array $condition = []): int
+    {
+        $SQLString = $this->drawSQLString($table, [], [], $condition, [], [], 'select', true, $this->validateEverything);
+        if ($condition) {
+            $values = $this->makeValues($condition);
+            $result = $this->execGet($SQLString, $values);
+        } else {
+            $result = $this->execGet($SQLString, []);
+        }
+
+        if (!isset($result[0]) || !isset($result[0]['COUNT'])) {
+            return 0;
+        }
+
+        return (int)$result[0]['COUNT'];
+    }
+
+    /**
+     * @param string $table
+     * @param array $join
+     * @param array $updateFields
+     * @param array $condition
+     * @param array $orderBy
+     * @param array $limit
+     * @param string $type
+     * @param bool $count
+     * @param bool $validateEverything
+     * @return string
+     * @throws \Exception
+     */
+    private function drawSQLString(string $table, array $join = [], array $updateFields = [], array $condition = [], array $orderBy = [], array $limit = [], string $type = 'select', bool $count = false, bool $validateEverything = true): string
+    {
+        $table = $this->prepareTable($table);
+
+        // unfortunately it's just impossible to turn off without destroying everything
+        if ($validateEverything && true) {
+            $join = $this->prepareJoin($join, $table);
+            $condition = $this->prepareCondition($condition, $table);
+            $updateFields = $this->prepareCondition($updateFields, $table);
+            $orderBy = $this->prepareOrderBy($orderBy, $table);
+            $limit = $this->prepareLimit($limit);
+        }
+
+        $SQLString = '';
+        switch ($type) {
+            case 'select':
+                $SQLString = $this->drawSelect($table, $join, $condition, $orderBy, $limit, $count);
+                break;
+            case 'insert':
+                $SQLString = $this->drawInsert($table, $condition);
+                break;
+            case 'update':
+                $SQLString = $this->drawUpdate($table, $updateFields, $condition);
+                break;
+            case 'delete':
+                $SQLString = $this->drawDelete($table, $condition);
+                break;
+            default:
+                $this->throwException('DRAW: Incorrect type');
+        }
+
+        return $SQLString;
     }
 
     /**
@@ -650,54 +461,8 @@ class Store
      */
     private function drawDelete(string $table, array $condition): string
     {
-        $table = $this->prepareTable($table);
-        return "DELETE FROM " . $table . " WHERE " . $this->drawWhere($condition, $table);
-    }
-
-    /**
-     * @param array $array
-     * @return string
-     */
-    private function drawWhere(array $array, string $table): string
-    {
-        $result = '';
-        $clause = '';
-        foreach ($array as $field => $value) {
-            if (is_array($value)) {
-                // use IN (?)
-                $placeholders = '';
-                foreach ($value as $key => $item) {
-                    $placeholders .= ',:' . $this->escape($field) . $key;
-                }
-                $placeholders = substr($placeholders, 1);
-                $result .= $table . '.' . $this->escape($field) . ' IN (' . $placeholders . ')';
-            } else {
-                // regular where
-                if ($result) {
-                    $clause = strpos($field, "!") === 0 ? " OR " : " AND ";
-                }
-                $operator = strpos($value, "!") === 0 ? "<>" : "=";
-                $result .= $clause . $table . '.' . $this->escape($field) . " " . $operator . " :" . $this->escape($field);
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $conditions
-     * @param string $joinTable
-     * @param $mainTable
-     * @return string
-     */
-    private function drawOn(array $conditions, string $joinTable, $mainTable): string
-    {
-        $result = [];
-        foreach ($conditions as $joinField => $mainField) {
-            $result[] = $joinTable . '.' . $joinField . ' = ' . $mainTable . '.' . $mainField;
-        }
-
-        return implode(' AND ', $result);
+        $SQLWhere = $this->drawWhere($condition, $table);
+        return "DELETE FROM " . $table . " WHERE " . $SQLWhere;
     }
 
     /**
@@ -708,16 +473,51 @@ class Store
      */
     private function drawUpdate(string $table, array $fields, array $condition): string
     {
-        $table = $this->prepareTable($table);
-        return "UPDATE " . $table . " SET " . $this->drawValues($fields, "update") . " WHERE " . $this->drawWhere($condition, $table);
+        $SQLWhat = $this->drawValues($fields, 'update');
+        $SQLWhere = $this->drawWhere($condition, $table);
+        return "UPDATE " . $table . " SET " . $SQLWhat . " WHERE " . $SQLWhere;
+    }
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @return string
+     */
+    private function drawInsert(string $table, array $condition): string
+    {
+        $data = $this->drawValues($condition, 'insert');
+        return "INSERT INTO " . $table . " ( " . $data['fields'] . " ) VALUES ( " . $data['values'] . " )";
+    }
+
+    /**
+     * @param string $table
+     * @param array $condition
+     * @param array $orderBy
+     * @param array $limit
+     * @param bool $count
+     * @param array $join
+     * @return string
+     * @throws \Exception
+     */
+    private function drawSelect(string $table, array $join, array $condition, array $orderBy, array $limit, bool $count = false): string
+    {
+        // we assume that everything is prepared
+        // all that function used to validate data, but now it is unnecessary
+        $SQLWhat = $this->drawWhat($table, $join);
+        $SQLOrderBy = $this->drawOrderBy($orderBy, $table);
+        $SQLLimit = $this->drawLimit($limit);
+        $SQLJoin = $this->drawJoin($join, $table);
+        $SQLWhere = $this->drawWhere($condition, $table);
+
+        return "SELECT " . ($count ? "COUNT(*) AS COUNT" : $SQLWhat) . " FROM " . $table . $SQLJoin . ($condition ? " WHERE " . $SQLWhere : "") . $SQLOrderBy . $SQLLimit;
     }
 
     /**
      * @param array $condition
      * @param string $type
-     * @return array|bool|string
+     * @return array|string
      */
-    private function drawValues(array $condition, string $type)
+    private function drawValues(array $condition, string $type = 'insert')
     {
         if ($type === "insert") {
             $fields = implode(', ', array_keys($condition));
@@ -733,69 +533,29 @@ class Store
             $sql = "";
 
             foreach ($condition as $key => $value) {
-                $sql .= $eq . $this->escape($key) . " = :set_" . $this->escape($key);
+                $sql .= $eq . $key . " = :set_" . $key;
                 $eq = ", ";
             }
 
             return $sql;
         }
 
-        return false;
-    }
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @return string
-     */
-    private function drawInsert(string $table, array $condition): string
-    {
-        $data = $this->drawValues($condition, "insert");
-        return "INSERT INTO " . $this->prepareTable($table) . " ( " . $data['fields'] . " ) VALUES ( " . $data['values'] . " )";
-    }
-
-    /**
-     * @param string $table
-     * @param array $condition
-     * @param array $orderBy
-     * @param array $limit
-     * @param bool $count
-     * @param bool $join
-     * @return string
-     * @deprecated
-     */
-    private function drawSelect(string $table, array $condition, array $orderBy, array $limit, bool $count = false, array $join = array()): string
-    {
-        $table = $this->prepareTable($table);
-        $orderBy = $this->drawOrderBy($orderBy, $table);
-        $limit = $this->drawLimit($limit);
-        $join = $this->drawJoin($join, $table);
-
-        return "SELECT " . ($count ? "COUNT(*) AS COUNT" : "*") . " FROM " . $table . $join . ($condition ? " WHERE " . $this->drawWhere($condition, $table) : "") . $orderBy . $limit;
-    }
-
-    private function drawSelectNew(string $table, array $join, array $condition, array $orderBy, array $limit, bool $count = false): string
-    {
-        $what = $this->drawWhat($table, $join);
-        $table = $this->prepareTable($table);
-        $orderBy = $this->drawOrderBy($orderBy, $table);
-        $limit = $this->drawLimit($limit);
-        $join = $this->drawJoin($join, $table);
-        $condition = $this->drawWhere($condition, $table);
-
-        return "SELECT " . ($count ? "COUNT(*) AS COUNT" : $what) . " FROM " . $table . $join . ($condition ? " WHERE " . $condition : "") . $orderBy . $limit;
+        return '';
     }
 
     /**
      * @param string $table
      * @param array $join
      * @return string
+     * @throws \Exception
      */
     private function drawWhat(string $table, array $join): string
     {
-        $this->setFields($table);
+        if (!isset($this->fields[$table])) {
+            $this->setFields($table);
+        }
+
         $fields = $this->fields[$table];
-        $table = $this->prepareTable($table);
         $result = "";
         $delimiter = ", ";
 
@@ -806,14 +566,15 @@ class Store
         // join tables
         foreach ($join as $condition) {
             $joinTable = $condition[1];
-            $joinTablePrepared = $this->prepareTable($joinTable);
-            $this->setFields($joinTable);
+            if (!isset($this->fields[$joinTable])) {
+                $this->setFields($joinTable);
+            }
             $joinFields = $this->fields[$joinTable];
             foreach ($joinFields as $field => $value) {
                 if (array_key_exists($field, $fields)) {
                     $field = $field . ' AS ' . $joinTable . '_' . $field;
                 }
-                $result .= $joinTablePrepared . '.' . $field . $delimiter;
+                $result .= $joinTable . '.' . $field . $delimiter;
             }
             $fields = array_merge($fields, $joinFields);
         }
@@ -822,34 +583,8 @@ class Store
     }
 
     /**
-     * @param array $join
-     * @return string
-     */
-    private function drawJoin(array $join, string $table): string
-    {
-        $result = "";
-        $delimiter = " ";
-        foreach ($join as $key => $condition) {
-            $joinType = strtoupper($condition[0]);
-            $joinTable = $this->prepareTable($condition[1]);
-            $joinCondition = $this->drawOn($condition[2], $joinTable, $table);
-
-            if (!in_array($joinType, $this->joinTypes)) {
-                continue;
-            }
-            $result .= $joinType . " JOIN " . $joinTable . " ON " . $joinCondition . $delimiter;
-        }
-
-        $result = rtrim($result, " ");
-        if ($result) {
-            $result = " " . $result;
-        }
-
-        return $result;
-    }
-
-    /**
      * @param array $orderBy
+     * @param string $table
      * @return string
      */
     private function drawOrderBy(array $orderBy, string $table): string
@@ -857,7 +592,7 @@ class Store
         $result = "";
         $delimiter = ", ";
         foreach ($orderBy as $field => $key) {
-            $result .= $table . '.' . $this->escape($field) . " " . strtoupper($this->escape($key)) . $delimiter;
+            $result .= $table . '.' . $field . " " . strtoupper($key) . $delimiter;
         }
 
         $result = rtrim($result, ", ");
@@ -881,25 +616,403 @@ class Store
             return "";
         }
 
-        return " LIMIT " . $this->escape($limit[0]) . (!empty($limit[1]) ? ", " . $this->escape($limit[1]) : "");
+        return " LIMIT " . $limit[0] . (!empty($limit[1]) ? ", " . $limit[1] : "");
+    }
+
+    /**
+     * @param array $join
+     * @param string $table
+     * @return string
+     * @throws \Exception
+     */
+    private function drawJoin(array $join, string $table): string
+    {
+        $result = "";
+        $delimiter = " ";
+        foreach ($join as $key => $condition) {
+            $joinType = strtoupper($condition[0]);
+            $joinTable = $condition[1];
+            $joinCondition = $this->drawOn($condition[2], $joinTable, $table);
+            $result .= $joinType . " JOIN " . $joinTable . " ON " . $joinCondition . $delimiter;
+        }
+
+        $result = rtrim($result, " ");
+        if ($result) {
+            $result = " " . $result;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $conditions
+     * @param string $joinTable
+     * @param $mainTable
+     * @return string
+     */
+    private function drawOn(array $conditions, string $joinTable, $mainTable): string
+    {
+        $result = '';
+        $delimiter = '';
+        foreach ($conditions as $joinField => $mainField) {
+            $result .= $delimiter . $joinTable . '.' . $joinField . ' = ' . $mainTable . '.' . $mainField;
+            $delimiter = ' AND ';
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    private function drawWhere(array $array, string $table): string
+    {
+        $result = '';
+        $clause = '';
+        foreach ($array as $field => $value) {
+            if (is_array($value)) {
+                // use IN (?)
+                $placeholders = '';
+                foreach ($value as $key => $item) {
+                    $placeholders .= ',:' . $field . $key;
+                }
+                $placeholders = substr($placeholders, 1);
+                $result .= $table . '.' . $field . ' IN (' . $placeholders . ')';
+            } else {
+                // regular where
+                if ($result) {
+                    $clause = strpos($field, "!") === 0 ? " OR " : " AND ";
+                }
+                $operator = strpos($value, "!") === 0 ? "<>" : "=";
+                $result .= $clause . $table . '.' . $field . " " . $operator . " :" . $field;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $orderBy
+     * @param string $table
+     * @return array
+     * @throws \Exception
+     */
+    private function prepareOrderBy(array $orderBy = [], string $table = '', bool $dieIfIncorrect = false): array
+    {
+        if (!$orderBy) {
+            return [];
+        }
+
+        if (!isset($this->fields[$table])) {
+            $this->setFields($table);
+        }
+
+        foreach ($orderBy as $field => $type) {
+            if (!array_key_exists($field, $this->fields[$table])) {
+                $this->throwException("ORDER BY: Given field does not exist in the table", $dieIfIncorrect);
+            }
+
+            if (!in_array($type, $this->orderTypes)) {
+                $this->throwException("ORDER BY: Incorrect type", $dieIfIncorrect);
+            }
+        }
+
+        return $orderBy;
+    }
+
+    /**
+     * @param array $condition
+     * @param string $table
+     * @return array
+     * @throws \Exception
+     */
+    private function prepareCondition(array $condition = [], string $table = '', bool $dieIfIncorrect = false): array
+    {
+        if (!$condition) {
+            return [];
+        }
+
+        if (!isset($this->fields[$table])) {
+            $this->setFields($table);
+        }
+
+        foreach ($condition as $field => $value) {
+            // do not check values, at this point we don't need it
+            if (!array_key_exists($field, $this->fields[$table])) {
+                $this->throwException("CONDITION: Given field does not exist in the table", $dieIfIncorrect);
+            }
+        }
+
+        return $condition;
+    }
+
+    /**
+     * @param array $join
+     * @param string $table
+     * @param bool $dieIfIncorrect
+     * @return array
+     * @throws \Exception
+     */
+    private function prepareJoin(array $join = [], string $table = '', bool $dieIfIncorrect = false): array
+    {
+        if (!$join) {
+            return [];
+        }
+
+        /**
+         * join => [
+         *      ['TYPE', 'table', ['JoinField' => 'MainField']]
+         * ]
+         */
+
+        foreach ($join as $key => $joinItem) {
+            $joinType = $joinItem[0];
+            if (!in_array($joinType, $this->joinTypes)) {
+                $this->throwException("JOIN: Incorrect type, allowed only " . implode('/', $this->joinTypes), $dieIfIncorrect);
+            }
+//            $join[$key][0] = $joinType;
+
+            $joinTable = $joinItem[1];
+            // it also add _view prefix
+            $join[$key][1] = $this->prepareTable($joinTable);
+
+
+            $joinCondition = $joinItem[2];
+            if (!is_array($joinCondition)) {
+                $this->throwException("JOIN: Expected condition to be an array, but given " . gettype($joinCondition), $dieIfIncorrect);
+            }
+
+            foreach ($joinCondition as $joinField => $mainField) {
+                if (!$this->fields[$table]) {
+                    $this->setFields($table);
+                }
+                if (!$this->fields[$joinTable]) {
+                    $this->setFields($joinTable);
+                }
+
+                if (!array_key_exists($mainField, $this->fields[$table]) || !array_key_exists($joinField, $this->fields[$joinTable])) {
+                    $this->throwException("JOIN: Given field does not exist in the table", $dieIfIncorrect);
+                }
+//                $join[$key][2][$joinField] = $mainField;
+            }
+        }
+
+        return $join;
+    }
+
+    /**
+     * @param string $table
+     * @param bool $dieIfIncorrect
+     * @return string
+     * @throws \Exception
+     */
+    public function prepareTable(string $table, bool $dieIfIncorrect = false): string
+    {
+        // whitelisting table
+        if (!in_array($table, $this->tables)) {
+            $this->throwException("TABLE: The specified table does not exist", $dieIfIncorrect);
+        }
+
+        // check view
+        $viewName = $table . $this->postfix;
+        if (!in_array($viewName, $this->views)) {
+            // if view does not exist -> let's try to create it
+            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}();";
+            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+            if (!$result) {
+                $this->throwException("TABLE: View does not exist and it's impossible to create one", $dieIfIncorrect);
+            }
+
+            // everything is fine
+            $this->views[] = $viewName;
+        }
+
+        // check triggers
+        $triggerName = $table . $this->triggerPostfix;
+        if (!in_array($triggerName, $this->triggers)) {
+            $sql = "CREATE TRIGGER {$triggerName}
+                      BEFORE INSERT ON {$table} 
+                      FOR EACH ROW
+                      SET new._config_id = {$this->partitionFunction}()";
+            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+            if (!$result) {
+                $this->throwException("TABLE: Trigger does not exist and it's impossible to create one", $dieIfIncorrect);
+            }
+        }
+
+        // If everything is fine
+        return $viewName;
+    }
+
+    /**
+     * @param array $limit
+     * @return array
+     * @throws \Exception
+     */
+    private function prepareLimit(array $limit): array
+    {
+        if (!$limit) {
+            return [];
+        }
+
+        if (!isset($limit[0])) {
+            $this->throwException("LIMIT: Array should contain one or two integer values");
+        }
+        $limit[0] = (int)$limit[0];
+
+        if (isset($limit[1])) {
+            $limit[1] = (int)$limit[1];
+        }
+
+        return $limit;
+    }
+
+    /**
+     * @param array $condition
+     * @param string|null $prefix
+     * @return array
+     */
+    private function makeValues(array $condition, string $prefix = null): array
+    {
+        if (!$condition) {
+            return [];
+        }
+
+        if ($prefix) {
+            $prefix = $prefix . "_";
+        }
+
+        $values = [];
+        foreach ($condition as $field => $item) {
+            if (is_array($item)) {
+                foreach ($item as $key => $_item) {
+                    $values[":" . $prefix . $field . $key] = $_item;
+                }
+            } else {
+                if (strpos($item, "!") === 0) {
+                    $item = substr($item, 1);
+                }
+                $values[":" . $prefix . $field] = $item;
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * @param string $table
+     * @param array $params
+     * @return array
+     * @throws \Exception
+     */
+    private function setEmptyFields(string $table, array $params): array
+    {
+        $table = $this->prepareTable($table);
+        if (!in_array($table, $this->fields)) {
+            $this->setFields($table);
+        }
+
+        foreach ($params as $key => $value) {
+            if ($value === $this->null) {
+                $params[$key] = null;
+                continue;
+            }
+            if (empty($value)) {
+                $key_clean = substr($key, 1);
+                if (strpos($key_clean, "set_") !== false) {
+                    $key_clean = substr($key_clean, 4);
+                }
+
+                $params[$key] = array_key_exists($key_clean, $this->fields[$table]) ? $this->fields[$table][$key_clean] : null;
+            }
+        }
+
+        return $params;
+    }
+
+    /**
+     * @param string $table
+     * @return bool
+     * @throws \Exception
+     */
+    private function setFields(string $table): bool
+    {
+        if (isset($this->fields[$table])) {
+            return true;
+        }
+
+        $fields = $this->execGet("SHOW FIELDS FROM " . $table);
+        foreach ($fields as $key => $value) {
+            $type = strtolower($value['Type']);
+            if (($end = strpos($type, '(')) !== false) {
+                $type = substr($type, 0, $end);
+            }
+            $empty = array_key_exists($type, $this->types) ? $this->types[$type] : null;
+            $this->fields[$table][$value['Field']] = $empty;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $rawString
+     * @return string
+     */
+    private function returnValidIdentifier(string $rawString): string
+    {
+        $string = trim($rawString);
+        $string = preg_replace('/[^A-Za-z0-9_]/', '', $string);
+        $string = strtolower($string);
+        return $string;
+    }
+
+    /**
+     * @param string $tableType
+     */
+    private function showTables()
+    {
+        $rows = $this->execGet("show full tables");
+        $rowKey = 'Tables_in_' . Config::$db['database'];
+
+        foreach ($rows as $key => $value) {
+            if ($value['Table_type'] === 'BASE TABLE') {
+                $this->tables[] = $value[$rowKey];
+            } else if ($value['Table_type'] === 'VIEW') {
+                $this->views[] = $value[$rowKey];
+            }
+        }
+    }
+
+    private function showTriggers()
+    {
+        $rows = $this->execGet("show triggers");
+
+        foreach ($rows as $key => $value) {
+            $this->triggers[] = $value['Trigger'];
+        }
     }
 
     /**
      * @param $result
      * @return array|string
      */
-    private function removeSpecialChars($result)
+    private function removeSpecialChars(array $result): array
     {
-        if (!is_array($result) AND !is_object($result)) {
-            return CloudStore::$app->tool->utils->removeSpecialChars($result);
-        }
+        return CloudStore::$app->tool->utils->removeSpecialChars($result);
+    }
 
-        for ($i = 0; $i < count($result); $i++) {
-            foreach ($result[$i] as $key => $value) {
-                $result[$i][$key] = CloudStore::$app->tool->utils->removeSpecialChars($value);
-            }
+    /**
+     * @param string $message
+     * @param bool $die
+     * @throws \Exception
+     */
+    private function throwException(string $message, bool $die = false)
+    {
+        if ($die) {
+            CloudStore::$app->exit($message);
+        } else {
+            throw new \Exception($message);
         }
-
-        return $result;
     }
 }

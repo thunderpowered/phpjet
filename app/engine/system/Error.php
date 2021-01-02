@@ -28,6 +28,8 @@ class Error
      */
     public function __construct()
     {
+        ob_start();
+
         //track all errors
         ini_set('display_errors', 1);
         error_reporting(E_ALL | E_STRICT);

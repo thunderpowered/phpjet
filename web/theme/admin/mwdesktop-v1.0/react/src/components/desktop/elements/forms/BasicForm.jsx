@@ -11,7 +11,7 @@ export class BasicForm extends Component {
 
     onSubmit(event) {
         event.preventDefault();
-        // this.blockForm();
+        this.blockForm();
 
         if (!Object.keys(this.input).length) {
             return false;

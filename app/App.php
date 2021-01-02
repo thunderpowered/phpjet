@@ -14,8 +14,8 @@ use CloudStore\App\Engine\Config\ConfigManager;
 use CloudStore\App\Engine\Config\Database;
 use CloudStore\App\Engine\Core\PageBuilder;
 use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\Store;
 use CloudStore\App\Engine\Core\Selector;
+use CloudStore\App\Engine\Core\Store;
 use CloudStore\App\Engine\Core\System;
 use CloudStore\App\Engine\Core\Tool;
 use CloudStore\App\Engine\System\Error;
@@ -98,7 +98,16 @@ class App
         $this->configManager->prepareConfig();
 
         // Start the engine
-        return $this->router->start();
+        return $this->execute($this->router);
+    }
+
+    /**
+     * @param Router $router
+     * @return string
+     */
+    public function execute(Router $router): string
+    {
+        return $router->start();
     }
 
     /**
