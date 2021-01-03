@@ -15,10 +15,6 @@ use CloudStore\CloudStore;
 class ControllerAuth extends Controller
 {
     /**
-     * @var array
-     */
-    private $json;
-    /**
      * @var ModelAdmin
      */
     private $modelAdmin;
@@ -49,7 +45,6 @@ class ControllerAuth extends Controller
     {
         parent::__construct($name);
         $this->modelAdmin = new ModelAdmin();
-        $this->json = CloudStore::$app->system->request->getJSON();
     }
 
     /**
@@ -84,8 +79,12 @@ class ControllerAuth extends Controller
         if (!$json || empty($json[$this->jsonEmailField]) || empty($json[$this->jsonPasswordField])) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data provided.');
+
+            $this->modelAdmin->recordActions('Auth', false, 'attempt failed - empty data.');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
+
+        // Following actions record in Model
 
         $email = $json[$this->jsonEmailField];
         $password = $json[$this->jsonPasswordField];
@@ -93,6 +92,7 @@ class ControllerAuth extends Controller
         if (!$result['valid']) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Wrong login or password.');
+
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -113,14 +113,37 @@ class ControllerAuth extends Controller
     /**
      * @return string
      */
+    public function actionLogout(): string
+    {
+        // Following actions record in Model
+        $result = $this->modelAdmin->logout();
+        if (!$result) {
+            CloudStore::$app->tool->JSONOutput->setStatusFalse();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Failed. Probably admin is already signed off.');
+
+            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        } else {
+            CloudStore::$app->tool->JSONOutput->setStatusTrue();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('You have successfully signed out.');
+            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        }
+    }
+
+    /**
+     * @return string
+     */
     public function actionVerifyCode(): string
     {
         $json = CloudStore::$app->system->request->getJSON();
         if (!$json || empty($json[$this->json2FVerificationField])) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data provided.');
+
+            $this->modelAdmin->recordActions('Auth', false, '2F verification failed - empty data.');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
+
+        // Following actions record in Model
 
         $verificationCode = $json[$this->json2FVerificationField];
         $result = $this->modelAdmin->validate2FAuthentication($verificationCode);

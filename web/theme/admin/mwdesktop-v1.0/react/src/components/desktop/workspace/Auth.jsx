@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {FixedPopup} from "../elements/popups/FixedPopup";
-import {Logotype} from "../elements/info/Logotype";
-import {EngineVersion} from "../elements/info/EngineVersion";
+import {Logotype} from "../elements/widgets/Logotype";
+import {EngineVersion} from "../elements/widgets/EngineVersion";
 import {BasicForm} from "../elements/forms/BasicForm";
 
 export class Auth extends Component {
@@ -19,7 +19,7 @@ export class Auth extends Component {
             if (typeof this.props.callback !== 'undefined') {
                 this.props.callback(true);
             }
-        }, 2000);
+        }, 1000);
     }
 
     secondFactor() {

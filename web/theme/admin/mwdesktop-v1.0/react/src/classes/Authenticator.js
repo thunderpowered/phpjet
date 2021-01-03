@@ -4,6 +4,7 @@ export class Authenticator {
 
     constructor() {
         this.urlCheck = globalSystemHost + '/admin/auth/check';
+        this.urlLogout = globalSystemHost + '/admin/auth/logout';
         this.recheckInterval = 60000;
     }
 
@@ -22,8 +23,18 @@ export class Authenticator {
             onSuccess: (result) => {
                 if (typeof result.data !== 'undefined' && typeof result.data.auth !== 'undefined') {
                     proceedAuthorization(result.data.auth);
-                } else {
-                    console.log('Not authorized');
+                }
+            }
+        });
+    }
+
+    logout(proceedAuthorization) {
+        return fetch2(this.urlLogout, {}, {
+            onSuccess: (result) => {
+                if (typeof result.status !== 'undefined' && result.status) {
+                    // return proceedAuthorization(false);
+                    // Or we can just call check again to be sure everything is fine
+                    return this.checkAuthentication(proceedAuthorization);
                 }
             }
         });

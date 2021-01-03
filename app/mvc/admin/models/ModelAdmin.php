@@ -74,26 +74,36 @@ class ModelAdmin extends Model
     {
         $emailValid = CloudStore::$app->tool->formatter->validateEmail($email);
         if (!$emailValid) {
+
+            $this->recordActions('Auth', false, 'attempt failed - invalid email.');
             return ['valid' => false];
         }
 
         $admin = Authority::getOne(['email' => $email], [], [], false);
         if (!$admin) {
+
+            $this->recordActions('Auth', false, 'attempt failed - no such email in Database.');
             return ['valid' => false];
         }
 
         $passwordCorrect = password_verify($password, $admin->password);
         if (!$passwordCorrect) {
+
+            $this->recordActions('Auth', false, 'attempt failed - wrong password.');
             return ['valid' => false];
         }
 
         // Everything is fine
         if (!$admin->two_factor_auth) {
             $this->grantAccess($admin);
+
+            $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
             return ['valid' => true, '2F' => false];
         } else {
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
+
+            $this->recordActions('Auth', true, 'attempt successful - waiting for 2F auth.');
             return ['valid' => true, '2F' => true];
         }
     }
@@ -115,6 +125,7 @@ class ModelAdmin extends Model
 
         return $code;
     }
+
     /**
      * @param string $verificationCode
      * @return bool
@@ -123,27 +134,117 @@ class ModelAdmin extends Model
     {
         $adminID = CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
         if (!$adminID) {
+
+            $this->recordActions('Auth', false, '2F verification failed - no such admin in Session.');
             return false;
         }
 
         $fingerPrint = $this->getFingerprint();
         $fingerPrintSession = CloudStore::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerPrintSession || $fingerPrint !== $fingerPrintSession) {
-                return false;
+
+            $this->recordActions('Auth', false, '2F verification failed - fingerprint incorrect.');
+            return false;
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
+
+            $this->recordActions('Auth', false, '2F verification failed - no such admin in Database.');
             return false;
         }
 
         if (!password_verify($verificationCode, $admin->session_token)) {
+
+            $this->recordActions('Auth', false, '2F verification failed - invalid verification code.');
             return false;
         }
 
         // seems like everything is ok
+        $this->recordActions('Auth', true, '2F verification successful - 2f auth completed.');
         $this->grantAccess($admin);
         return true;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAdminID(): int
+    {
+        return (int)CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
+    }
+
+    public function logout(): bool
+    {
+        $adminID = $this->getAdminID();
+        if (!$adminID) {
+
+            $this->recordActions('Logout', false, 'attempt failed - admin is already signed off.');
+            return false;
+        }
+
+        $admin = Authority::getOne(['id' => $adminID], [], [], false);
+        if (!$admin) {
+
+            $this->recordActions('Logout', false, 'attempt failed - no such admin in Database.');
+            return false;
+        }
+
+        $this->forbidAccess($admin);
+
+        $this->recordActions('Logout', true, 'attempt successful - admin signing off completed.');
+        return true;
+    }
+
+    /**
+     * @param string $contextName
+     * @return string
+     */
+    public function getAdminContext(string $contextName): string
+    {
+        $adminID = $this->getAdminID();
+        if (!$adminID || !$contextName) {
+            return '';
+        }
+
+        return CloudStore::$app->system->settings->getContext($this->getAdminContextKey($contextName, $adminID));
+    }
+
+    /**
+     * @param string $contextName
+     * @param string $data
+     * @return bool
+     */
+    public function setAdminContext(string $contextName, string $data): bool
+    {
+        $adminID = $this->getAdminID();
+        if (!$adminID || !$contextName || $data) {
+            return false;
+        }
+
+        return CloudStore::$app->system->settings->setContext($this->getAdminContextKey($contextName, $adminID), $data);
+    }
+
+    /**
+     * @param string $action
+     * @param bool $status
+     * @param string $explanation
+     * @return bool
+     */
+    public function recordActions(string $action, bool $status, string $explanation = ''): bool
+    {
+        $adminID = (int)$this->getAdminID();
+        return CloudStore::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
+    }
+
+    /**
+     * @param string $contextName
+     * @param int $adminID
+     * @return string
+     */
+    private function getAdminContextKey(string $contextName, int $adminID): string
+    {
+        return 'admin' . $adminID . '_context__' . $contextName;
     }
 
     /**
@@ -156,8 +257,18 @@ class ModelAdmin extends Model
         // todo
         // it's temporary just to see
         $filename = ENGINE . 'emailCode.txt';
-        file_put_contents($filename, $admin->email . ' - ' .$code);
+        file_put_contents($filename, $admin->email . ' - ' . $code);
         return true;
+    }
+
+    /**
+     * @param Authority $admin
+     */
+    private function forbidAccess(Authority $admin)
+    {
+        CloudStore::$app->system->request->unsetSESSION($this->sessionAuthorizedKey);
+        CloudStore::$app->system->request->unsetSESSION($this->sessionAdminID);
+        CloudStore::$app->system->request->unsetSESSION($this->sessionFingerprint);
     }
 
     /**

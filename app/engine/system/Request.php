@@ -222,6 +222,17 @@ class Request
     }
 
     /**
+     * @param string $name
+     */
+    public function unsetSESSION(string $name)
+    {
+        if (isset($this->session[$name])) {
+            unset($_SESSION[$name]);
+            unset($this->session[$name]);
+        }
+    }
+
+    /**
      * @param string $sessionKey
      * @deprecated
      */

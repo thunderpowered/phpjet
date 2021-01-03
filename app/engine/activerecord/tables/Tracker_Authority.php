@@ -7,23 +7,35 @@ namespace CloudStore\App\Engine\ActiveRecord\Tables;
 use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
 
 /**
- * Class Tracker
+ * Class Tracker_Authority
  * @package CloudStore\App\Engine\ActiveRecord\Tables
  */
-class Tracker extends ActiveRecord
+class Tracker_Authority extends ActiveRecord
 {
     /**
      * @var int
      */
     public $id;
     /**
-     * @var string
+     * @var int
      */
-    public $url;
+    public $authority_id;
     /**
      * @var string
      */
-    public $referer;
+    public $action;
+    /**
+     * @var bool
+     */
+    public $status;
+    /**
+     * @var string
+     */
+    public $explanation;
+    /**
+     * @var string
+     */
+    public $url;
     /**
      * @var string
      */
@@ -32,10 +44,6 @@ class Tracker extends ActiveRecord
      * @var string
      */
     public $user_agent;
-    /**
-     * @var string
-     */
-    public $post;
     /**
      * @var string
      */

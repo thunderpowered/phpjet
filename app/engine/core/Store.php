@@ -264,7 +264,13 @@ class Store
     public function dangerouslySendQueryWithoutPreparation(string $SQLString): bool
     {
         $this->counter++;
-        return $this->db->exec($SQLString);
+        $result = $this->db->exec($SQLString);
+        if ($result === false) {
+            // exec returns number of string which were modified or deleted / or false
+            // so if (result) is not valid, since if (0) is false anyway
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -818,7 +824,7 @@ class Store
         $viewName = $table . $this->postfix;
         if (!in_array($viewName, $this->views)) {
             // if view does not exist -> let's try to create it
-            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}();";
+            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}()";
             $result = $this->dangerouslySendQueryWithoutPreparation($sql);
             if (!$result) {
                 $this->throwException("TABLE: View does not exist and it's impossible to create one", $dieIfIncorrect);
@@ -839,6 +845,7 @@ class Store
             if (!$result) {
                 $this->throwException("TABLE: Trigger does not exist and it's impossible to create one", $dieIfIncorrect);
             }
+            $this->triggers[] = $triggerName;
         }
 
         // If everything is fine

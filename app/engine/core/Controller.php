@@ -73,6 +73,9 @@ class Controller
         $this->app = $app;
 
         $this->checkQueryMethod();
+        // @todo use cron
+        CloudStore::$app->system->tracker->manageTable();
+        CloudStore::$app->system->tracker->trackEverythingYouFind();
     }
 
     /**

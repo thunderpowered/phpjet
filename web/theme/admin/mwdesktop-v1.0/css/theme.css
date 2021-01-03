@@ -1,5 +1,5 @@
 .theme__background-color {
-    background-color:#000;
+    background-color: #000;
 }
 
 .theme__background-color2 {
@@ -11,11 +11,19 @@
 }
 
 .theme__background-color--accent {
-    background-color:#d20000;
+    background-color: #d20000;
 }
 
 .theme__background-color--hover:hover {
-    background-color:#9b0000;
+    background-color: #9b0000;
+}
+
+.theme__background-color--hover-soft:hover {
+    background-color: #3d3d3d;
+}
+
+.theme__background-transparent {
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .theme__background-opacity {
@@ -27,7 +35,7 @@
 }
 
 .theme__link-color {
-    color:#ebebeb;
+    color: #ebebeb;
     /*color:#e1e1e1;*/
 }
 
@@ -36,7 +44,7 @@
 }
 
 .theme__link-color--hover:hover {
-    color:#d20000;
+    color: #d20000;
 }
 
 .theme__font-basic {
@@ -57,14 +65,14 @@
 }
 
 .theme__fixed-absolute--center {
-    left:0;
-    right:0;
-    bottom:0;
-    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
 }
 
 .theme__border {
-    border:1px solid;
+    border: 1px solid;
 }
 
 .theme__border-right {
@@ -76,11 +84,11 @@
 }
 
 .theme__border-top {
-    border-top:1px solid;
+    border-top: 1px solid;
 }
 
 .theme__border-bottom {
-    border-bottom:1px solid;
+    border-bottom: 1px solid;
 }
 
 .theme__border-color--accent {
@@ -96,5 +104,5 @@
 }
 
 .theme__border--none {
-    border:none;
+    border: none;
 }

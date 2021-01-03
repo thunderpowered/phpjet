@@ -11,6 +11,10 @@ export class Desktop extends Component {
         this.state = {};
     }
 
+    logout() {
+        return this.authenticator.logout(this.proceedAuthorization.bind(this));
+    }
+
     checkAuthorization() {
         return this.authenticator.isAdminAuthorized(this.proceedAuthorization.bind(this), true);
     }
@@ -27,7 +31,7 @@ export class Desktop extends Component {
         }
 
         if (this.state.authorized) {
-            return <Workspace/>
+            return <Workspace onClickLogout={this.logout.bind(this)}/>
         } else {
             return <Auth callback={this.proceedAuthorization.bind(this)}/>
         }

@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var \CloudStore\App\Engine\Core\View $this
+ */
+?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>
 <html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
@@ -93,7 +98,7 @@
 <?php echo $this->includeJS('react/dist/js/app.js'); ?>
 
 <!-- JQUERY PLUGIN ACTIVATION -->
-<?php echo $this->includeJS('js/plugins.js'); ?>
+<?php echo $this->includeJS('js/plugins.js', false, true); ?>
 
 </body>
 <!-- END BODY -->

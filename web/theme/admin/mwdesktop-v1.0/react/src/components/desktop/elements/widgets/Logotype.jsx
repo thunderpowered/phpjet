@@ -6,7 +6,7 @@ export class Logotype extends Component {
         super();
         this.state = {backgroundImage: ''};
 
-        this.urlGetLogotype = '/admin/media/getLogotype';
+        this.urlGetLogotype = '/admin/misc/getLogotype';
         this.loadBackgroundImage();
     }
 

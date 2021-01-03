@@ -57,7 +57,7 @@ abstract class ActiveRecord
      * @param array $orderBy
      * @param array $limit
      * @param bool $removeSpecialChars
-     * @return ActiveRecord|void
+     * @return static|void
      */
     public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true)
     {

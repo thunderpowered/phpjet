@@ -11,7 +11,7 @@
 }
 
 .Desktop__Elements__Popups--FixedPopup-background {
-    z-index: 2;
+    z-index: 5;
 }
 
 .Desktop__Elements__Popups--FixedPopup-window {
@@ -41,6 +41,48 @@
     background-color: #000 !important;
 }
 
+.Desktop__Workspace__Blocks--WindowSpace {
+    z-index: 2;
+}
+
+.Desktop__Workspace__Blocks--TaskBar {
+    z-index: 3;
+}
+
+.Desktop__Workspace__Blocks--TaskBar__Start {
+    /*width:44px !important;*/
+    /*height:44px !important;*/
+    cursor: pointer;
+    user-select: none !important;
+}
+
+.Desktop__Workspace__Blocks--TaskBar__widget-rack {
+    /* Not Working in Chrome */
+    justify-self: end;
+    /* Working in Chrome */
+    margin-left: auto;
+}
+
+.Desktop__Elements__Widgets--Clocks {
+    vertical-align: middle;
+    user-select: none;
+}
+
+.Desktop__Elements__Widgets--Clocks b {
+    font-weight: 500;
+}
+
+.Desktop__Workspace__WindowSpace--StartMenu__Item {
+    width:400px;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.Desktop__Workspace__WindowSpace--StartMenu__Rack {
+    max-height: 60vh;
+    overflow: auto;
+}
+
 /**
     MSG PLUGIN
  */
@@ -48,11 +90,11 @@
     display: block;
     content: '';
     height: 100%;
-    width:5px;
+    width: 5px;
     background-color: #9b0000;
-    position:absolute;
-    left:0;
-    top:0;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 #msg {
@@ -60,7 +102,7 @@
     border: none;
     background-color: #232323;
     color: #ebebeb !important;
-    padding:14px 20px;
+    padding: 14px 20px;
 }
 
 
@@ -69,7 +111,7 @@
 }
 
 #msg .msg-progress {
-    display:none;
+    display: none;
 }
 
 #msg .close {

@@ -171,9 +171,10 @@ class View
     /**
      * @param string $jsPath
      * @param bool $reload
+     * @param bool $asPlainText
      * @return string
      */
-    public function includeJS(string $jsPath, bool $reload = false): string
+    public function includeJS(string $jsPath, bool $reload = false, bool $asPlainText = false): string
     {
         $filePath = WEB . 'theme/' . $this->themePath . Config::$availableThemes[MVC_SECTOR][$this->theme]['static'] . '/' . $jsPath;
         $fileURL = THEME_STATIC_URL . $jsPath;
@@ -182,7 +183,12 @@ class View
         }
 
         if (file_exists($filePath)) {
-            return "<script src=\"" . $fileURL . "\"></script>";
+            if ($asPlainText) {
+                $content = file_get_contents($filePath);
+                return "<script type='text/javascript'>" . $content . "</script>";
+            } else {
+                return "<script type='text/javascript' src=\"" . $fileURL . "\"></script>";
+            }
         } else {
             return '';
         }
@@ -191,9 +197,10 @@ class View
     /**
      * @param string $jsPath
      * @param bool $reload
+     * @param bool $asPlainText
      * @return string
      */
-    public function includeCommonJS(string $jsPath, bool $reload = false): string
+    public function includeCommonJS(string $jsPath, bool $reload = false, bool $asPlainText = false): string
     {
         $filePath = WEB . 'theme/common/' . $jsPath;
         $fileURL = THEME_COMMON_URL . $jsPath;
@@ -202,7 +209,12 @@ class View
         }
 
         if (file_exists($filePath)) {
-            return "<script src=\"" . $fileURL . "\"></script>";
+            if ($asPlainText) {
+                $content = file_get_contents($filePath);
+                return "<script type='text/javascript'>" . $content . "</script>";
+            } else {
+                return "<script type='text/javascript' src=\"" . $fileURL . "\"></script>";
+            }
         } else {
             return '';
         }
