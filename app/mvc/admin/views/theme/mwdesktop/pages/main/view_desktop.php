@@ -1,1 +1,4 @@
-<!-- EVERYTHING HANDLED BY REACT.JS -->
+<?php
+/**
+ * There is literally nothing here!
+ */
