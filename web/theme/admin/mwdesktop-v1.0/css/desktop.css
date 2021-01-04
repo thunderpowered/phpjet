@@ -109,6 +109,11 @@
     cursor: pointer;
 }
 
+.Desktop__Elements__Windows--Window.Desktop__Elements__Windows--Window--expanded {
+    /*width:100% !important;*/
+    height:100% !important;
+}
+
 /* SOME TWEAKS */
 .fa-container {
     position:relative;

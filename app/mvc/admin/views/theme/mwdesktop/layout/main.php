@@ -43,9 +43,6 @@
     <!-- BOOTSTRAP MSG -->
     <?php echo $this->includeCommonCSS('libs/bootstrap-msg-1.0.8/css/bootstrap-msg.css'); ?>
 
-    <!-- JQUERY.UI.JS -->
-    <?php echo $this->includeCommonCSS('libs/jquery-ui-1.12.1.custom/jquery-ui.min.css'); ?>
-
     <script>
         const globalSystemHost = "<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>";
     </script>
@@ -70,9 +67,6 @@
 
 <!-- NICESCROLL.JS -->
 <?php echo $this->includeCommonJS('libs/jquery.nicescroll-3.7.6/jquery.nicescroll.min.js'); ?>
-
-<!-- JQUERY.UI.JS -->
-<?php echo $this->includeCommonJS('libs/jquery-ui-1.12.1.custom/jquery-ui.min.js'); ?>
 
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('react/desktop.js'); ?>
