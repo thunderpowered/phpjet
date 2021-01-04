@@ -34,7 +34,8 @@ export class Background extends Component {
     }
 
     render() {
-        return <div onContextMenu={(e) => this.onContextMenu(e)} style={{'backgroundImage': `url('${this.state.backgroundImage}')`}}
+        return <div onContextMenu={(e) => this.onContextMenu(e)}
+                    style={{'backgroundImage': `url('${this.state.backgroundImage}')`}}
                     className={'Desktop__Workspace__Blocks--Background vh-100 w-100 position-absolute overflow-hidden theme__background-color theme__background-image theme__background-image--cover'}
                     id={'Background'}/>
     }

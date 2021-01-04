@@ -6,9 +6,9 @@ import {Auth} from "./workspace/Auth";
 export class Desktop extends Component {
     constructor(props) {
         super(props);
+        this.state = {};
         this.authenticator = new Authenticator();
         this.checkAuthorization();
-        this.state = {};
     }
 
     logout() {

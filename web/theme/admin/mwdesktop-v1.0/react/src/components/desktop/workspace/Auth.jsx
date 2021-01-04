@@ -34,7 +34,10 @@ export class Auth extends Component {
                 </div>
                 <div className={'Desktop__Workspace--Auth-body p-3'}>
                     {this.state.step === 1 &&
-                    <BasicForm action={this.authActionStep1} actions={{'2F': this.secondFactor.bind(this),'S': this.successfulAuthorization.bind(this)}}>
+                    <BasicForm action={this.authActionStep1} actions={{
+                        '2F': this.secondFactor.bind(this),
+                        'S': this.successfulAuthorization.bind(this)
+                    }}>
                         <input min={'8'} max={'60'} autoComplete={'email'}
                                className={'theme__border theme__border-color'}
                                type={'email'} name={'email'}

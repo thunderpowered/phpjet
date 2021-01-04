@@ -10,5 +10,5 @@ if (desktopContainer) {
         desktopContainer
     );
 } else {
-    console.log('Unable to create Root component.');
+    alert('Unable to start the application. Reload page and try again.');
 }
