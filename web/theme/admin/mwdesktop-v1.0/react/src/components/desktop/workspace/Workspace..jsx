@@ -81,7 +81,7 @@ export class Workspace extends Component {
     }
 
     render() {
-        return <div id={'Workspace'}>
+        return <div className={'w-100 h-100 position-relative'} id={'Workspace'} onClick={() => this.onClickStart(false)}>
             <Background/>
             <Windows windowOrder={this.windowOrder}
                      onMount={this.loadMenu.bind(this)}>

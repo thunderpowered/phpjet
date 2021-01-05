@@ -13,14 +13,8 @@ export class Clocks extends Component {
     loadServerTime() {
         return fetch2(this.urlGetServerTime, {}, {
             onSuccess: (result) => {
-                if (typeof result.data === 'undefined') {
-                    return false;
-                }
-
-                if (typeof result.data.serverTimeUTC !== 'undefined' && typeof result.data.serverTimeOffset !== 'undefined') {
+                if (typeof result.data !== 'undefined' && typeof result.data.serverTimeUTC !== 'undefined' && typeof result.data.serverTimeOffset !== 'undefined') {
                     this.startClocks(result.data.serverTimeOffset * 1000, result.data.serverTimeUTC * 1000);
-                }
-                if (typeof result.data.serverTimeZone !== 'undefined') {
                     this.setState(() => ({timeZone: result.data.serverTimeZone}));
                 }
             }
@@ -54,15 +48,15 @@ export class Clocks extends Component {
         let fullDate = `${date} ${month} ${year}`;
         this.setState(() => ({time: fullTime, date: fullDate}));
 
-
         this.timeout = setTimeout(() => {
             this.startClocks(serverTimeOffset, serverTimeUTC + 1000)
         }, 1000);
     }
 
     render() {
-        return <div className={'Desktop__Elements__Widgets--Clocks p-3 m-1 mt-0 mb-0 h-100 theme__background-color3 theme__border-right theme__border-color theme__border--thicker user-select-none'}
-                    title={'Server Time' + (this.state.timeZone ? ` (${this.state.timeZone})` : '')} id={'Clocks'}>
+        return <div
+            className={'Desktop__Elements__Widgets--Clocks p-3 m-1 mt-0 mb-0 h-100 theme__background-color3 theme__border-right theme__border-color theme__border--thicker user-select-none'}
+            title={'Server Time' + (this.state.timeZone ? ` (${this.state.timeZone})` : '')} id={'Clocks'}>
             <b>{this.state.time}</b> {this.state.date}
         </div>
     }

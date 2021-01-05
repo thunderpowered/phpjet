@@ -45,6 +45,10 @@
     z-index:2;
 }
 
+.Desktop__Workspace__Blocks--StartMenu-wrapper--block {
+    z-index:5 !important;
+}
+
 .Desktop__Workspace__Blocks--WindowSpace {
 
 }
@@ -54,7 +58,7 @@
 }
 
 #Workspace .Desktop__Workspace__Blocks--TaskBar {
-    z-index: 3 !important;
+    z-index: 5 !important;
     /*padding-left:0 !important;*/
 }
 
