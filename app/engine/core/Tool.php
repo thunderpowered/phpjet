@@ -4,6 +4,7 @@
 namespace CloudStore\App\Engine\Core;
 
 use CloudStore\App\Engine\Tools\Cache;
+use CloudStore\App\Engine\Tools\FileManager;
 use CloudStore\App\Engine\Tools\JSONOutput;
 use CloudStore\App\Engine\Tools\SEO;
 use CloudStore\App\Engine\Tools\Formatter;
@@ -18,6 +19,7 @@ use CloudStore\App\Engine\Tools\Utils;
  * @property Formatter $formatter
  * @property Cache $cache
  * @property JSONOutput $JSONOutput
+ * @property FileManager $fileManager
  */
 class Tool
 {
@@ -41,6 +43,10 @@ class Tool
      * @var JSONOutput
      */
     private $JSONOutput;
+    /**
+     * @var FileManager
+     */
+    private $fileManager;
 
     /**
      * Tool constructor.

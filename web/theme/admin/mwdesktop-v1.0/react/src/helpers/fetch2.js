@@ -1,7 +1,7 @@
 // CloudStore Engine requires every POST-query to have csrf-token
 import {Token} from "./token";
 
-export function fetch2(url, options = {}, callbacks) {
+export function fetch2(url, options = {}, callbacks = {}, json = true) {
     options = {
         method: 'POST',
         credentials: 'same-origin',
@@ -20,7 +20,7 @@ export function fetch2(url, options = {}, callbacks) {
         options.queryParams.__csrf = Token;
     }
 
-    options.body = JSON.stringify(options.queryParams);
+    options.body = json ? JSON.stringify(options.queryParams) : options.queryParams;
     // url += (url.indexOf('?') === -1 ? '?' : '&') + queryParams(options.queryParams);
     delete options.queryParams;
 
@@ -33,7 +33,6 @@ export function fetch2(url, options = {}, callbacks) {
                 }
 
                 if (typeof result.messageBox !== 'undefined' && typeof result.messageBox.text !== 'undefined' && result.messageBox.text) {
-                    // todo use bootstrap popup
                     let style = 'info';
                     if (typeof result.messageBox.style !== 'undefined') {
                         style = result.messageBox.style;
@@ -45,7 +44,7 @@ export function fetch2(url, options = {}, callbacks) {
                 if (typeof callbacks.onError !== 'undefined') {
                     callbacks.onError(error);
                 }
-                // todo shout out error message
+                Msg.danger(error, 5000);
             });
 }
 

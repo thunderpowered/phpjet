@@ -33,6 +33,24 @@ class ModelAdmin extends Model
      * @var string
      */
     private $session2FAuthenticationCode = 'admin_2f_authentication_code';
+    /**
+     * @var string
+     */
+    private $contextKeyWallpaper = 'wallpaper';
+    /**
+     * @var string
+     */
+    private $contextPanelState = 'panel_state';
+    /**
+     * @var string
+     */
+    private $contextDefaultWindowID = 'default_window_id';
+    /**
+     * @var array
+     */
+    private $panelStates = [
+        'window', 'classic'
+    ];
 
     /**
      * ModelAdmin constructor.
@@ -218,7 +236,7 @@ class ModelAdmin extends Model
     public function setAdminContext(string $contextName, string $data): bool
     {
         $adminID = $this->getAdminID();
-        if (!$adminID || !$contextName || $data) {
+        if (!$adminID || !$contextName || !$data) {
             return false;
         }
 
@@ -235,6 +253,92 @@ class ModelAdmin extends Model
     {
         $adminID = (int)$this->getAdminID();
         return CloudStore::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminWallpaper(): string
+    {
+        $wallpaper = $this->getAdminContext($this->contextKeyWallpaper);
+        if (!$wallpaper) {
+            return '';
+        }
+        return CloudStore::$app->tool->utils->getImageLink($wallpaper);
+    }
+
+    /**
+     * @param array $file
+     * @return bool
+     */
+    public function setAdminWallpaper(array $file): string
+    {
+        $currentWallpaper = $this->getAdminContext($this->contextKeyWallpaper);
+        $filePath = CloudStore::$app->tool->fileManager->saveNewFile('images/admin/wallpapers', $file);
+        if (!$filePath) {
+            return '';
+        }
+
+        $result = $this->setAdminContext($this->contextKeyWallpaper, $filePath);
+        if (!$result) {
+            return '';
+        }
+
+        CloudStore::$app->tool->fileManager->deleteFile($currentWallpaper);
+        return CloudStore::$app->tool->utils->getImageLink($filePath);
+    }
+
+    /**
+     * @param string $state
+     * @return bool
+     */
+    public function setPanelState(string $state): bool
+    {
+        if (!in_array($state, $this->panelStates)) {
+            return false;
+        }
+
+        $result = $this->setAdminContext($this->contextPanelState, $state);
+        if (!$result) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPanelState(): string
+    {
+        $panelMode = $this->getAdminContext($this->contextPanelState);
+        if (!$panelMode) {
+            // default
+            $panelMode = $this->panelStates[0];
+        }
+        return $panelMode;
+    }
+
+    /**
+     * @param int $defaultWindowID
+     * @return bool
+     */
+    public function setDefaultWindow(int $defaultWindowID): bool
+    {
+        return $this->setAdminContext($this->contextDefaultWindowID, 'id_' . $defaultWindowID);
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultWindow(): int
+    {
+        $defaultWindow = $this->getAdminContext($this->contextDefaultWindowID);
+        if (!$defaultWindow) {
+            return -1;
+        }
+
+        return str_replace('id_', '', $defaultWindow);
     }
 
     /**

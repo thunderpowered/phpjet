@@ -201,6 +201,91 @@ html, body {
     opacity: 1 !important;
 }
 
+.Desktop__Elements__DropDowns--SimpleDropMenu {
+    min-width: 300px;
+    z-index:15;
+}
+
+.Desktop__Elements__DropDowns--SimpleDropMenu-Item-wrapper {
+    cursor: pointer;
+}
+
+.Desktop__Elements__DropDowns--SimpleDropMenu-Item {
+    cursor: pointer;
+}
+
+.Desktop__Elements__DropDowns--SimpleDropMenu-Item-wrapper:last-of-type > .Desktop__Elements__DropDowns--SimpleDropMenu-Item {
+    border: none !important;
+}
+
+/* CLASSIC MODE */
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper {
+    z-index:4 !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper > div {
+    display:block !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper > div > div > div > div {
+    justify-content: space-between !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Rack > div:last-of-type {
+    border-bottom:1px solid #353635 !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode #StartMenu {
+    height:100% !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window {
+    display: block !important;
+    left:400px !important;
+    top:0 !important;
+    right: 0 !important;
+    bottom: 49px !important;
+    width:calc(100% - 400px) !important;
+    height:calc(100% - 49px) !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--Windows {
+    z-index:3 !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window  .Desktop__Elements__Windows--Window-controls {
+    display: none !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window .Desktop__Elements__Windows--Window-title {
+    cursor: unset !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar {
+    height:49px !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar #TaskList {
+    display: none !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar__Start {
+    display:none !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--Background  {
+    display: none !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Item {
+    border-left-color:#353635 !important;
+}
+
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Item--active {
+    border-left-color: #9b0000 !important;
+}
+
+
 /* SOME TWEAKS */
 .fa-container {
     position:relative;

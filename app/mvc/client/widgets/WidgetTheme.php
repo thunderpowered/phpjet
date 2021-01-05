@@ -37,6 +37,9 @@ class WidgetTheme extends Widget
 
     private function loadTheme(): void
     {
+        // temporary disabled
+        return;
+
 
         $theme = CloudStore::$app->system->settings->getContext('theme');
         if (!$theme) {

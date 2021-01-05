@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Logotype} from "../../elements/widgets/Logotype";
 import {EngineVersion} from "../../elements/widgets/EngineVersion";
 import {MenuItem} from "./StartMenu/MenuItem";
+import {SimpleDropMenu} from "../../elements/dropdowns/SimpleDropMenu";
 
 export class StartMenu extends Component {
 
@@ -9,6 +10,28 @@ export class StartMenu extends Component {
         super(props);
         this.ref = React.createRef();
         this.showStartMenu = false;
+        this.state = {mousePosition: {top: 0, left: 0}, contextMenu: false, index: 0};
+    }
+
+    componentDidMount() {
+        document.addEventListener('mousedown', () => {
+            this.setState(() => ({contextMenu: false}));
+        });
+    }
+
+    onContextMenu(e, index) {
+        e.preventDefault();
+        e.stopPropagation();
+        this.setState(() => ({
+            mousePosition: {top: e.clientY, left: e.clientX},
+            contextMenu: true,
+            'index': index
+        }));
+    }
+
+    onContextMenuClick(e, index) {
+        this.props.onContextMenu(e, index);
+        this.setState(() => ({contextMenu: false}));
     }
 
     render() {
@@ -35,8 +58,8 @@ export class StartMenu extends Component {
                             {/* Actual menu list */}
                             <div className="Desktop__Workspace__Blocks--StartMenu__Rack js-plugin_niceScroll">
                                 {this.props.windowConfig.map((item, index) => (
-                                    <MenuItem onClick={() => this.props.onClickMenu(index)} icon={item.icon}
-                                              label={item.label}/>
+                                    <MenuItem active={this.props.windowOnTop === index} onClick={() => this.props.onClickMenu(index)} icon={item.icon}
+                                              label={item.label} index={index} onContextMenu={(e) => this.onContextMenu(e, index)}/>
                                 ))
                                 }
 
@@ -44,10 +67,18 @@ export class StartMenu extends Component {
                                 <MenuItem onClick={this.props.onClickLogout} icon={'fa-sign-out-alt'}
                                           label={'Sign out'}/>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
+                <SimpleDropMenu active={this.state.contextMenu} mouse={this.state.mousePosition} hoverClass={'theme__background-color--hover'}>
+                    <div onMouseDown={(e) => e.stopPropagation()}>
+                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={(e) => {this.onContextMenuClick(e, this.state.index)}}>
+                            Set this window as Default
+                        </div>
+                    </div>
+                </SimpleDropMenu>
+
             </div>
         </div>
 

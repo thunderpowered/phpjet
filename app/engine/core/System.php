@@ -92,7 +92,8 @@ class System
 
     /**
      * @param string $setting_name
-     * @return bool|mixed
+     * @return array
+     * @throws \Exception
      * @deprecated
      */
     public static function getSettingsSingle(string $setting_name)
@@ -102,7 +103,8 @@ class System
 
     /**
      * @param string $section
-     * @return bool|mixed
+     * @return array
+     * @throws \Exception
      * @deprecated
      */
     public static function getSettingsSection(string $section)
@@ -111,7 +113,8 @@ class System
     }
 
     /**
-     * @return array|bool
+     * @return array
+     * @throws \Exception
      * @deprecated
      */
     public static function getAllSettings()

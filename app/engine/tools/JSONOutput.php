@@ -89,6 +89,7 @@ class JSONOutput
      */
     public function returnJSONOutput(): string
     {
+        header('Content-Type: application/json');
         return json_encode($this->JSONOutput);
     }
 }

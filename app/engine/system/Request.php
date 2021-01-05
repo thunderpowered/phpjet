@@ -40,6 +40,10 @@ class Request
      * @var array
      */
     private $json;
+    /**
+     * @var array
+     */
+    private $files;
 
     // 60*60*24*30*6 = 180 days = ~half a year;
     private $cookieDefaultExpires = 15552000;
@@ -77,6 +81,9 @@ class Request
 
         $this->server = $_SERVER;
         unset($_SERVER);
+
+        $this->files = $_FILES;
+        unset($_FILES);
 
         // well session and cookie technically available even without this class, but it'd be good to still use it
         $this->session = $_SESSION;
@@ -148,6 +155,7 @@ class Request
 
         $result = [];
         if (!$name) {
+            // return entire POST array
             $result = $this->post;
         } else {
             if (array_key_exists($name, $this->post)) {
@@ -165,6 +173,7 @@ class Request
     /**
      * @return bool
      * It is also temporary solution
+     * @deprecated
      */
     public function testPOST(): bool
     {
@@ -184,6 +193,18 @@ class Request
         }
 
         return $this->getPOST($name, $removeSpecialChars);
+    }
+
+    /**
+     * @param string $fileName
+     * @return array
+     */
+    public function getFile(string $fileName): array
+    {
+        if (!isset($this->files[$fileName])) {
+            return [];
+        }
+        return $this->files[$fileName];
     }
 
     /**

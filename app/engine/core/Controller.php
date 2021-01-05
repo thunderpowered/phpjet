@@ -63,8 +63,9 @@ class Controller
     /**
      * Controller constructor.
      * @param string $name
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
         $this->name = $name;
         $this->title = Config::$page['default_page_title'];
@@ -74,8 +75,10 @@ class Controller
 
         $this->checkQueryMethod();
         // @todo use cron
-        CloudStore::$app->system->tracker->manageTable();
-        CloudStore::$app->system->tracker->trackEverythingYouFind();
+        if ($enableTracker) {
+            CloudStore::$app->system->tracker->manageTable();
+            CloudStore::$app->system->tracker->trackEverythingYouFind();
+        }
     }
 
     /**

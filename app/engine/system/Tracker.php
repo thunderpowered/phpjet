@@ -35,6 +35,7 @@ class Tracker
         if ($post) {
             $tracker->post = json_encode($post);
         }
+
         return $tracker->save();
     }
 

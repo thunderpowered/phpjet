@@ -26,8 +26,8 @@ define('WEB', ROOT . 'web/');
 define('ENGINE', ROOT . 'app/engine/');
 
 // Images and thumbnails directories (relative paths)
-define('IMAGES', 'storage/images/');
-define('THUMBNAILS', 'storage/thumbnails/images/');
+define('IMAGES', 'storage/');
+define('THUMBNAILS', 'storage/thumbnails/');
 
 // Engine Core
 require_once(ROOT . 'CloudStore.php');

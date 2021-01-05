@@ -59,18 +59,25 @@ class Settings
      */
     public function setContext(string $name, string $value): bool
     {
-        // just to prevent setting empty values
         if (!$name || !$value) {
             return false;
         }
 
-        $this->settings[$name] = new Context();
+        // try to get context
+        $this->settings[$name] = Context::getOne(['name' => $name]);
+        if (!$this->settings[$name]) {
+            // if nothing found -> create new
+            $this->settings[$name] = new Context();
+            $this->settings[$name]->name = $name;
+        }
+
         $this->settings[$name]->value = $value;
         return $this->settings[$name]->save();
     }
 
     /**
      * @return array
+     * @throws \Exception
      */
     public function getSettings(): array
     {

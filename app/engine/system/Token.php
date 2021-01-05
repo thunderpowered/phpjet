@@ -17,7 +17,6 @@ class Token
      * @var string
      */
     private $hashingAlgorithm = 'sha512';
-
     /**
      * Token constructor.
      */
@@ -52,19 +51,27 @@ class Token
     }
 
     /**
+     * @param string $algorithm
      * @return string
      */
-    public function generateHash(): string
+    public function generateHash(string $algorithm = ''): string
     {
-        return hash($this->hashingAlgorithm, uniqid(rand(), true));
+        if (!$algorithm) {
+            $algorithm = $this->hashingAlgorithm;
+        }
+        return hash($algorithm, uniqid(rand(), true));
     }
 
     /**
      * @param string $string
+     * @param string $algorithm
      * @return string
      */
-    public function hashString(string $string): string
+    public function hashString(string $string, string $algorithm = ''): string
     {
-        return hash($this->hashingAlgorithm, $string);
+        if (!$algorithm) {
+            $algorithm = $this->hashingAlgorithm;
+        }
+        return hash($algorithm, $string);
     }
 }

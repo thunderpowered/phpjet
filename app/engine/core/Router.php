@@ -364,10 +364,9 @@ class Router
         $MVCRoot = $this->rootURL ? ucfirst($this->rootURL) : ucfirst(Config\Config::$urlRules['']);
         // Create full controller name with namespace
         $Class = "\CloudStore\App\MVC\\$MVCRoot\Controllers\\" . $name;
-
         // Create object
         if (class_exists($Class)) {
-            $controller = new $Class($name);
+            $controller = new $Class($name, true);
         } else {
             // If there is no such class
             CloudStore::$app->exit("Class '{$Class}' Not Found");
