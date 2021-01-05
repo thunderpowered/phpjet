@@ -1,11 +1,17 @@
 import React, {Component} from 'react';
 
 export class Window extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.windowRef = React.createRef();
         this.headerRef = React.createRef();
-        this.state = {display: 'block', coordinates: {}, dimensions: {'width':'50%','height':'70%'}, expanded: false};
+        this.prevCoordinates = {top: 0, left: 0};
+        this.state = {
+            coordinates: {},
+            dimensions: {'width': document.body.offsetWidth / 2, 'height': document.body.offsetHeight / 1.2},
+            expanded: true,
+            expandClass: 'Desktop__Elements__Windows--Window--expand-right'
+        };
     }
 
     componentDidMount() {
@@ -13,6 +19,13 @@ export class Window extends Component {
         let windowCoordinates = this.windowRef.current.getBoundingClientRect();
         this.setState(() => ({coordinates: windowCoordinates}));
 
+        // and dimensions
+        this.prevDimensions = {
+            width: this.windowRef.current.offsetWidth,
+            height: this.windowRef.current.offsetHeight
+        };
+
+        // make it draggable, very simple
         let callback = this.dragWindow.bind(this);
         this.headerRef.current.addEventListener('mousedown', (event) => {
             this.mouseCoordinates = {
@@ -43,8 +56,8 @@ export class Window extends Component {
         };
 
         let windowCoordinates = {
-            top: parseInt(this.state.coordinates.top) + differenceCoordinates.top,
-            left: parseInt(this.state.coordinates.left) + differenceCoordinates.left
+            top: this.state.coordinates.top + differenceCoordinates.top,
+            left: this.state.coordinates.left + differenceCoordinates.left
         };
         // to prevent moving out of space
         if (windowCoordinates.top <= 0) {
@@ -58,19 +71,16 @@ export class Window extends Component {
         }
     }
 
-    minify() {
-        this.setState(() => ({display: 'none'}));
-    }
-
+    // not very good, but ok
     expandHalf(event) {
         // the only exception
-        if (this.state.coordinates.top <= 3) {
+        if (this.state.coordinates.top <= 5) {
             this.expand(true);
         }
-        if (event.clientX <= 3) {
+        if (event.clientX <= 5) {
             this.expand(true, false, {}, 'left');
         }
-        if (event.clientX >= document.body.offsetWidth - 3) {
+        if (event.clientX >= document.body.offsetWidth - 5) {
             this.expand(true, false, {}, 'right');
         }
     }
@@ -78,45 +88,49 @@ export class Window extends Component {
     expand(expand = false, toMouse = false, mouseCoordinates = {}, position = 'center') {
         if (this.state.expanded || !expand) {
 
+            // set window to mouse coordinates, it's much more convenient this way
             if (toMouse && mouseCoordinates) {
-                let windowWidth = parseInt(this.prevDimensions.width);
+                let windowWidth = this.prevDimensions.width;
                 let headerHeight = this.headerRef.current.offsetHeight;
                 this.prevCoordinates = {
-                    top: mouseCoordinates.top - (headerHeight / 2) + 'px',
-                    left: mouseCoordinates.left - (windowWidth / 2) + 'px'
+                    top: mouseCoordinates.top - (headerHeight / 2),
+                    left: mouseCoordinates.left - (windowWidth / 2)
                 };
             }
 
-            this.setState(() => ({coordinates: this.prevCoordinates, dimensions: this.prevDimensions, expanded: false}));
+            this.setState(() => ({coordinates: this.prevCoordinates, expanded: false, expandClass: ''}));
         } else {
-            this.prevCoordinates = this.state.coordinates;
             this.prevDimensions = {
-                width: this.windowRef.current.offsetWidth + 'px',
-                height: this.windowRef.current.offsetHeight + 'px'
+                width: this.windowRef.current.offsetWidth,
+                height: this.windowRef.current.offsetHeight
             };
-            let newCoordinates = {
-                top: 0,
-                left: (position === 'left' || position === 'center' ? 0 : (document.body.offsetWidth / 2)),
-            };
-            let newDimensions = {
-                width: (position === 'center' ? '100%' : '50%'),
-                height: '100%'
-            };
-
-            this.setState(() => ({coordinates: newCoordinates, dimensions: newDimensions, expanded: true}));
+            // Just using classes
+            this.setState(() => ({
+                expanded: true,
+                expandClass: 'Desktop__Elements__Windows--Window--expand-' + position
+            }));
         }
     }
 
+    sortWindows(index) {
+        this.props.onSortWindows(index);
+    }
+
     render() {
+        let display = this.props.active ? 'block' : 'none';
         return <div ref={this.windowRef}
                     style={{
-                        'display': this.state.display,
+                        'display':display,
                         'top': `${this.state.coordinates.top}px`,
                         'left': `${this.state.coordinates.left}px`,
-                        'width': `${this.state.dimensions.width}`,
-                        'height': `${this.state.dimensions.height}`
+                        'width': `${this.state.dimensions.width}px`,
+                        'height': `${this.state.dimensions.height}px`,
+                        'z-index': `${this.props.zIndex + 4}` // set it above others
                     }}
-                    className={'Desktop__Elements__Windows--Window position-fixed fixed-top h-80 theme__background-color3 theme__border theme__border-color' + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '')}>
+                    onMouseDown={() => {
+                        this.sortWindows(this.props.configIndex)
+                    }}
+                    className={'Desktop__Elements__Windows--Window position-fixed fixed-top h-80 theme__background-color3 theme__border theme__border-color' + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '') + ' ' + this.state.expandClass}>
             <div
                 className="p-0 theme__background-color2 user-select-none position-relative d-flex justify-content-start flex-row">
                 <div ref={this.headerRef}
@@ -125,7 +139,7 @@ export class Window extends Component {
                 </div>
                 <div
                     className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
-                    <div onClick={this.minify.bind(this)} title="Minify"
+                    <div onClick={() => {this.props.onClickWindows(this.props.index)}} title="Minify"
                          className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft">
                         <i className="fas fa-minus"/>
                     </div>
@@ -133,7 +147,8 @@ export class Window extends Component {
                          className="p-2 flex-grow-1 controls-fullscreen text-center theme__cursor-pointer theme__background-color--hover-soft">
                         <i className="far fa-window-maximize"/>
                     </div>
-                    <div onClick={this.props.onDestroy} title="Close"
+                    <div onClick={(e) => this.props.onDestroy(this.props.index, this.props.configIndex, e)}
+                         title="Close"
                          className="p-2 flex-grow-1 controls-close text-center theme__cursor-pointer theme__background-color--hover">
                         <i className="fas fa-times"/>
                     </div>

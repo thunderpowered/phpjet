@@ -61,7 +61,7 @@ export class Clocks extends Component {
     }
 
     render() {
-        return <div className={'Desktop__Elements__Widgets--Clocks p-3 h-100 theme__background-color3'}
+        return <div className={'Desktop__Elements__Widgets--Clocks p-3 m-1 mt-0 mb-0 h-100 theme__background-color3 theme__border-right theme__border-color theme__border--thicker user-select-none'}
                     title={'Server Time' + (this.state.timeZone ? ` (${this.state.timeZone})` : '')} id={'Clocks'}>
             <b>{this.state.time}</b> {this.state.date}
         </div>

@@ -45,12 +45,17 @@
     z-index:2;
 }
 
+.Desktop__Workspace__Blocks--WindowSpace {
+
+}
+
 .Desktop__Workspace__Blocks--Windows {
     z-index: 4;
 }
 
-.Desktop__Workspace__Blocks--TaskBar {
+#Workspace .Desktop__Workspace__Blocks--TaskBar {
     z-index: 3 !important;
+    /*padding-left:0 !important;*/
 }
 
 .Desktop__Workspace__Blocks--TaskBar__Start {
@@ -109,9 +114,44 @@
     cursor: pointer;
 }
 
+/* STATES OF WINDOW */
 .Desktop__Elements__Windows--Window.Desktop__Elements__Windows--Window--expanded {
-    /*width:100% !important;*/
     height:100% !important;
+}
+
+.Desktop__Elements__Windows--Window--expand-center {
+    width:100% !important;
+    left:0 !important;
+    right:0 !important;
+    top:0 !important;
+}
+
+.Desktop__Elements__Windows--Window--expand-left {
+    width:50% !important;
+    left:0 !important;
+    top:0 !important;
+}
+
+.Desktop__Elements__Windows--Window--expand-right {
+    width:50% !important;
+    left:unset !important;
+    right:0 !important;
+    top:0 !important;
+}
+
+#TaskList {
+    flex: 1 1 0;
+}
+
+.Desktop__Workspace__Blocks__TaskBar__TaskList--TaskListItem {
+    flex-basis: 100%;
+    max-width:10%;
+    cursor: pointer;
+    opacity:0.6;
+}
+
+.Desktop__Workspace__Blocks__TaskBar__TaskList--TaskListItem--active {
+    opacity: 1 !important;
 }
 
 /* SOME TWEAKS */
