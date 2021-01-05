@@ -5,6 +5,12 @@ export class Window extends Component {
         super(props);
         this.windowRef = React.createRef();
         this.headerRef = React.createRef();
+
+        this.resizeLeft = React.createRef();
+        this.resizeRight = React.createRef();
+        this.resizeBottom = React.createRef();
+        this.direction = '';
+
         this.prevCoordinates = {top: 0, left: 0};
         this.state = {
             coordinates: {},
@@ -25,18 +31,28 @@ export class Window extends Component {
             height: this.windowRef.current.offsetHeight
         };
 
+        // add resizing
+        let resizeCallback = (event) => this.resize(event, this.direction);
+        [this.resizeLeft, this.resizeRight, this.resizeBottom].forEach((ref) => {
+            ref.current.addEventListener('mousedown', () => {
+                document.addEventListener('mousemove', resizeCallback);
+            });
+        });
+
         // make it draggable, very simple
         let callback = this.dragWindow.bind(this);
-        this.headerRef.current.addEventListener('mousedown', (event) => {
-            this.mouseCoordinates = {
-                top: event.clientY,
-                left: event.clientX
-            };
+        this.headerRef.current.addEventListener('mousedown', () => {
             document.addEventListener('mousemove', callback);
         });
 
+        document.addEventListener('mousedown', (event) => {
+            this.mouseCoordinates = {top: event.clientY, left: event.clientX};
+        });
+
+        // remove all callbacks
         document.addEventListener('mouseup', (event) => {
             document.removeEventListener('mousemove', callback);
+            document.removeEventListener('mousemove', resizeCallback);
         });
 
         this.headerRef.current.addEventListener('mouseup', (event) => {
@@ -116,11 +132,38 @@ export class Window extends Component {
         this.props.onSortWindows(index);
     }
 
+    resize(event, direction) {
+        let differenceCoordinates = {
+            top: event.clientY - this.mouseCoordinates.top,
+            left: event.clientX - this.mouseCoordinates.left
+        };
+
+        // well it's not direction, it is just side of the window, i should've named it differently, but who cares?
+        if (direction === 'left') {
+            // in this case we need to change width and move to the left/right by this change
+            let newWidth = this.state.dimensions.width - differenceCoordinates.left;
+            let newLeft = this.state.coordinates.left + differenceCoordinates.left;
+            this.setState(() => ({
+                dimensions: {...this.state.dimensions, width: newWidth},
+                coordinates: {...this.state.coordinates, left: newLeft}
+            }));
+        } else if (direction === 'bottom') {
+            // just change width and height...
+            let newHeight = this.state.dimensions.height + differenceCoordinates.top;
+            this.setState(() => ({dimensions: {...this.state.dimensions, height: newHeight}}));
+        } else if (direction === 'right') {
+            let newWidth = this.state.dimensions.width + differenceCoordinates.left;
+            this.setState(() => ({dimensions: {...this.state.dimensions, width: newWidth}}));
+        }
+
+        this.mouseCoordinates = {top: event.clientY, left: event.clientX};
+    }
+
     render() {
         let display = this.props.active ? 'block' : 'none';
         return <div ref={this.windowRef}
                     style={{
-                        'display':display,
+                        'display': display,
                         'top': `${this.state.coordinates.top}px`,
                         'left': `${this.state.coordinates.left}px`,
                         'width': `${this.state.dimensions.width}px`,
@@ -139,7 +182,9 @@ export class Window extends Component {
                 </div>
                 <div
                     className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
-                    <div onClick={() => {this.props.onClickWindows(this.props.index)}} title="Minify"
+                    <div onClick={() => {
+                        this.props.onClickWindows(this.props.index)
+                    }} title="Minify"
                          className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft">
                         <i className="fas fa-minus"/>
                     </div>
@@ -154,7 +199,22 @@ export class Window extends Component {
                     </div>
                 </div>
             </div>
-            {this.props.children}
+            <div className="p-2 Desktop__Elements__Windows--Window-content">
+                <div className="m-2 Desktop__Elements__Windows--Window-content-inner overflow-auto">
+                    {this.props.children}
+                </div>
+            </div>
+
+            {/* resizing controls */}
+            <div className="window-resize--left" ref={this.resizeLeft} onMouseDown={() => {
+                this.direction = 'left'
+            }}/>
+            <div className="window-resize--bottom" ref={this.resizeBottom} onMouseDown={() => {
+                this.direction = 'bottom'
+            }}/>
+            <div className="window-resize--right" ref={this.resizeRight} onMouseDown={() => {
+                this.direction = 'right'
+            }}/>
         </div>
     }
 }
