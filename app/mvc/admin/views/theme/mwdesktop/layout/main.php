@@ -43,6 +43,9 @@
     <!-- BOOTSTRAP MSG -->
     <?php echo $this->includeCommonCSS('libs/bootstrap-msg-1.0.8/css/bootstrap-msg.css'); ?>
 
+    <!-- DATATABLES -->
+    <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
+
     <script>
         const globalSystemHost = "<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>";
     </script>
@@ -54,10 +57,14 @@
 <body>
 
 <!-- ROOT ELEMENT -->
-<div class="p-0 w-100 vh-100 overflow-hidden theme__background-color theme__link-color" id="Desktop"><?php echo $this->view; ?></div>
+<div class="p-0 w-100 vh-100 overflow-hidden theme__background-color theme__link-color"
+     id="Desktop"><?php echo $this->view; ?></div>
 
 <!-- JQUERY -->
-<?php echo $this->includeCommonJS('libs/jquery-3.5.1/jquery-3.5.1.min.js') ?>
+<?php //echo $this->includeCommonJS('libs/jquery-3.5.1/jquery-3.5.1.min.js') ?>
+
+<!-- DATATABLES -->
+<?php echo $this->includeCommonJS('libs/datatables/datatables.min.js'); ?>
 
 <!-- BOOTSTRAP/JS -->
 <?php echo $this->includeCommonJS('libs/bootstrap-5.0.0-beta1/js/bootstrap.bundle.min.js'); ?>
@@ -70,6 +77,8 @@
 
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('react/desktop.js'); ?>
+
+
 
 <!-- JQUERY PLUGIN ACTIVATION -->
 <?php echo $this->includeJS('js/plugins.js', false, true); ?>

@@ -92,7 +92,7 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
-     * @return array
+     * @return static[]
      */
     public static function get(array $conditions = array(), array $orderBy = array(), array $limit = array()): array
     {

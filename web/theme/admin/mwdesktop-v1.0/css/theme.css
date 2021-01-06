@@ -10,6 +10,10 @@
     background-color: #191919;
 }
 
+.theme__background-color3-i {
+    background-color: #191919 !important;
+}
+
 .theme__background-color--accent {
     background-color: #d20000;
 }
@@ -41,6 +45,10 @@
 
 .theme__link-color--accent {
     color: #9b0000;
+}
+
+.theme__link-color--accent2 {
+    color: #d20000;
 }
 
 .theme__link-color--hover:hover {

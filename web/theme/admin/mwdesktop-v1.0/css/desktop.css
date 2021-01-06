@@ -113,6 +113,10 @@ html, body {
     max-height: 100%;
 }
 
+.Desktop__Elements__Windows--Window.display-none {
+    display:none !important;
+}
+
 .Desktop__Elements__Windows--Window-title {
     flex:1;
     cursor: move;
@@ -347,6 +351,59 @@ html, body {
 
 #msg.alert-info:before {
     background-color: orangered;
+}
+
+/* DataTables */
+.dt-buttons > button > span, .dataTables_filter > label > input, .dataTables_info {
+    color: #fafafa !important;
+}
+
+.dataTables_wrapper label {
+    color: #fafafa !important;
+}
+
+.dataTables_wrapper select {
+    background-color: #191919 !important;
+    color: #fafafa !important;
+}
+
+.dt-buttons button {
+    color: #fafafa !important;
+    background-color: #191919 !important;
+    background: unset !important;
+    border:1px solid rgba(0,0,0,0.3);
+}
+
+html body .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color:#fafafa !important;
+    background: #191919 !important;
+    border:1px solid rgba(0,0,0,0.3);
+}
+
+html body .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color:#fafafa !important;
+    background: #282828 !important;
+    border:1px solid rgba(0,0,0,0.3);
+}
+
+html body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #2d2d2d !important;
+    color:#fafafa !important;
+    border:1px solid rgba(0,0,0,0.3);
+}
+
+html body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    color:#fafafa !important;
+    border:1px solid rgba(0,0,0,0.3);
+}
+
+thead input {
+    width: 100%;
+}
+
+
+.dataTable tr {
+    background-color: #191919 !important;
 }
 
 

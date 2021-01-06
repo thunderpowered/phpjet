@@ -111,6 +111,8 @@ class ControllerMisc extends Controller
         if (!$this->modelAdmin->isAdminAuthorized()) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+
+            $this->modelAdmin->recordActions('Theme', false, 'attempt to change wallpapers failed - not authorized');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -118,6 +120,8 @@ class ControllerMisc extends Controller
         if (!$file) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('No file to load');
+
+            $this->modelAdmin->recordActions('Theme', false, 'attempt to change wallpapers failed - no data');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -125,6 +129,8 @@ class ControllerMisc extends Controller
         if (!$wallpaper) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Unable to set a Wallpaper');
+
+            $this->modelAdmin->recordActions('Theme', false, 'attempt to change wallpapers failed - function returned false');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -134,6 +140,8 @@ class ControllerMisc extends Controller
         CloudStore::$app->tool->JSONOutput->setData([
             'wallpaper' => $wallpaper
         ]);
+
+        $this->modelAdmin->recordActions('Theme', true, 'attempt to change wallpapers succeeded');
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }
 
@@ -146,6 +154,8 @@ class ControllerMisc extends Controller
         if (!$this->modelAdmin->isAdminAuthorized()) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to change mode failed - not authorized');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -153,6 +163,8 @@ class ControllerMisc extends Controller
         if (!$mode) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data to set');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to change mode failed - no data');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -160,6 +172,8 @@ class ControllerMisc extends Controller
         if (!$result) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Unable to set Panel Mode');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to change mode failed - function returned false');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -169,6 +183,8 @@ class ControllerMisc extends Controller
         CloudStore::$app->tool->JSONOutput->setData([
             'panelMode' => $mode
         ]);
+
+        $this->modelAdmin->recordActions('Panel Mode', true, 'attempt to change mode succeeded');
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }
 
@@ -206,6 +222,8 @@ class ControllerMisc extends Controller
         if (!$this->modelAdmin->isAdminAuthorized()) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to set default window failed - not authorized');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -213,6 +231,8 @@ class ControllerMisc extends Controller
         if (!is_int($defaultWindow)) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data to set');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to set default window failed - no data');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -220,6 +240,8 @@ class ControllerMisc extends Controller
         if (!$result) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Unable to set default window');
+
+            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to set default window failed - function returned false');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
@@ -229,6 +251,8 @@ class ControllerMisc extends Controller
         CloudStore::$app->tool->JSONOutput->setData([
             'defaultWindow' => $defaultWindow
         ]);
+
+        $this->modelAdmin->recordActions('Panel Mode', true, 'attempt to set default window succeeded');
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }
 

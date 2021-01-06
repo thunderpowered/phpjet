@@ -4,6 +4,7 @@ namespace CloudStore\App\MVC\Admin\Models;
 
 use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
 use CloudStore\App\Engine\ActiveRecord\Tables\Authority;
+use CloudStore\App\Engine\ActiveRecord\Tables\Tracker_Authority;
 use CloudStore\App\Engine\Core\Model;
 use CloudStore\CloudStore;
 
@@ -339,6 +340,20 @@ class ModelAdmin extends Model
         }
 
         return str_replace('id_', '', $defaultWindow);
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdminActions(): array
+    {
+        $actions =  Tracker_Authority::get([], ['id' => 'DESC']);
+        foreach ($actions as $key => $action) {
+            $actions[$key]->status = $action->status ? 'Success' : 'Fail';
+            $actions[$key]->authority_id = $action->authority_id ? $action->authority_id : 'Not authorized';
+            $actions[$key]->datetime = date("d.m.Y G:i:s", strtotime($action->datetime));
+        }
+        return $actions;
     }
 
     /**

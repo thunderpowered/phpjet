@@ -41,8 +41,11 @@ export class Window extends Component {
 
         // make it draggable, very simple
         let callback = this.dragWindow.bind(this);
-        this.headerRef.current.addEventListener('mousedown', () => {
+        let mouseUpCallback = (event) => {this.expandHalf(event);};
+        this.headerRef.current.addEventListener('mousedown', (event) => {
+            if (event.button !== 0) return;
             document.addEventListener('mousemove', callback);
+            this.headerRef.current.addEventListener('mouseup', mouseUpCallback);
         });
 
         document.addEventListener('mousedown', (event) => {
@@ -53,11 +56,9 @@ export class Window extends Component {
         document.addEventListener('mouseup', (event) => {
             document.removeEventListener('mousemove', callback);
             document.removeEventListener('mousemove', resizeCallback);
+            this.headerRef.current.removeEventListener('mouseup', mouseUpCallback);
         });
 
-        this.headerRef.current.addEventListener('mouseup', (event) => {
-            this.expandHalf(event);
-        });
     }
 
     dragWindow(event) {
@@ -173,7 +174,7 @@ export class Window extends Component {
                     onMouseDown={() => {
                         this.sortWindows(this.props.configIndex)
                     }}
-                    className={'Desktop__Elements__Windows--Window position-fixed fixed-top h-80 theme__background-color3 theme__border theme__border-color' + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '') + ' ' + this.state.expandClass}>
+                    className={'Desktop__Elements__Windows--Window overflow-auto position-fixed d-flex flex-column fixed-top h-80 theme__background-color3 theme__border theme__border-color display-' + display + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '') + ' ' + this.state.expandClass}>
             <div
                 className="p-0 theme__background-color2 user-select-none position-relative d-flex justify-content-start flex-row">
                 <div ref={this.headerRef}
@@ -199,8 +200,8 @@ export class Window extends Component {
                     </div>
                 </div>
             </div>
-            <div className="p-2 Desktop__Elements__Windows--Window-content">
-                <div className="m-2 Desktop__Elements__Windows--Window-content-inner overflow-auto">
+            <div className="p-2 Desktop__Elements__Windows--Window-content overflow-auto">
+                <div className="m-2 Desktop__Elements__Windows--Window-content-inner">
                     {this.props.children}
                 </div>
             </div>
