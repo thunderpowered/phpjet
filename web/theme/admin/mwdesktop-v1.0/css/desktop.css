@@ -63,6 +63,7 @@ html, body {
 
 #Workspace .Desktop__Workspace__Blocks--TaskBar {
     z-index: 5 !important;
+    height:49px !important;
     /*padding-left:0 !important;*/
 }
 
@@ -132,7 +133,7 @@ html, body {
 
 /* STATES OF WINDOW */
 .Desktop__Elements__Windows--Window.Desktop__Elements__Windows--Window--expanded {
-    height:100% !important;
+    height:calc(100% - 49px) !important;
 }
 
 .Desktop__Elements__Windows--Window--expand-center {
@@ -220,6 +221,17 @@ html, body {
 
 .Desktop__Elements__DropDowns--SimpleDropMenu-Item-wrapper:last-of-type > .Desktop__Elements__DropDowns--SimpleDropMenu-Item {
     border: none !important;
+}
+
+.Desktop__Elements__Loaders--SimpleLoader {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+
+    width: 80px;
+    height: 80px;
 }
 
 /* CLASSIC MODE */
@@ -368,32 +380,32 @@ html, body {
 }
 
 .dt-buttons button {
-    color: #fafafa !important;
+    color: #ebebeb !important;
     background-color: #191919 !important;
     background: unset !important;
     border:1px solid rgba(0,0,0,0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button {
-    color:#fafafa !important;
+    color:#ebebeb !important;
     background: #191919 !important;
     border:1px solid rgba(0,0,0,0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    color:#fafafa !important;
+    color:#ebebeb !important;
     background: #282828 !important;
     border:1px solid rgba(0,0,0,0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
     background: #2d2d2d !important;
-    color:#fafafa !important;
+    color:#ebebeb !important;
     border:1px solid rgba(0,0,0,0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    color:#fafafa !important;
+    color:#ebebeb !important;
     border:1px solid rgba(0,0,0,0.3);
 }
 
@@ -401,9 +413,36 @@ thead input {
     width: 100%;
 }
 
-
 .dataTable tr {
     background-color: #191919 !important;
 }
+
+/* PURE LOADED */
+
+.lds-dual-ring {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+.lds-dual-ring:after {
+    content: " ";
+    display: block;
+    width: 64px;
+    height: 64px;
+    margin: 8px;
+    border-radius: 50%;
+    border: 6px solid #fff;
+    border-color: #fff transparent #fff transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 

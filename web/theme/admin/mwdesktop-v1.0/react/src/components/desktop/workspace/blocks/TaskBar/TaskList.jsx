@@ -6,7 +6,7 @@ export class TaskList extends Component {
         return <div className={'p-0 pt-0 pb-0 d-flex flex-nowrap justify-content-start align-items-center'} id={'TaskList'}>
             {this.props.windows.map((item) => {
                 if (!Object.keys(item).length) return;
-                return <TaskListItem onClickWindows={this.props.onClickWindows} task={item} />
+                return <TaskListItem onMinifyWindow={this.props.onMinifyWindow} task={item} />
             })}
         </div>
     }

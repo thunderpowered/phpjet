@@ -53,7 +53,6 @@ class Cache
             return '';
         }
 
-        // just return the fucking cache
         return file_get_contents($cacheLocation);
     }
 

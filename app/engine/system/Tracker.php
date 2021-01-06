@@ -26,6 +26,7 @@ class Tracker
     {
         $tracker = new \CloudStore\App\Engine\ActiveRecord\Tables\Tracker();
         $tracker->url = CloudStore::$app->router->getURL();
+        $tracker->method = CloudStore::$app->system->request->getSERVER('REQUEST_METHOD');
         $tracker->referer = CloudStore::$app->system->request->getSERVER('HTTP_REFERER');
         $tracker->user_agent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
         $tracker->ip = CloudStore::$app->system->request->getUserIP();

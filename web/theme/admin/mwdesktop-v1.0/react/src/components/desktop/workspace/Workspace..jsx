@@ -14,33 +14,43 @@ export class Workspace extends Component {
         this.urlGetMode = '/admin/misc/getMode';
         this.urlSetDefaultWindow = '/admin/misc/setDefaultWindow';
         this.urlGetDefaultWindow = '/admin/misc/getDefaultWindow';
-        // i think this is too much, maybe i can find a solution to simplify this?
+        // i added some explanation because things became a little more complicated than i thought it would be, so it is just to keep in mind
+        // i do not overuse comments!
         this.state = {
+            // classic or window
             panelMode: 'default',
+            // in classic mode we have to load some window to fill empty space
             defaultWindow: 0,
+            // is start menu opened
             showStartMenu: false,
+            // array with window configs
             windowConfig: [],
+            // array with actual React components
             windowComponents: [],
+            // ordering is very important, since if we click on some window, it should pop up on top, and order of other windows should be the same
             windowOrder: [],
+            // represents id of last opened/clicked window (for startBar in classic mode)
             windowOnTop: -1,
             mousePosition: {top: 0, left: 0},
+            // whether context menu opened or not
             contextMenu: false,
-            opacity:0
+            // by default we hide workspace and show only when everything is loaded
+            // it'd be good to add some loading animation or something, but i got a lot to do, will think about it later
+            opacity: 0
         };
     }
 
     componentDidMount() {
         document.addEventListener('mousedown', () => (
+            // if click anywhere -> close context menu
             this.setState(() => ({contextMenu: false}))
         ));
-        setTimeout(() => {
-            this.setState(() => ({opacity:1}));
-        }, 1000);
     }
 
+    // load config array from Windows component
     loadMenu(windowConfig) {
         this.setState(() => ({'windowConfig': windowConfig}), () => {
-            this.loadPanelMode();
+            return this.loadPanelMode();
         });
     }
 
@@ -72,7 +82,8 @@ export class Workspace extends Component {
             onSortWindows: this.onSortWindows.bind(this),
             onDestroy: this.destroyWindow.bind(this),
             title: this.state.windowConfig[index]['label'],
-            component: this.state.windowConfig[index].component
+            component: this.state.windowConfig[index].component,
+            children: this.state.windowConfig[index].children
         };
 
         this.setState(() => (
@@ -91,9 +102,14 @@ export class Workspace extends Component {
         let newWindowComponents = this.state.windowComponents.map((item) => {
             return Object.keys(item).length ? {...item, zIndex: newWindowOrder.indexOf(item.configIndex)} : {};
         });
-        this.setState(() => ({windowOrder: newWindowOrder, windowComponents: newWindowComponents, windowOnTop: configIndex}));
+        this.setState(() => ({
+            windowOrder: newWindowOrder,
+            windowComponents: newWindowComponents,
+            windowOnTop: configIndex
+        }));
     }
 
+    // delete window
     destroyWindow(index, configIndex, event) {
         event.stopPropagation();
         if (typeof this.state.windowComponents[index] !== 'undefined') {
@@ -109,7 +125,7 @@ export class Workspace extends Component {
         }
     }
 
-    onClickWindows(index) {
+    onMinifyWindow(index) {
         let newWindowComponents = this.state.windowComponents.map((item, _index) => {
             return Object.keys(item).length && _index === index ? {...item, active: !item.active} : item;
         });
@@ -130,6 +146,12 @@ export class Workspace extends Component {
                         if (this.state.panelMode === 'classic') {
                             this.loadDefaultWindow();
                         }
+                        // after panel state loaded, let's show the workspace!
+                        // short delay is for reinsurance
+                        // todo: add loading animation
+                        setTimeout(() => {
+                            this.setState(() => ({opacity: 1}));
+                        }, 100);
                     });
                 }
             }
@@ -176,13 +198,20 @@ export class Workspace extends Component {
     }
 
     render() {
-        return <div style={{opacity: this.state.opacity}} className={`w-100 h-100 position-relative Desktop__Workspace--${this.state.panelMode.charAt(0).toUpperCase() + this.state.panelMode.slice(1)}Mode`} id={'Workspace'}
-                    onClick={() => this.onClickStart(false)} onContextMenu={(e) => this.onContextMenu(e)}>
+        return <div id={'Workspace'}
+                    style={{opacity: this.state.opacity}}
+                    className={`w-100 h-100 position-relative Desktop__Workspace--${this.state.panelMode.charAt(0).toUpperCase() + this.state.panelMode.slice(1)}Mode`}
+                    onClick={() => this.onClickStart(false)}
+                    onContextMenu={(e) => this.onContextMenu(e)}>
+
+            {/* We don't need background in classic mode, so let's jst not render it */}
             {this.state.panelMode === 'window' &&
-                <Background/>
+            <Background/>
             }
+
             <Windows windowOrder={this.windowOrder}
                      onMount={this.loadMenu.bind(this)}>
+                {/* render all active windows */}
                 {this.state.windowComponents.map((item, index) => {
                     if (!Object.keys(item).length) return;
                     return <Window active={item.active}
@@ -190,14 +219,17 @@ export class Workspace extends Component {
                                    zIndex={item.zIndex}
                                    title={item.title}
                                    configIndex={item.configIndex}
+                                   children={item.children}
                                    onSortWindows={item.onSortWindows}
                                    onDestroy={item.onDestroy}
-                                   onClickWindows={this.onClickWindows.bind(this)}>
+                                   onMinifyWindow={this.onMinifyWindow.bind(this)}>
                         {item.component}
                     </Window>
                 })}
             </Windows>
-            <StartMenu windowConfig={this.state.windowConfig}
+
+            <StartMenu panelMode={this.state.panelMode}
+                       windowConfig={this.state.windowConfig}
                        windowOnTop={this.state.windowOnTop}
                        showStartMenu={this.state.showStartMenu}
                        onClickLogout={this.props.onClickLogout}
@@ -205,23 +237,33 @@ export class Workspace extends Component {
                        onClickStart={this.onClickStart.bind(this)}
                        onContextMenu={this.setDefaultWindow.bind(this)}
             />
-            <TaskBar showStartMenu={this.state.showStartMenu} onClickStart={this.onClickStart.bind(this)}
-                     windows={this.state.windowComponents} onClickWindows={this.onClickWindows.bind(this)}/>
 
-            <SimpleDropMenu active={this.state.contextMenu} mouse={this.state.mousePosition} hoverClass={'theme__background-color--hover'}>
+            <TaskBar showStartMenu={this.state.showStartMenu}
+                     windows={this.state.windowComponents}
+                     onMinifyWindow={this.onMinifyWindow.bind(this)}
+                     onClickStart={this.onClickStart.bind(this)}
+            />
+
+            <SimpleDropMenu active={this.state.contextMenu}
+                            mouse={this.state.mousePosition}
+                            hoverClass={'theme__background-color--hover'}>
                 <div onMouseDown={(e) => e.stopPropagation()}>
+                    {/* It is possible to add more modes in the future */}
                     {this.state.panelMode !== 'classic' &&
-                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={() => this.setPanelMode('classic')}>
+                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
+                             onClick={() => this.setPanelMode('classic')}>
                             Switch to Classic Mode
                         </div>
                     }
                     {this.state.panelMode !== 'window' &&
-                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={() => this.setPanelMode('window')}>
+                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
+                             onClick={() => this.setPanelMode('window')}>
                             Switch to Window Mode
                         </div>
                     }
                 </div>
             </SimpleDropMenu>
+
         </div>
     }
 }

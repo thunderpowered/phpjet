@@ -1,25 +1,36 @@
 import React, {Component} from 'react';
 // import windows
 import {WindowAdminActions} from "./Windows/WindowAdminActions";
-import {WindowPageBuilder} from "./Windows/WindowPageBuilder";
+import {WindowAllPages} from "./Windows/WindowAllPages";
+import {WindowPageBuilder} from "./Windows/WindowAllPages/WindowPageBuilder";
 
 
 export class Windows extends Component {
     constructor(props) {
         super(props);
+        // order is like in menu -> top elements are on top
         this.windowsConfig = [
+            {
+                'component': <WindowAllPages/>,
+                'windowName': 'WindowAllPages',
+                'label': 'Pages',
+                'icon': 'fa-columns',
+                'children': [
+                    {
+                        'component': <WindowPageBuilder/>,
+                        'windowName': 'WindowPageBuilder',
+                        'label': 'Page Builder',
+                        'icon': 'fa-magic'
+                    }
+                ]
+            },
             {
                 'component': <WindowAdminActions/>,
                 'windowName': 'WindowAdminActions',
                 'label': 'Recent activity',
                 // font awesome https://fontawesome.com/icons/
-                'icon': 'fa-user-shield'
-            },
-            {
-                'component': <WindowPageBuilder/>,
-                'windowName': 'WindowPageBuilder',
-                'label': 'Page Builder',
-                'icon': 'fa-magic'
+                'icon': 'fa-user-shield',
+                'children': []
             }
         ];
     }
@@ -28,7 +39,6 @@ export class Windows extends Component {
         this.props.onMount(this.windowsConfig);
         delete this.windowsConfig;
     }
-
 
     render() {
         return <div

@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {SimpleLoader} from "../loaders/SimpleLoader";
 
 export class Window extends Component {
     constructor(props) {
@@ -16,7 +17,10 @@ export class Window extends Component {
             coordinates: {},
             dimensions: {'width': document.body.offsetWidth / 2, 'height': document.body.offsetHeight / 1.2},
             expanded: true,
-            expandClass: 'Desktop__Elements__Windows--Window--expand-right'
+            expandClass: 'Desktop__Elements__Windows--Window--expand-right',
+            // if content is not loaded -> just show the spinner
+            // moreover each window should decide whether it loaded or not (just call this.props.onLoad() function)
+            loaded: false
         };
     }
 
@@ -160,6 +164,10 @@ export class Window extends Component {
         this.mouseCoordinates = {top: event.clientY, left: event.clientX};
     }
 
+    onLoaded(callBack) {
+        this.setState(() => ({loaded: true}), callBack);
+    }
+
     render() {
         let display = this.props.active ? 'block' : 'none';
         return <div ref={this.windowRef}
@@ -177,14 +185,18 @@ export class Window extends Component {
                     className={'Desktop__Elements__Windows--Window overflow-auto position-fixed d-flex flex-column fixed-top h-80 theme__background-color3 theme__border theme__border-color display-' + display + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '') + ' ' + this.state.expandClass}>
             <div
                 className="p-0 theme__background-color2 user-select-none position-relative d-flex justify-content-start flex-row">
+
+                {/* Header is not only for showing title, we also use it for activate gragging */}
                 <div ref={this.headerRef}
                      className="p-2 Desktop__Elements__Windows--Window-title">
                     {this.props.title}
                 </div>
-                <div
-                    className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
+
+                <div className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
+
+                    {/* Window controls */}
                     <div onClick={() => {
-                        this.props.onClickWindows(this.props.index)
+                        this.props.onMinifyWindow(this.props.index)
                     }} title="Minify"
                          className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft">
                         <i className="fas fa-minus"/>
@@ -198,15 +210,25 @@ export class Window extends Component {
                          className="p-2 flex-grow-1 controls-close text-center theme__cursor-pointer theme__background-color--hover">
                         <i className="fas fa-times"/>
                     </div>
+
                 </div>
             </div>
             <div className="p-2 Desktop__Elements__Windows--Window-content overflow-auto">
-                <div className="m-2 Desktop__Elements__Windows--Window-content-inner">
-                    {this.props.children}
+                {/* If window content is not loaded, don't show it */}
+                <div className={`m-2 Desktop__Elements__Windows--Window-content-inner position-relative ${this.state.loaded ? 'd-block' : 'd-none'}`}>
+                    {React.Children.map(this.props.children, child => (
+                        React.cloneElement(child, {
+                            ...child.props,
+                            onLoaded: this.onLoaded.bind(this)
+                        })
+                    ))}
                 </div>
+                {!this.state.loaded &&
+                    <SimpleLoader />
+                }
             </div>
 
-            {/* resizing controls */}
+            {/* Resizing controls */}
             <div className="window-resize--left" ref={this.resizeLeft} onMouseDown={() => {
                 this.direction = 'left'
             }}/>

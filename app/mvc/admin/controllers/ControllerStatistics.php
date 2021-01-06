@@ -25,7 +25,7 @@ class ControllerStatistics extends Controller
      */
     public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name, $enableTracker);
+        parent::__construct($name, false);
         $this->modelAdmin = new ModelAdmin();
     }
 

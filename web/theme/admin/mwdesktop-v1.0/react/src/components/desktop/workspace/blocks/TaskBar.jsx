@@ -10,7 +10,7 @@ export class TaskBar extends Component {
             className={'Desktop__Workspace__Blocks--TaskBar p-0 pt-0 pb-0 position-fixed fixed-bottom w-100 theme__background-color2 d-flex flex-row flex-nowrap justify-content-start align-items-stretch'}
             id={'TaskBar'}>
             <Start showStartMenu={this.props.showStartMenu} onClickStart={this.props.onClickStart}/>
-            <TaskList onClickWindows={this.props.onClickWindows} windows={this.props.windows}/>
+            <TaskList onMinifyWindow={this.props.onMinifyWindow} windows={this.props.windows}/>
             <div className={'Desktop__Workspace__Blocks--TaskBar__widget-rack justify-self-end ml-auto'}>
                 <Clocks/>
             </div>

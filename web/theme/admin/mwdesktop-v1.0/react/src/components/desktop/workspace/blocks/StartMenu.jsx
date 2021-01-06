@@ -58,7 +58,7 @@ export class StartMenu extends Component {
                             {/* Actual menu list */}
                             <div className="Desktop__Workspace__Blocks--StartMenu__Rack js-plugin_niceScroll">
                                 {this.props.windowConfig.map((item, index) => (
-                                    <MenuItem active={this.props.windowOnTop === index} onClick={() => this.props.onClickMenu(index)} icon={item.icon}
+                                    <MenuItem active={this.props.windowOnTop === index} panelMode={this.props.panelMode} onClick={() => this.props.onClickMenu(index)} icon={item.icon}
                                               label={item.label} index={index} onContextMenu={(e) => this.onContextMenu(e, index)}/>
                                 ))
                                 }
@@ -75,6 +75,11 @@ export class StartMenu extends Component {
                     <div onMouseDown={(e) => e.stopPropagation()}>
                         <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={(e) => {this.onContextMenuClick(e, this.state.index)}}>
                             Set this window as Default
+                        </div>
+                    </div>
+                    <div onMouseDown={(e) => e.stopPropagation()}>
+                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={(e) => {console.log('todo')}}>
+                            Refresh window (//todo)
                         </div>
                     </div>
                 </SimpleDropMenu>

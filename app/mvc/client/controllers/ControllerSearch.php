@@ -18,13 +18,15 @@ class ControllerSearch extends Controller
      * @var ModelSearch
      */
     private $modelSearch;
+
     /**
      * ControllerSearch constructor.
      * @param string $name
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name);
+        parent::__construct($name, $enableTracker);
         $this->modelSearch = new ModelSearch();
     }
 

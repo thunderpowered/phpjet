@@ -24,9 +24,14 @@ class ControllerMain extends Controller
         'title' => ''
     ];
 
-    public function __construct(string $name = "")
+    /**
+     * ControllerMain constructor.
+     * @param string $name
+     * @param bool $enableTracker
+     */
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name);
+        parent::__construct($name, $enableTracker);
 
         // load from settings
         $this->SEO['description'] = CloudStore::$app->system->settings->getContext('site_description');

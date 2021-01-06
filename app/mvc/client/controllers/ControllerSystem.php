@@ -20,12 +20,13 @@ class ControllerSystem extends Controller
     private $accessToken = '~h?C~%|rkuT9~~oek{vkF9CpcKBuZIAC';
 
     /**
-     * TaskController constructor.
+     * ControllerSystem constructor.
      * @param string $name
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name);
+        parent::__construct($name, $enableTracker);
         $accessToken = CloudStore::$app->system->request->getGET('accessToken');
         if (!$accessToken || $accessToken !== $this->accessToken) {
             CloudStore::$app->router->goHome();

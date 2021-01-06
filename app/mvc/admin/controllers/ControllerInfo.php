@@ -20,6 +20,11 @@ class ControllerInfo extends Controller
         'POST'
     ];
 
+    public function __construct(string $name = "", bool $enableTracker = false)
+    {
+        parent::__construct($name, false);
+    }
+
     /**
      * @return string
      */

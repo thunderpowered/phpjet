@@ -11,12 +11,9 @@ use CloudStore\App\Engine\Core\Controller;
  */
 class ControllerGames extends Controller
 {
-    /**
-     * ControllerGames constructor.
-     */
-    public function __construct()
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct();
+        parent::__construct($name, $enableTracker);
     }
 
     /**

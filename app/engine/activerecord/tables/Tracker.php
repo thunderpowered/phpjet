@@ -19,6 +19,10 @@ class Tracker extends ActiveRecord
     /**
      * @var string
      */
+    public $method;
+    /**
+     * @var string
+     */
     public $url;
     /**
      * @var string

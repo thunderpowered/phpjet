@@ -180,7 +180,7 @@ class ModelAdmin extends Model
         }
 
         // seems like everything is ok
-        $this->recordActions('Auth', true, '2F verification successful - 2f auth completed.');
+        $this->recordActions('Auth', true, '2F verification successful - auth completed.');
         $this->grantAccess($admin);
         return true;
     }
@@ -209,9 +209,8 @@ class ModelAdmin extends Model
             return false;
         }
 
-        $this->forbidAccess($admin);
-
         $this->recordActions('Logout', true, 'attempt successful - admin signing off completed.');
+        $this->forbidAccess();
         return true;
     }
 
@@ -349,9 +348,10 @@ class ModelAdmin extends Model
     {
         $actions =  Tracker_Authority::get([], ['id' => 'DESC']);
         foreach ($actions as $key => $action) {
+
             $actions[$key]->status = $action->status ? 'Success' : 'Fail';
             $actions[$key]->authority_id = $action->authority_id ? $action->authority_id : 'Not authorized';
-            $actions[$key]->datetime = date("d.m.Y G:i:s", strtotime($action->datetime));
+            $actions[$key]->datetime = date("d.m.Y H:i:s", strtotime($action->datetime));
         }
         return $actions;
     }
@@ -383,7 +383,7 @@ class ModelAdmin extends Model
     /**
      * @param Authority $admin
      */
-    private function forbidAccess(Authority $admin)
+    private function forbidAccess()
     {
         CloudStore::$app->system->request->unsetSESSION($this->sessionAuthorizedKey);
         CloudStore::$app->system->request->unsetSESSION($this->sessionAdminID);

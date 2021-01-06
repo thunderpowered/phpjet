@@ -32,7 +32,7 @@ class ControllerMisc extends Controller
 
     public function __construct(string $name = "")
     {
-        parent::__construct($name);
+        parent::__construct($name, false);
         $this->modelAdmin = new ModelAdmin();
     }
 
