@@ -33,10 +33,11 @@ class ControllerMisc extends Controller
     /**
      * ControllerMisc constructor.
      * @param string $name
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name, false);
+        parent::__construct($name, $enableTracker);
         $this->modelAdmin = new ModelAdmin();
 
         if (!$this->modelAdmin->isAdminAuthorized()) {

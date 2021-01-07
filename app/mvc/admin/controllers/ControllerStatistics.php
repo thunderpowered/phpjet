@@ -31,7 +31,7 @@ class ControllerStatistics extends Controller
      */
     public function __construct(string $name = "", bool $enableTracker = false)
     {
-        parent::__construct($name, false);
+        parent::__construct($name, $enableTracker);
         $this->modelAdmin = new ModelAdmin();
 
         if (!$this->modelAdmin->isAdminAuthorized()) {
