@@ -1,29 +1,9 @@
 import React, {Component} from 'react';
-import {fetch2} from "../../../../helpers/fetch2";
 
 export class Logotype extends Component {
     constructor() {
         super();
-        this.state = {backgroundImage: ''};
-
-        this.urlGetLogotype = '/admin/misc/getLogotype';
-        this.loadBackgroundImage();
-    }
-
-    setLogotype(logotype) {
-        this.setState(() => {
-            return {backgroundImage: logotype}
-        });
-    }
-
-    loadBackgroundImage() {
-        return fetch2(this.urlGetLogotype, {}, {
-            onSuccess: (result) => {
-                if (typeof result.data !== 'undefined' && typeof result.data.logotype !== 'undefined') {
-                    this.setLogotype(result.data.logotype);
-                }
-            }
-        });
+        this.state = {backgroundImage: globalDesktopMisc.logotype};
     }
 
     render() {

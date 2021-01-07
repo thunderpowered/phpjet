@@ -15,6 +15,12 @@ use CloudStore\CloudStore;
 class ControllerStatistics extends Controller
 {
     /**
+     * @var array
+     */
+    protected $methods = [
+        'POST'
+    ];
+    /**
      * @var ModelAdmin
      */
     private $modelAdmin;

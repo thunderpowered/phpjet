@@ -51,5 +51,5 @@ if (!\CloudStore\CloudStore::$app->system->request->getPOST()) {
         echo '<!-- SQL-queries: ' .  \CloudStore\CloudStore::$app->store->getNumberOfQueries() . ' -->';
     }
     // Just for Fun!
-    echo '<!-- ModWare Version ' .  \CloudStore\CloudStore::$app->system->getEngineVersion() . ' -->';
+    echo '<!-- ' .  \CloudStore\CloudStore::$app->system->getEngineVersion() . ' -->';
 }

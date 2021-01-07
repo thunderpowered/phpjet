@@ -141,14 +141,18 @@ class System
 
     /**
      * @param bool $includeName
+     * @param bool $includeTitle
      * @return string
      */
-    public function getEngineVersion(bool $includeName = false): string
+    public function getEngineVersion(bool $includeName = false, bool $includeTitle = true): string
     {
         // global.func.stage:dev
         $version = ENGINE_VER_GLOBAL . '.' . ENGINE_VER_FUNC . '.' . ENGINE_VER_DEV . ' ' . $this->versionStages[ENGINE_VER_STAGE];
         if ($includeName) {
             $version = $version . ' (' . ENGINE_VER_RELEASE_NAME . ')';
+        }
+        if ($includeTitle) {
+            $version = 'Engine Version: ' . $version;
         }
 
         return $version;

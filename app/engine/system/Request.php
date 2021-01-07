@@ -121,8 +121,6 @@ class Request
         // just to unambiguity convert in to bool
         // and of course if we expect JSON input, use function $this->getJSON()
         $this->json = (bool)$this->json;
-
-        $this->method = $this->getSERVER('REQUEST_METHOD');
     }
 
     /**
@@ -231,14 +229,22 @@ class Request
 
     /**
      * @param string $name
-     * @return mixed
+     * @param bool $removeSpecialChars
+     * @return array|mixed|string
      */
-    public function getSERVER(string $name = '')
+    public function getSERVER(string $name = '', bool $removeSpecialChars = true)
     {
         if (!$name) {
-            return $this->server;
+            $result = $this->server;
+        } else {
+            $result = $this->server[$name] ?? '';
         }
-        return $this->server[$name] ?? '';
+
+        if ($removeSpecialChars) {
+            $result = CloudStore::$app->tool->utils->removeSpecialChars($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -292,7 +298,15 @@ class Request
      */
     public function getUserIP(): string
     {
-        return $this->server['REMOTE_ADDR'];
+        return $this->getSERVER('REMOTE_ADDR');
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestMethod(): string
+    {
+        return $this->getSERVER('REQUEST_METHOD');
     }
 
     /**
@@ -362,7 +376,7 @@ class Request
         $this->setSESSION('new_session_id', $newSessionID);
 
         // step 4: generate new session id and keep old session
-       session_regenerate_id(false);
+        session_regenerate_id(false);
 
         // see? we create new session with new identifier, but old session is still alive!
         // in this session we don't need new id and destroy time

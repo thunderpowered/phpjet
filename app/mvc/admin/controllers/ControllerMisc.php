@@ -53,27 +53,6 @@ class ControllerMisc extends Controller
     /**
      * @return string
      */
-    public function actionGetLogotype(): string
-    {
-        // todo move to model
-        $logotype = CloudStore::$app->system->settings->getContext($this->contextKeyLogotype);
-        if ($logotype) {
-            $logotype = CloudStore::$app->tool->utils->getImageLink($logotype);
-            CloudStore::$app->tool->JSONOutput->setStatusTrue();
-            CloudStore::$app->tool->JSONOutput->setData([
-                'logotype' => $logotype
-            ]);
-        } else {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Logotype not found');
-        }
-
-        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-    }
-
-    /**
-     * @return string
-     */
     public function actionGetWallpaper(): string
     {
         $wallpaper = $this->modelAdmin->getAdminWallpaper();

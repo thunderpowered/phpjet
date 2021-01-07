@@ -76,4 +76,21 @@ class Formatter
     {
         return (bool)filter_var($email, FILTER_VALIDATE_EMAIL);
     }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    public function arrayToListString(array $array): string
+    {
+        $result = "";
+        foreach ($array as $key => $item) {
+            $result .= "$key: ";
+            if (is_array($item)) {
+                $item = $this->arrayToListString($item);
+            }
+            $result .= $item . "\r\n";
+        }
+        return $result;
+    }
 }

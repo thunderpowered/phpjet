@@ -51,5 +51,9 @@ class Tracker_Authority extends ActiveRecord
     /**
      * @var string
      */
+    public $post;
+    /**
+     * @var string
+     */
     protected $_primaryKey = 'id';
 }

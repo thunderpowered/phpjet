@@ -38,20 +38,20 @@ export class Auth extends Component {
                         '2F': this.secondFactor.bind(this),
                         'S': this.successfulAuthorization.bind(this)
                     }}>
-                        <input min={'8'} max={'60'} autoComplete={'email'}
+                        <input required={true} minLength={'8'} maxLength={'60'} autoComplete={'email'}
                                className={'theme__border theme__border-color'}
                                type={'email'} name={'email'}
                                placeholder={'Your Email...'}/>
-                        <input min={'8'} max={'60'} autoComplete={'current-password'}
+                        <input required={true} minLength={'8'} maxLength={'60'} autoComplete={'current-password'}
                                className={'theme__border theme__border-color'} type={'password'} name={'password'}
-                               placeholder={'Your Password'}/>
+                               placeholder={'Your Password...'}/>
                         <input className={'theme__background-color theme__background-color--hover theme__border--none'}
                                type={'submit'} name={'submit'} value={'Login'}/>
                     </BasicForm>
                     }
                     {this.state.step === 2 &&
                     <BasicForm action={this.authActionStep2} actions={{'S': this.successfulAuthorization.bind(this)}}>
-                        <input min={'8'} max={'60'} autoComplete={'off'}
+                        <input required={true} minLength={'6'} maxLength={'6'} autoComplete={'off'}
                                className={'theme__border theme__border-color'}
                                type={'password'} name={'verification'}
                                placeholder={'Enter verification code here...'}/>

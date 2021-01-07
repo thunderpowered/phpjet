@@ -117,6 +117,7 @@ export class WindowAdminActions extends Component {
                         <th>IP</th>
                         <th>User Agent</th>
                         <th>Date and Time</th>
+                        <th>POST Data</th>
                     </tr>
                     </thead>
                     <tbody>

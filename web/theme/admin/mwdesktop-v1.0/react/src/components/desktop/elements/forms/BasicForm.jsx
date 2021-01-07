@@ -11,27 +11,38 @@ export class BasicForm extends Component {
 
     onSubmit(event) {
         event.preventDefault();
-        this.blockForm();
 
         if (!Object.keys(this.input).length) {
             return false;
         }
 
+        let formValid = this.validateForm();
+        if (!formValid) {
+            return false;
+        }
+
+        this.blockForm();
         return fetch2(this.action, {
             queryParams: this.input
         }, {
             onSuccess: (result) => {
                 this.unblockForm();
-
                 if (typeof result.status === 'undefined' || !result.status) {
                     return this.showErrors();
                 }
-
                 if (typeof result.action !== 'undefined' && typeof this.props.actions !== 'undefined' && typeof this.props.actions[result.action] !== 'undefined') {
                     this.props.actions[result.action](result.data);
                 }
+            },
+            onError: (error) => {
+                this.unblockForm();
             }
         });
+    }
+
+    validateForm() {
+        // todo
+        return true;
     }
 
     blockForm() {
@@ -50,7 +61,6 @@ export class BasicForm extends Component {
         if (typeof this.input[event.target.name] === 'undefined') {
             this.input[event.target.name] = '';
         }
-
         this.input[event.target.name] = event.target.value;
     }
 

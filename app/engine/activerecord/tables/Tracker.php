@@ -47,11 +47,11 @@ class Tracker extends ActiveRecord
     /**
      * @var string
      */
-    public $post;
+    public $datetime;
     /**
      * @var string
      */
-    public $datetime;
+    public $post;
     /**
      * @var string
      */

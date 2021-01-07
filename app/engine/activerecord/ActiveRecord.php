@@ -59,7 +59,7 @@ abstract class ActiveRecord
      * @param bool $removeSpecialChars
      * @return static|void
      */
-    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true)
+    public static function getOne(array $conditions = array(), array $orderBy = array(), array $limit = array(0, 1), bool $removeSpecialChars = true)
     {
         /**
          * Call hooks
@@ -92,9 +92,10 @@ abstract class ActiveRecord
      * @param array $conditions
      * @param array $orderBy
      * @param array $limit
+     * @param bool $removeSpecialChars
      * @return static[]
      */
-    public static function get(array $conditions = array(), array $orderBy = array(), array $limit = array()): array
+    public static function get(array $conditions = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true): array
     {
         /**
          * Do the same for for many rows
@@ -103,7 +104,7 @@ abstract class ActiveRecord
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
         try {
-            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit);
+            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
         } catch (\Exception $e) {
             self::exceptionHandler($e);
         }

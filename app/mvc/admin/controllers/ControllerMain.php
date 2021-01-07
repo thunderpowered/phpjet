@@ -12,6 +12,12 @@ use CloudStore\App\MVC\Admin\Models\ModelAdmin;
 class ControllerMain extends Controller
 {
     /**
+     * @var array
+     */
+    protected $methods = [
+        'GET'
+    ];
+    /**
      * @var ModelAdmin
      */
     private $modelAdmin;

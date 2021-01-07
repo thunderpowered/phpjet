@@ -35,7 +35,6 @@ class Tracker
         $tracker->type = $type;
         $tracker->details = $explanation;
 
-        // i'm still not sure should i store post-data, we'll see
         $post = CloudStore::$app->system->request->getPOST();
         if ($post) {
             $tracker->post = json_encode($post);
@@ -61,6 +60,11 @@ class Tracker
         $tracker->details = $details;
         $tracker->ip = CloudStore::$app->system->request->getUserIP();
         $tracker->user_agent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
+
+        $post = CloudStore::$app->system->request->getPOST();
+        if ($post) {
+            $tracker->post = json_encode($post);
+        }
         return $tracker->save();
     }
 

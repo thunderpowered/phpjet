@@ -336,7 +336,24 @@ class Utils
             $dataToClear = trim($dataToClear);
         }
 
-        return htmlspecialchars($dataToClear);
+        return htmlentities($dataToClear, ENT_COMPAT | ENT_HTML401);
+    }
+
+    /**
+     * @param $dataToRevert
+     * @return array|string
+     */
+    public function revertRemoveSpecialCart($dataToRevert)
+    {
+        if (is_array($dataToRevert)) {
+            foreach ($dataToRevert as $key => $value) {
+                $dataToRevert[$key] = $this->revertRemoveSpecialCart($value);
+            }
+
+            return $dataToRevert;
+        }
+
+        return html_entity_decode($dataToRevert);
     }
 
     /**
@@ -366,6 +383,7 @@ class Utils
 
     /**
      * TODO: deprecated
+     * @deprecated
      */
     static function getSorting()
     {
@@ -418,6 +436,7 @@ class Utils
 
     /**
      * @return bool
+     * @deprecated
      */
     public static function updateCount()
     {
@@ -427,6 +446,7 @@ class Utils
     /**
      * @param $url
      * @param int $code
+     * @deprecated
      */
     public static function away($url, $code = 301)
     {
@@ -437,6 +457,7 @@ class Utils
     /**
      * @param $controller
      * @param $action
+     * @deprecated
      */
     public static function strongRedirect($controller, $action)
     {
@@ -451,6 +472,7 @@ class Utils
     /**
      * @param $url
      * @param int $code
+     * @deprecated
      */
     public static function redirect($url, $code = 301)
     {
@@ -463,7 +485,7 @@ class Utils
     }
 
     /**
-     *
+     * @deprecated
      */
     public static function homeRedirect()
     {
@@ -476,6 +498,7 @@ class Utils
      * @param $action
      * @param int $code
      * todo: i think it should be moved to Router
+     * @deprecated
      */
     public static function regularRedirect($controller, $action, $code = 301)
     {
@@ -484,7 +507,7 @@ class Utils
     }
 
     /**
-     *
+     * @deprecated
      */
     public static function refresh()
     {

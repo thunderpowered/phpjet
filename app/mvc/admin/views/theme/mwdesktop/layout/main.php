@@ -1,8 +1,11 @@
 <?php
 /**
- * @var \CloudStore\App\Engine\Core\View $this
+ * @var View $this
+ * @var WidgetMisc $this->widget->widgetMisc
  */
-?>
+
+use CloudStore\App\Engine\Core\View;
+use CloudStore\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>
 <html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
@@ -46,8 +49,12 @@
     <!-- DATATABLES -->
     <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
 
-    <script>
+    <script type="text/javascript" class="globalVariables">
         const globalSystemHost = "<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>";
+        const globalDesktopMisc = JSON.parse('<?php echo json_encode([
+            'logotype' => $this->widget->widgetMisc->getLogotype(),
+            'engineVersion' => \CloudStore\CloudStore::$app->system->getEngineVersion()
+        ])?>');
     </script>
 
     <!-- FONT AWESOME -->
@@ -77,7 +84,6 @@
 
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('react/desktop.js'); ?>
-
 
 
 <!-- JQUERY PLUGIN ACTIVATION -->

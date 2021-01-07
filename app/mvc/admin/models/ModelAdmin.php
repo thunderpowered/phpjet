@@ -342,16 +342,23 @@ class ModelAdmin extends Model
     }
 
     /**
+     * @param int $limit
      * @return array
      */
-    public function getAdminActions(): array
+    public function getAdminActions(int $limit = 1000): array
     {
-        $actions =  Tracker_Authority::get([], ['id' => 'DESC']);
+        $actions =  Tracker_Authority::get([], ['id' => 'DESC'], [0, $limit]);
         foreach ($actions as $key => $action) {
-
             $actions[$key]->status = $action->status ? 'Success' : 'Fail';
             $actions[$key]->authority_id = $action->authority_id ? $action->authority_id : 'Not authorized';
             $actions[$key]->datetime = date("d.m.Y H:i:s", strtotime($action->datetime));
+            if ($action->post) {
+                // since Store automatically removes special chars from data
+                $action->post = CloudStore::$app->tool->utils->revertRemoveSpecialCart($action->post);
+                $action->post = json_decode($action->post, true);
+                $action->post = CloudStore::$app->tool->formatter->arrayToListString($action->post);
+                $action->post = CloudStore::$app->tool->utils->removeSpecialChars($action->post);
+            }
         }
         return $actions;
     }

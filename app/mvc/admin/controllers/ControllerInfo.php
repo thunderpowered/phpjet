@@ -5,7 +5,6 @@ namespace CloudStore\App\MVC\Admin\Controllers;
 
 
 use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\Engine\Core\Model;
 use CloudStore\App\MVC\Admin\Models\ModelAdmin;
 use CloudStore\CloudStore;
 
@@ -40,20 +39,5 @@ class ControllerInfo extends Controller
             // force application to send output and stop
             CloudStore::$app->router->immediateResponse($output);
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function actionEngineVersion(): string
-    {
-        $engineVersion = CloudStore::$app->system->getEngineVersion();
-        $engineVersion = 'Engine Version: ' . $engineVersion;
-        CloudStore::$app->tool->JSONOutput->setStatusTrue();
-        CloudStore::$app->tool->JSONOutput->setData([
-            'engineVersion' => $engineVersion
-        ]);
-
-        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }
 }
