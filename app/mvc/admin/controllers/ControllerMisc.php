@@ -30,10 +30,24 @@ class ControllerMisc extends Controller
      */
     private $contextKeyLogotype = 'logotype';
 
+    /**
+     * ControllerMisc constructor.
+     * @param string $name
+     */
     public function __construct(string $name = "")
     {
         parent::__construct($name, false);
         $this->modelAdmin = new ModelAdmin();
+
+        if (!$this->modelAdmin->isAdminAuthorized()) {
+            CloudStore::$app->tool->JSONOutput->setStatusFalse();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+            $output = CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+
+            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
+            // force application to send output and stop
+            CloudStore::$app->router->immediateResponse($output);
+        }
     }
 
     /**
@@ -62,13 +76,6 @@ class ControllerMisc extends Controller
      */
     public function actionGetWallpaper(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $wallpaper = $this->modelAdmin->getAdminWallpaper();
         if ($wallpaper) {
             CloudStore::$app->tool->JSONOutput->setStatusTrue();
@@ -87,12 +94,6 @@ class ControllerMisc extends Controller
      */
     public function actionGetTime(): string
     {
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         CloudStore::$app->tool->JSONOutput->setData([
             'serverTimeUTC' => time(),
@@ -107,15 +108,6 @@ class ControllerMisc extends Controller
      */
     public function actionSetWallpaper(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-
-            $this->modelAdmin->recordActions('Theme', false, 'attempt to change wallpapers failed - not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $file = CloudStore::$app->system->request->getFile('file');
         if (!$file) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
@@ -150,15 +142,6 @@ class ControllerMisc extends Controller
      */
     public function actionSetMode(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-
-            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to change mode failed - not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $mode = CloudStore::$app->system->request->getPOST('panelMode');
         if (!$mode) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
@@ -193,13 +176,6 @@ class ControllerMisc extends Controller
      */
     public function actionGetMode(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $mode = $this->modelAdmin->getPanelState();
         if (!$mode) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
@@ -218,15 +194,6 @@ class ControllerMisc extends Controller
      */
     public function actionSetDefaultWindow(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-
-            $this->modelAdmin->recordActions('Panel Mode', false, 'attempt to set default window failed - not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $defaultWindow = CloudStore::$app->system->request->getPOST('defaultWindow');
         if (!is_int($defaultWindow)) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
@@ -261,13 +228,6 @@ class ControllerMisc extends Controller
      */
     public function actionGetDefaultWindow(): string
     {
-        // Should check every action that require admin to be authorized
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $defaultWindow = $this->modelAdmin->getDefaultWindow();
         if ($defaultWindow < 0) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();

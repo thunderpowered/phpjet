@@ -421,9 +421,10 @@ class ModelAdmin extends Model
         // pretty basic, but i'll extend it later
         $userAgent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
         $remoteAddr = CloudStore::$app->system->request->getSERVER('REMOTE_ADDR');
-        $adminID = CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
+        $originatedIP = CloudStore::$app->system->request->getSERVER('HTTP_X_FORWARDED_FOR');
+        $adminID = $this->getAdminID();
 
-        $fingerprint = $userAgent . $remoteAddr . $adminID;
+        $fingerprint = $userAgent . $remoteAddr . $originatedIP . $adminID;
         return CloudStore::$app->system->token->hashString($fingerprint);
     }
 

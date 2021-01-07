@@ -143,6 +143,16 @@ class Router
 
         return $this->errorPage404();
     }
+
+    /**
+     * @param string $content
+     */
+    public function immediateResponse(string $content = '')
+    {
+        CloudStore::$app->system->buffer->destroyBuffer();
+        echo $content;
+        CloudStore::$app->exit();
+    }
     /**
      * @return string
      */

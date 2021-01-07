@@ -27,6 +27,16 @@ class ControllerStatistics extends Controller
     {
         parent::__construct($name, false);
         $this->modelAdmin = new ModelAdmin();
+
+        if (!$this->modelAdmin->isAdminAuthorized()) {
+            CloudStore::$app->tool->JSONOutput->setStatusFalse();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+            $output = CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+
+            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
+            // force application to send output and stop
+            CloudStore::$app->router->immediateResponse($output);
+        }
     }
 
     /**
@@ -34,12 +44,6 @@ class ControllerStatistics extends Controller
      */
     public function actionGetAdminActions(): string
     {
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
         $adminActions = $this->modelAdmin->getAdminActions();
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         CloudStore::$app->tool->JSONOutput->setData([

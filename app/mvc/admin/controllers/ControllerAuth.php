@@ -78,9 +78,9 @@ class ControllerAuth extends Controller
         $json = CloudStore::$app->system->request->getJSON();
         if (!$json || empty($json[$this->jsonEmailField]) || empty($json[$this->jsonPasswordField])) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data provided.');
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('No data');
 
-            $this->modelAdmin->recordActions('Auth', false, 'attempt failed - empty data.');
+            $this->modelAdmin->recordActions('Auth', false, 'attempt failed - no data.');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 

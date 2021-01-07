@@ -228,7 +228,7 @@ abstract class ActiveRecord
     /**
      * @param \Exception $e
      */
-    private static function exceptionHandler(\Exception $e)
+    protected static function exceptionHandler(\Exception $e)
     {
         CloudStore::$app->error->exceptionCatcher($e);
     }

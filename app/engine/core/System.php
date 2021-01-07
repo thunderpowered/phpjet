@@ -73,8 +73,8 @@ class System
     {
         $this->buffer = new Buffer();
         $this->mail = new Mail();
-        $this->token = new Token();
         $this->request = new Request();
+        $this->token = new Token();
         $this->settings = new Settings();
         $this->tracker = new Tracker();
 

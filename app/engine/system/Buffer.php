@@ -63,16 +63,11 @@ class Buffer
     }
 
     /**
-     * @param bool $return
-     * @return string
+     * @return bool
      */
-    public function destroyBuffer(bool $return = false): string
+    public function destroyBuffer(): bool
     {
-        $output = '';
-        if (ob_get_length()) {
-            $output = ob_end_clean();
-        }
-        return $output;
+        return @ob_end_clean();
     }
 
     public function createCompressedBuffer()

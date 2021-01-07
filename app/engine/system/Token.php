@@ -3,12 +3,18 @@
 
 namespace CloudStore\App\Engine\System;
 
+use CloudStore\CloudStore;
+
 /**
  * Class Token
  * @package CloudStore\App\Engine\System
  */
 class Token
 {
+    /**
+     * @var string
+     */
+    private $sessionCSRFTokenKey = '__csrf_token';
     /**
      * @var string
      */
@@ -22,7 +28,7 @@ class Token
      */
     public function __construct()
     {
-        $this->csrfToken = $_SESSION['token'] ?? null;
+        $this->csrfToken = $_SESSION[$this->sessionCSRFTokenKey] ?? null;
     }
 
     /**
@@ -31,7 +37,8 @@ class Token
     public function generateToken(): string
     {
         if (!$this->csrfToken) {
-            $_SESSION['token'] = $this->csrfToken = $this->generateHash();
+            $this->csrfToken = $this->generateHash();
+            CloudStore::$app->system->request->setSESSION($this->sessionCSRFTokenKey, $this->csrfToken);
         }
 
         return $this->csrfToken;

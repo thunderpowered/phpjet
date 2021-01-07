@@ -61,7 +61,6 @@ class App
      */
     public function __construct()
     {
-        session_start();
         // Set main loader
         spl_autoload_register(array($this, "classLoader"));
         // Set config loader, because configs may be located in different directories

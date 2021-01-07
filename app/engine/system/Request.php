@@ -62,6 +62,22 @@ class Request
      * @var string
      */
     private $method;
+    /**
+     * @var string
+     */
+    private $sessionIDPrefix = 'mw-';
+    /**
+     * @var int
+     */
+    private $sessionAnnihilatedLifeSpan = 60;
+    /**
+     * @var int
+     */
+    private $sessionCurrentLifeSpan = 300; // 5 min
+    /**
+     * @var string
+     */
+    private $sessionLog = ENGINE . 'session_access.log';
 
     // There are some problems with clearing post that contains json string
     // Another temporary solution
@@ -85,8 +101,14 @@ class Request
         $this->files = $_FILES;
         unset($_FILES);
 
+        $this->sessionStart();
         // well session and cookie technically available even without this class, but it'd be good to still use it
         $this->session = $_SESSION;
+        // don't forget to make sure that this session is active
+        $this->checkSessionActive();
+        // session has a lifespan, check if it is still alive
+        $this->checkSessionAlive();
+
         $this->cookie = $_COOKIE;
 
         // Proceed JSON, if JSON exists -> replace POST with it
@@ -237,8 +259,6 @@ class Request
      */
     public function setSESSION(string $name, $value)
     {
-        // temp
-        // i wanted to set just property and set actual session on destruction
         $_SESSION[$name] = $this->session[$name] = $value;
     }
 
@@ -315,5 +335,132 @@ class Request
         }
         $this->CSRFAlreadyChecked = true;
         return true;
+    }
+
+    private function sessionRegenerateId()
+    {
+        // the main idea is to generate new session key every time changes happen
+        // even if the session were hijacked, it will be expired very soon, so doing this way we reduce chance of users's (or admin's) account penetration
+        // again, it's not 100% way to do secure accounts, but it makes hijacking harder
+        // and yes, i almost copied code from php.net ;)
+
+        // step 0. make sure that session is active
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        // step 1: create new session id
+        $newSessionID = session_create_id($this->sessionIDPrefix);
+
+        // outdated session, we don't need it
+        $this->unsetSESSION('session_created');
+
+        // step 2: push time of regenerating into current session
+        $this->setSESSION('session_annihilated', time());
+
+        // step 3: save new session id into old session
+        $this->setSESSION('new_session_id', $newSessionID);
+
+        // step 4: generate new session id and keep old session
+       session_regenerate_id(false);
+
+        // see? we create new session with new identifier, but old session is still alive!
+        // in this session we don't need new id and destroy time
+        $this->unsetSESSION('session_annihilated');
+        $this->unsetSESSION('new_session_id');
+
+        // and create time of creating to check it later
+        $this->setSESSION('session_created', time());
+    }
+
+    // i made it to have an ability to call this from different places
+    private function setSessionINI()
+    {
+        ini_set('session.use_strict_mode', 1);
+        ini_set('session.use_only_cookies', 1);
+        // todo enable on production
+//        ini_set('session.cookie_secure', 1);
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.cookie_samesite', 'Strict');
+    }
+
+    private function sessionStart()
+    {
+        $this->setSessionINI();
+        session_start();
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkSessionAlive(): bool
+    {
+        $sessionCreatedTime = $this->getSESSION('session_created');
+        if (!$sessionCreatedTime || $sessionCreatedTime < time() - $this->sessionCurrentLifeSpan) {
+            // session is outdated
+            $this->sessionRegenerateId();
+            return false;
+        }
+
+        // everything is fine
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkSessionActive(): bool
+    {
+        $sessionAnnihilated = $this->getSESSION('session_annihilated');
+        if (!$sessionAnnihilated) {
+            // everything is fine, nothing to check
+            return true;
+        }
+
+        // if we are here - something definitely went wrong
+        // unstable internet connection may cause this - we changed session_id, but user never got a cookie with this id
+        // but we gave it some time, let's just check it
+        if ($sessionAnnihilated < time() - $this->sessionAnnihilatedLifeSpan) {
+            // that's bad, that's means that someone tried to access outdated session
+            // let's record this and restart session
+            // again, it may be because of bad connection or something
+            $sessionID = session_id();
+            $date = date('d.m.Y H:i:s', time());
+            $userIP = $this->getUserIP();
+            $userAgent = $this->getSERVER('HTTP_USER_AGENT');
+            $method = $this->getSERVER('REQUEST_METHOD');
+            $details = "[Annihilated Session Access] [Session ID: $sessionID] [Date: $date] [IP: $userIP] [User Agent: $userAgent] [Method: $method]";
+            $this->recordSuspiciousAction($details);
+            session_destroy();
+            return session_start();
+        }
+
+        // if cookies are still alive, let's recreate identifier
+        $newSessionID = $this->getSESSION('new_session_id');
+        if (!$newSessionID) {
+            // seems like it is impossible scenario, but i still have to check it
+            // as they say, you never know
+            return false;
+        }
+
+        // close session and set new id
+        session_commit();
+        session_id($newSessionID);
+
+        // everything is fine, let it be
+        session_start();
+        return true;
+    }
+
+    /**
+     * @param string $details
+     */
+    private function recordSuspiciousAction(string $details)
+    {
+        $logFile = fopen($this->sessionLog, 'a+');
+        if ($logFile) {
+            fwrite($logFile, $details . "\r\n");
+            fclose($logFile);
+        }
     }
 }

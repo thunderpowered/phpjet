@@ -73,12 +73,12 @@ class Controller
         global $app;
         $this->app = $app;
 
-        $this->checkQueryMethod();
-        // @todo use cron
         if ($enableTracker) {
             CloudStore::$app->system->tracker->manageTable();
             CloudStore::$app->system->tracker->trackEverythingYouFind();
         }
+
+        $this->checkQueryMethod();
     }
 
     /**

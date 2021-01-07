@@ -31,7 +31,7 @@ class Tracker_Authority extends ActiveRecord
     /**
      * @var string
      */
-    public $explanation;
+    public $details;
     /**
      * @var string
      */
