@@ -59,6 +59,32 @@ export class Workspace extends Component {
         this.setState(() => ({showStartMenu: show}))
     }
 
+    // this is temporary function, i'll find better solution later
+    tempLoadChildWindow(index = []) {
+        let window = this.state.windowConfig[index[0]];
+        for (let i = 1; i < index.length; i++) {
+            window = window.children[index[i]];
+        }
+
+        if (typeof window === 'undefined') {
+            console.log('window is undefined');
+            return false;
+        }
+
+        window.parentIndex = index.length - 2;
+        index = this.state.windowConfig.length;
+        this.setState(() => (
+            {windowConfig: [...this.state.windowConfig, window]}
+            // proceed as usual
+        ), () => {
+            this.onClickMenu(index);
+            this.setState(() => (
+                // and delete it from config
+                {windowConfig: this.state.windowConfig.filter((window, _index) => index !== _index)}
+            ))
+        });
+    }
+
     // If menu item is chosen -> create new window
     onClickMenu(index) {
         // if index doesn't exist
@@ -75,7 +101,7 @@ export class Workspace extends Component {
         // Prepare component, Window component is wrapper that should wrap each Window
         let newIndex = this.state.windowComponents.length;
         let windowComponent = {
-            active: true,
+            visible: true,
             index: newIndex,
             zIndex: newIndex,
             configIndex: index,
@@ -83,7 +109,9 @@ export class Workspace extends Component {
             onDestroy: this.destroyWindow.bind(this),
             title: this.state.windowConfig[index]['label'],
             component: this.state.windowConfig[index].component,
-            children: this.state.windowConfig[index].children
+            children: this.state.windowConfig[index].children,
+            // if not exists - will be undefined, so we have to check it
+            parent: this.state.windowConfig[index].parentIndex
         };
 
         this.setState(() => (
@@ -118,6 +146,7 @@ export class Workspace extends Component {
                 // because React doesn't render the components entirely, it just swap em or something
                 // for instance, if we have two components: 0 and 1, if i delete 0, 1 gets state of 0
                 // so to prevent this -> don't delete component from array, just set it to undefined. it won't render and won't mess with states
+                // todo just delete it and use React.cloneElement
                 windowComponents: this.state.windowComponents.map((item, _index) => index === _index ? {} : item),
                 // windowComponents: this.state.windowComponents.filter((item, _index) => index !== _index),
                 windowOrder: this.state.windowOrder.filter((item) => item !== configIndex)
@@ -127,7 +156,7 @@ export class Workspace extends Component {
 
     onMinifyWindow(index) {
         let newWindowComponents = this.state.windowComponents.map((item, _index) => {
-            return Object.keys(item).length && _index === index ? {...item, active: !item.active} : item;
+            return Object.keys(item).length && _index === index ? {...item, visible: !item.visible} : item;
         });
         this.setState(() => ({windowComponents: newWindowComponents}));
     }
@@ -210,16 +239,19 @@ export class Workspace extends Component {
             }
 
             <Windows windowOrder={this.windowOrder}
-                     onMount={this.loadMenu.bind(this)}>
+                     onMount={this.loadMenu.bind(this)}
+                     onLoadChildWindow={this.tempLoadChildWindow.bind(this)}>
                 {/* render all active windows */}
                 {this.state.windowComponents.map((item, index) => {
+                    // todo delete from array and use React.cloneElement
                     if (!Object.keys(item).length) return;
-                    return <Window active={item.active}
+                    return <Window visible={item.visible}
                                    index={index}
                                    zIndex={item.zIndex}
                                    title={item.title}
                                    configIndex={item.configIndex}
                                    children={item.children}
+                                   parent={item.parent}
                                    onSortWindows={item.onSortWindows}
                                    onDestroy={item.onDestroy}
                                    onMinifyWindow={this.onMinifyWindow.bind(this)}>
@@ -250,16 +282,16 @@ export class Workspace extends Component {
                 <div onMouseDown={(e) => e.stopPropagation()}>
                     {/* It is possible to add more modes in the future */}
                     {this.state.panelMode !== 'classic' &&
-                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
-                             onClick={() => this.setPanelMode('classic')}>
-                            Switch to Classic Mode
-                        </div>
+                    <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
+                         onClick={() => this.setPanelMode('classic')}>
+                        Switch to Classic Mode
+                    </div>
                     }
                     {this.state.panelMode !== 'window' &&
-                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
-                             onClick={() => this.setPanelMode('window')}>
-                            Switch to Window Mode
-                        </div>
+                    <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'}
+                         onClick={() => this.setPanelMode('window')}>
+                        Switch to Window Mode
+                    </div>
                     }
                 </div>
             </SimpleDropMenu>

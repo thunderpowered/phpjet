@@ -27,6 +27,10 @@ export class WindowAllPages extends Component {
         });
     }
 
+    openPageBuilder(id) {
+        this.props.openChildWindow(0);
+    }
+
     render() {
         return <div id={'WindowAllPages'} ref={this.parentDivRef}>
             <table id={this.tableID} className={'w-100'}>
@@ -36,6 +40,7 @@ export class WindowAllPages extends Component {
                     <th>URL</th>
                     <th>Commentary</th>
                     <th>Created</th>
+                    <th />
                 </tr>
                 </thead>
                 <tbody>
@@ -45,6 +50,7 @@ export class WindowAllPages extends Component {
                         <td>{item.url}</td>
                         <td>{item.comment}</td>
                         <td>{item.since}</td>
+                        <td><div className={'p-2 text-center user-select-none theme__background-color--hover theme__background-color2 theme__cursor-pointer'} onClick={() => this.openPageBuilder(item.id)}>Open PageBuilder</div></td>
                     </tr>
                 ))}
                 </tbody>
@@ -54,6 +60,7 @@ export class WindowAllPages extends Component {
                     <th>URL</th>
                     <th>Commentary</th>
                     <th>Created</th>
+                    <th />
                 </tr>
                 </tfoot>
             </table>

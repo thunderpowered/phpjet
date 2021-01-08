@@ -58,11 +58,11 @@ export function setDataTableResponsive(dataTable, parentDivRef, parentDivObject)
         height: parentDivRef.current.offsetHeight
     };
 
-    // ok, i can't handle it
-    // dataTables does not react on resizing of parent div, it only reacts when window (i mean browser window) changes
-    // so i have to force redrawing somehow
-    // probably this is the ugliest way to do it, but damn it works
-    document.addEventListener('mousemove', () => {
+    const callback = () => {
+        if (typeof parentDivRef.current === 'undefined' || !parentDivRef.current) {
+            return document.removeEventListener('mousemove', callback);
+        }
+
         if (parentDivObject.parentDivDimensions.width !== parentDivRef.current.offsetWidth || parentDivObject.parentDivDimensions.height !== parentDivRef.current.offsetHeight) {
             dataTable.responsive.recalc();
 
@@ -71,5 +71,11 @@ export function setDataTableResponsive(dataTable, parentDivRef, parentDivObject)
                 height: parentDivRef.current.offsetHeight
             };
         }
-    });
+    };
+
+    // ok, i can't handle it
+    // dataTables does not react on resizing of parent div, it only reacts when window (i mean browser window) changes
+    // so i have to force redrawing somehow
+    // probably this is the ugliest way to do it, but damn it works
+    document.addEventListener('mousemove', callback);
 }

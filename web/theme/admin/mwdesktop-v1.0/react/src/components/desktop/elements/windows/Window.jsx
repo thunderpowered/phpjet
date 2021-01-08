@@ -14,13 +14,43 @@ export class Window extends Component {
 
         this.prevCoordinates = {top: 0, left: 0};
         this.state = {
+            // draggable
             coordinates: {},
             dimensions: {'width': document.body.offsetWidth / 2, 'height': document.body.offsetHeight / 1.2},
             expanded: true,
             expandClass: 'Desktop__Elements__Windows--Window--expand-right',
-            // if content is not loaded -> just show the spinner
-            // moreover each window should decide whether it loaded or not (just call this.props.onLoad() function)
-            loaded: false
+            // 'loaded' represents whether or not window is visible
+            // i call it loaded because it depends on children component
+            // when it loaded it should call this.props.onLoaded() to tell Window that it actually done loading
+            // actually the only purpose of this -> to show the loading spinner when it's not loaded
+            loaded: false,
+            // 'active' represents whether or not window it is in memory
+            // if window is inactive for some time -> we disable it
+            // some kind of optimization
+            // the default is of course 'true'
+            active: true,
+            // child key is an index of the child
+            // to force remounting of children we should change the key
+            // we actually don't need it when disabling window due to time, since it completely removed from DOM
+            // if if we have to refresh it, it could be useful
+            // but i use it in both cases, nothing wrong with it
+            childrenKey: 1
+        };
+
+        this.windowLifeSpan = 300000; // 5 min
+
+        // callbacks
+        this.resizeCallback = () => {
+        };
+        this.mouseMoveCallback = () => {
+        };
+        this.mouseUpCallback = () => {
+        };
+        this.removeMouseupCallback = () => {
+        };
+        this.mouseDownCallbackDocument = () => {
+        };
+        this.mouseDownCallbackHeader = () => {
         };
     }
 
@@ -36,33 +66,69 @@ export class Window extends Component {
         };
 
         // add resizing
-        let resizeCallback = (event) => this.resize(event, this.direction);
+        this.resizeCallback = (event) => this.resize(event, this.direction);
         [this.resizeLeft, this.resizeRight, this.resizeBottom].forEach((ref) => {
             ref.current.addEventListener('mousedown', () => {
-                document.addEventListener('mousemove', resizeCallback);
+                document.addEventListener('mousemove', this.resizeCallback);
             });
         });
 
         // make it draggable, very simple
-        let callback = this.dragWindow.bind(this);
-        let mouseUpCallback = (event) => {this.expandHalf(event);};
-        this.headerRef.current.addEventListener('mousedown', (event) => {
+        this.mouseMoveCallback = this.dragWindow.bind(this);
+        this.mouseUpCallback = (event) => {
+            this.expandHalf(event);
+        };
+        this.mouseDownCallbackHeader = (event) => {
             if (event.button !== 0) return;
-            document.addEventListener('mousemove', callback);
-            this.headerRef.current.addEventListener('mouseup', mouseUpCallback);
-        });
+            document.addEventListener('mousemove', this.mouseMoveCallback);
+            this.headerRef.current.addEventListener('mouseup', this.mouseUpCallback);
+        };
 
-        document.addEventListener('mousedown', (event) => {
+        this.headerRef.current.addEventListener('mousedown', this.mouseDownCallbackHeader);
+
+        this.mouseDownCallbackDocument = (event) => {
             this.mouseCoordinates = {top: event.clientY, left: event.clientX};
-        });
+        };
+        document.addEventListener('mousedown', this.mouseDownCallbackDocument);
 
         // remove all callbacks
-        document.addEventListener('mouseup', (event) => {
-            document.removeEventListener('mousemove', callback);
-            document.removeEventListener('mousemove', resizeCallback);
-            this.headerRef.current.removeEventListener('mouseup', mouseUpCallback);
-        });
+        this.removeMouseupCallback = () => {
+            document.removeEventListener('mousemove', this.mouseMoveCallback);
+            document.removeEventListener('mousemove', this.resizeCallback);
+            this.headerRef.current.removeEventListener('mouseup', this.mouseUpCallback);
+        };
+        document.addEventListener('mouseup', this.removeMouseupCallback);
+    }
 
+    componentDidUpdate(prevProps) {
+        if (!this.state.loaded && prevProps.visible !== this.props.visible && this.props.visible) {
+            this.refreshWindow();
+        }
+        if (!this.props.visible) {
+            // if window was hidden -> start counter to its death
+            this.windowCreated = (new Date()).getTime();
+            this.windowAliveInterval = setInterval(() => {
+                this.shouldThisWindowBeDisabled()
+            }, 10000); // check every ten seconds
+        } else {
+            clearInterval(this.windowAliveInterval);
+        }
+    }
+
+    componentWillUnmount() {
+        this.headerRef.current.removeEventListener('mouseup', this.mouseUpCallback);
+        this.headerRef.current.removeEventListener('mousedown', this.mouseDownCallbackHeader);
+        document.removeEventListener('mousedown', this.mouseDownCallbackDocument);
+        document.removeEventListener('mouseup', this.removeMouseupCallback);
+        document.removeEventListener('mousemove', this.resizeCallback);
+    }
+
+    refreshWindow() {
+        this.setState(() => ({
+            childrenKey: ++this.state.childrenKey,
+            loaded: false,
+            active: true
+        }));
     }
 
     dragWindow(event) {
@@ -165,11 +231,21 @@ export class Window extends Component {
     }
 
     onLoaded(callBack) {
-        this.setState(() => ({loaded: true}), callBack);
+        this.setState(() => ({loaded: true, active: true}), callBack);
+    }
+
+    shouldThisWindowBeDisabled() {
+        let currentTime = (new Date()).getTime();
+        if (currentTime - this.windowCreated > this.windowLifeSpan && !this.props.visible && this.state.loaded) {
+            this.setState(() => ({loaded: false, active: false}));
+        }
     }
 
     render() {
-        let display = this.props.active ? 'block' : 'none';
+        // don't confuse it with state.active. It is not the same!
+        // it represents whether or not window minified, it can be active, but not visible
+        // it can be active and visible, but not loaded and so on
+        let display = this.props.visible ? 'block' : 'none';
         return <div ref={this.windowRef}
                     style={{
                         'display': display,
@@ -192,7 +268,8 @@ export class Window extends Component {
                     {this.props.title}
                 </div>
 
-                <div className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
+                <div
+                    className="p-0 Desktop__Elements__Windows--Window-controls d-flex justify-content-between flex-row">
 
                     {/* Window controls */}
                     <div onClick={() => {
@@ -214,17 +291,22 @@ export class Window extends Component {
                 </div>
             </div>
             <div className="p-2 Desktop__Elements__Windows--Window-content overflow-auto">
-                {/* If window content is not loaded, don't show it */}
-                <div className={`m-2 Desktop__Elements__Windows--Window-content-inner position-relative ${this.state.loaded ? 'd-block' : 'd-none'}`}>
+                {this.state.active &&
+                <div
+                    className={`m-2 Desktop__Elements__Windows--Window-content-inner position-relative ${this.state.loaded ? 'd-block' : 'd-none'}`}>
                     {React.Children.map(this.props.children, child => (
                         React.cloneElement(child, {
                             ...child.props,
-                            onLoaded: this.onLoaded.bind(this)
+                            onLoaded: this.onLoaded.bind(this),
+                            openChildWindow: this.props.openChildWindow,
+                            parent: this.props.parent,
+                            key: this.state.childrenKey
                         })
                     ))}
                 </div>
+                }
                 {!this.state.loaded &&
-                    <SimpleLoader />
+                <SimpleLoader/>
                 }
             </div>
 

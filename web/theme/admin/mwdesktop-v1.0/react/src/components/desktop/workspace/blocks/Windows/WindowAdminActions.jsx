@@ -9,6 +9,9 @@ export class WindowAdminActions extends Component {
         this.state = {rows: []};
         this.tableID = 'WindowAdminActionsTable';
         this.parentDivRef = React.createRef();
+    }
+
+    componentDidMount() {
         this.loadRows();
     }
 

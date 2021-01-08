@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Authenticator} from "../../classes/Authenticator";
 import {Workspace} from "./workspace/Workspace.";
 import {Auth} from "./workspace/Auth";
+import {SimpleLoader} from "./elements/loaders/SimpleLoader";
 
 export class Desktop extends Component {
     constructor(props) {
@@ -27,7 +28,7 @@ export class Desktop extends Component {
 
     render() {
         if (typeof this.state.authorized === 'undefined') {
-            return <div>Loading...</div>
+            return <SimpleLoader/>
         }
 
         if (this.state.authorized) {
