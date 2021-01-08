@@ -48,14 +48,12 @@ export class Windows extends Component {
         return <div
             className={'Desktop__Workspace__Blocks--Windows vh-100 position-absolute overflow-hidden theme__background-transparent'}
             id={'Windows'}>
-            {React.Children.map(this.props.children, child => {
-                // todo find workaround, all this ifs are ugly
-                if (!child) return;
-                return React.cloneElement(child, {
+            {this.props.children.map(child => (
+                React.cloneElement(child, {
                     ...child.props,
                     openChildWindow: (childIndex) => this.openChildWindow(childIndex, child.props.configIndex)
-                })
-            })}
+                }))
+            )}
         </div>
     }
 }

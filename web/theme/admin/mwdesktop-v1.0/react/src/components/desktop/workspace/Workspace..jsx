@@ -27,8 +27,6 @@ export class Workspace extends Component {
             windowConfig: [],
             // array with actual React components
             windowComponents: [],
-            // ordering is very important, since if we click on some window, it should pop up on top, and order of other windows should be the same
-            windowOrder: [],
             // represents id of last opened/clicked window (for startBar in classic mode)
             windowOnTop: -1,
             mousePosition: {top: 0, left: 0},
@@ -93,31 +91,31 @@ export class Workspace extends Component {
         }
 
         // if window already created
-        if (this.state.windowOrder.indexOf(index) > -1) {
-            // just push it on top
-            return this.onSortWindows(index);
+        let label = this.state.windowConfig[index].label;
+        if (this.state.windowComponents.find(window => (
+            window.props.title === label
+        ))) {
+            return false;
         }
 
         // Prepare component, Window component is wrapper that should wrap each Window
         let newIndex = this.state.windowComponents.length;
-        let windowComponent = {
-            visible: true,
-            index: newIndex,
-            zIndex: newIndex,
-            configIndex: index,
-            onSortWindows: this.onSortWindows.bind(this),
-            onDestroy: this.destroyWindow.bind(this),
-            title: this.state.windowConfig[index]['label'],
-            component: this.state.windowConfig[index].component,
-            children: this.state.windowConfig[index].children,
-            // if not exists - will be undefined, so we have to check it
-            parent: this.state.windowConfig[index].parentIndex
-        };
+        let windowComponent = <Window
+            // do not change key value! it should be set only once and should be unique
+            key={newIndex}
+            visible={true}
+            configIndex={index}
+            title={this.state.windowConfig[index]['label']}
+            children={this.state.windowConfig[index].component}
+            parent={this.state.windowConfig[index].parentIndex}
+            onSortWindows={this.onSortWindows.bind(this)}
+            onDestroy={this.destroyWindow.bind(this)}
+            onMinifyWindow={this.onMinifyWindow.bind(this)}
+        />;
 
         this.setState(() => (
             {
                 windowComponents: [...this.state.windowComponents, windowComponent],
-                windowOrder: [...this.state.windowOrder, index],
                 windowOnTop: index
             }
         ));
@@ -125,15 +123,15 @@ export class Workspace extends Component {
 
     // Each window has its own order, while we click on it, it should bubble to the top
     // So when we click, we should sort em
-    onSortWindows(configIndex) {
-        let newWindowOrder = [...this.state.windowOrder.filter((item) => item !== configIndex), configIndex];
-        let newWindowComponents = this.state.windowComponents.map((item) => {
-            return Object.keys(item).length ? {...item, zIndex: newWindowOrder.indexOf(item.configIndex)} : {};
-        });
+    onSortWindows(index) {
+        // take current component
+        let currentComponent = this.state.windowComponents[index];
+        // delete it from array and then again push it on top
+        let newWindowComponents = [...this.state.windowComponents.filter((component, _index) => index !== _index), currentComponent];
+
         this.setState(() => ({
-            windowOrder: newWindowOrder,
             windowComponents: newWindowComponents,
-            windowOnTop: configIndex
+            windowOnTop: currentComponent.props.configIndex
         }));
     }
 
@@ -142,21 +140,15 @@ export class Workspace extends Component {
         event.stopPropagation();
         if (typeof this.state.windowComponents[index] !== 'undefined') {
             this.setState(() => ({
-                // i know it looks like crutch, but i do really need it here
-                // because React doesn't render the components entirely, it just swap em or something
-                // for instance, if we have two components: 0 and 1, if i delete 0, 1 gets state of 0
-                // so to prevent this -> don't delete component from array, just set it to undefined. it won't render and won't mess with states
-                // todo just delete it and use React.cloneElement
-                windowComponents: this.state.windowComponents.map((item, _index) => index === _index ? {} : item),
-                // windowComponents: this.state.windowComponents.filter((item, _index) => index !== _index),
-                windowOrder: this.state.windowOrder.filter((item) => item !== configIndex)
+                windowComponents: this.state.windowComponents.filter((component, _index) => index !== _index)
             }));
         }
     }
 
     onMinifyWindow(index) {
-        let newWindowComponents = this.state.windowComponents.map((item, _index) => {
-            return Object.keys(item).length && _index === index ? {...item, visible: !item.visible} : item;
+        let newWindowComponents = this.state.windowComponents.map((component, _index) => {
+            // it sucks that each time i have to change something i have to clone this element
+            return index === _index ? React.cloneElement(component, {...component.props, visible: !component.props.visible}) : component;
         });
         this.setState(() => ({windowComponents: newWindowComponents}));
     }
@@ -192,7 +184,7 @@ export class Workspace extends Component {
             onSuccess: (result) => {
                 if (typeof result.data !== 'undefined' && typeof result.data.panelMode !== 'undefined') {
                     this.setState(() => ({panelMode: result.data.panelMode}), () => {
-                        if (!this.state.windowOrder.length) {
+                        if (!this.state.windowComponents.length) {
                             this.onClickMenu(this.state.defaultWindow);
                         }
                     });
@@ -207,7 +199,7 @@ export class Workspace extends Component {
             onSuccess: (result) => {
                 if (typeof result.data !== 'undefined' && typeof result.data.defaultWindow !== 'undefined') {
                     this.setState(() => ({defaultWindow: result.data.defaultWindow}), () => {
-                        if (!this.state.windowOrder.length) {
+                        if (!this.state.windowComponents.length) {
                             this.onClickMenu(this.state.defaultWindow);
                         }
                     });
@@ -238,26 +230,15 @@ export class Workspace extends Component {
             <Background/>
             }
 
-            <Windows windowOrder={this.windowOrder}
-                     onMount={this.loadMenu.bind(this)}
+            <Windows onMount={this.loadMenu.bind(this)}
                      onLoadChildWindow={this.tempLoadChildWindow.bind(this)}>
-                {/* render all active windows */}
-                {this.state.windowComponents.map((item, index) => {
-                    // todo delete from array and use React.cloneElement
-                    if (!Object.keys(item).length) return;
-                    return <Window visible={item.visible}
-                                   index={index}
-                                   zIndex={item.zIndex}
-                                   title={item.title}
-                                   configIndex={item.configIndex}
-                                   children={item.children}
-                                   parent={item.parent}
-                                   onSortWindows={item.onSortWindows}
-                                   onDestroy={item.onDestroy}
-                                   onMinifyWindow={this.onMinifyWindow.bind(this)}>
-                        {item.component}
-                    </Window>
-                })}
+                {/* here are windows */}
+                {this.state.windowComponents.map((child, _index) => (
+                    React.cloneElement(child, {
+                        ...child.props,
+                        index: _index
+                    })
+                ))}
             </Windows>
 
             <StartMenu panelMode={this.state.panelMode}

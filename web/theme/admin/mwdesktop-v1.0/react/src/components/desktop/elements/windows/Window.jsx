@@ -253,10 +253,10 @@ export class Window extends Component {
                         'left': `${this.state.coordinates.left}px`,
                         'width': `${this.state.dimensions.width}px`,
                         'height': `${this.state.dimensions.height}px`,
-                        'z-index': `${this.props.zIndex + 4}` // set it above others
+                        'z-index': `${this.props.index + 4}` // set it above others
                     }}
                     onMouseDown={() => {
-                        this.sortWindows(this.props.configIndex)
+                        this.sortWindows(this.props.index)
                     }}
                     className={'Desktop__Elements__Windows--Window overflow-auto position-fixed d-flex flex-column fixed-top h-80 theme__background-color3 theme__border theme__border-color display-' + display + (this.state.expanded ? ' Desktop__Elements__Windows--Window--expanded' : '') + ' ' + this.state.expandClass}>
             <div
