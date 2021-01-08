@@ -92,10 +92,12 @@ export class Workspace extends Component {
 
         // if window already created
         let label = this.state.windowConfig[index].label;
-        if (this.state.windowComponents.find(window => (
+        let indexExisting = this.state.windowComponents.findIndex(window => (
             window.props.title === label
-        ))) {
-            return false;
+        ));
+        if (indexExisting > -1) {
+            // just push it on top
+            return this.onSortWindows(indexExisting);
         }
 
         // Prepare component, Window component is wrapper that should wrap each Window

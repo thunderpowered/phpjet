@@ -12,8 +12,6 @@ export class TaskList extends Component {
             +component1.key - +component2.key
         ));
 
-        console.log(windows);
-
         return <div className={'p-0 pt-0 pb-0 d-flex flex-nowrap justify-content-start align-items-center'}
                     id={'TaskList'}>
             {windows.map(window => (
