@@ -269,7 +269,7 @@ html, body {
     z-index:3 !important;
 }
 
-#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window  .Desktop__Elements__Windows--Window-controls {
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window  .Desktop__Elements__Windows--Window-controls .classic-hidden {
     display: none !important;
 }
 

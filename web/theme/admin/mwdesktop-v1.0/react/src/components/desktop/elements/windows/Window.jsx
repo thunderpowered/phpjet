@@ -273,18 +273,24 @@ export class Window extends Component {
 
                     {/* Window controls */}
                     <div onClick={() => {
+                        this.refreshWindow()
+                    }} title="Refresh"
+                         className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft">
+                        <i className="fas fa-sync-alt"/>
+                    </div>
+                    <div onClick={() => {
                         this.props.onMinifyWindow(this.props.index)
                     }} title="Minify"
-                         className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft">
+                         className="p-2 flex-grow-1 controls-minify text-center theme__cursor-pointer theme__background-color--hover-soft classic-hidden">
                         <i className="fas fa-minus"/>
                     </div>
                     <div onClick={() => this.expand(true)} title="Expand"
-                         className="p-2 flex-grow-1 controls-fullscreen text-center theme__cursor-pointer theme__background-color--hover-soft">
+                         className="p-2 flex-grow-1 controls-fullscreen text-center theme__cursor-pointer theme__background-color--hover-soft classic-hidden">
                         <i className="far fa-window-maximize"/>
                     </div>
                     <div onClick={(e) => this.props.onDestroy(this.props.index, this.props.configIndex, e)}
                          title="Close"
-                         className="p-2 flex-grow-1 controls-close text-center theme__cursor-pointer theme__background-color--hover">
+                         className="p-2 flex-grow-1 controls-close text-center theme__cursor-pointer theme__background-color--hover classic-hidden">
                         <i className="fas fa-times"/>
                     </div>
 
