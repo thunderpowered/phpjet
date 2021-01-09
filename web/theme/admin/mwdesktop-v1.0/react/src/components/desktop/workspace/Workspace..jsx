@@ -58,7 +58,7 @@ export class Workspace extends Component {
     }
 
     // this is temporary function, i'll find better solution later
-    tempLoadChildWindow(index = []) {
+    tempLoadChildWindow(index = [], windowData = {}) {
         let window = this.state.windowConfig[index[0]];
         for (let i = 1; i < index.length; i++) {
             window = window.children[index[i]];
@@ -75,7 +75,7 @@ export class Workspace extends Component {
             {windowConfig: [...this.state.windowConfig, window]}
             // proceed as usual
         ), () => {
-            this.onClickMenu(index);
+            this.onClickMenu(index, windowData);
             this.setState(() => (
                 // and delete it from config
                 {windowConfig: this.state.windowConfig.filter((window, _index) => index !== _index)}
@@ -84,7 +84,7 @@ export class Workspace extends Component {
     }
 
     // If menu item is chosen -> create new window
-    onClickMenu(index) {
+    onClickMenu(index, windowData = {}) {
         // if index doesn't exist
         if (typeof this.state.windowConfig[index] === 'undefined') {
             return false;
@@ -110,6 +110,7 @@ export class Workspace extends Component {
             title={this.state.windowConfig[index]['label']}
             children={this.state.windowConfig[index].component}
             parent={this.state.windowConfig[index].parentIndex}
+            windowData={windowData}
             onSortWindows={this.onSortWindows.bind(this)}
             onDestroy={this.destroyWindow.bind(this)}
             onMinifyWindow={this.onMinifyWindow.bind(this)}

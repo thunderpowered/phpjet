@@ -4,6 +4,7 @@
 namespace CloudStore\App\MVC\Admin\Controllers;
 
 
+use CloudStore\App\Engine\ActiveRecord\Tables\Pages;
 use CloudStore\App\Engine\Core\Controller;
 use CloudStore\App\MVC\Admin\Models\ModelAdmin;
 use CloudStore\App\MVC\Admin\Models\ModelPages;
@@ -62,6 +63,32 @@ class ControllerPages extends Controller
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         CloudStore::$app->tool->JSONOutput->setData([
             'pages' => $pages
+        ]);
+        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+    }
+
+    /**
+     * @return string
+     */
+    public function actionLoadPage(): string
+    {
+        $pageID = CloudStore::$app->system->request->getJSON('page_id');
+        if (!$pageID) {
+            CloudStore::$app->tool->JSONOutput->setStatusFalse();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Field "page_id" cannot be empty');
+            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        }
+
+        $page = $this->modelPages->loadPage($pageID);
+        if (!$page) {
+            CloudStore::$app->tool->JSONOutput->setStatusFalse();
+            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Page not found');
+            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        }
+
+        CloudStore::$app->tool->JSONOutput->setStatusTrue();
+        CloudStore::$app->tool->JSONOutput->setData([
+            'page' => $page
         ]);
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }

@@ -27,8 +27,8 @@ export class WindowAllPages extends Component {
         });
     }
 
-    openPageBuilder(id) {
-        this.props.openChildWindow(0);
+    openPageBuilder(pageID) {
+        this.props.openChildWindow(0, {'pageID': +pageID});
     }
 
     render() {

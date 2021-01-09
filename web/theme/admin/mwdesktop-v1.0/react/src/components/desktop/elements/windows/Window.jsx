@@ -300,7 +300,8 @@ export class Window extends Component {
                             onLoaded: this.onLoaded.bind(this),
                             openChildWindow: this.props.openChildWindow,
                             parent: this.props.parent,
-                            key: this.state.childrenKey
+                            key: this.state.childrenKey,
+                            windowData: this.props.windowData
                         })
                     ))}
                 </div>

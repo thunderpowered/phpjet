@@ -6,6 +6,7 @@ namespace CloudStore\App\MVC\Admin\Models;
 
 use CloudStore\App\Engine\ActiveRecord\Tables\Pages;
 use CloudStore\App\Engine\Core\Model;
+use CloudStore\CloudStore;
 
 /**
  * Class ModelPages
@@ -19,9 +20,24 @@ class ModelPages extends Model
     public function loadPages(): array
     {
         $pages = Pages::get();
-
-        // some preparations
-
+        foreach ($pages as $key => $page) {
+            $page->since = CloudStore::$app->tool->formatter->formatDateString($page->since);
+        }
         return $pages;
+    }
+
+    /**
+     * @param int $pageID
+     * @return Pages|bool
+     */
+    public function loadPage(int $pageID)
+    {
+        $page = Pages::getOne(['id' => $pageID], [], [], false);
+        if (!$page) {
+            return false;
+        }
+
+        $page->since = CloudStore::$app->tool->formatter->formatDateString($page->since);
+        return $page;
     }
 }

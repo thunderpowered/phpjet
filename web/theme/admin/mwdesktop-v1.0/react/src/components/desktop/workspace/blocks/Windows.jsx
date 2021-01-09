@@ -40,8 +40,8 @@ export class Windows extends Component {
         delete this.windowsConfig;
     }
 
-    openChildWindow(childIndex, parentIndex) {
-        this.props.onLoadChildWindow([parentIndex, childIndex]);
+    openChildWindow(childIndex, parentIndex, windowData) {
+        this.props.onLoadChildWindow([parentIndex, childIndex], windowData);
     }
 
     render() {
@@ -51,7 +51,7 @@ export class Windows extends Component {
             {this.props.children.map(child => (
                 React.cloneElement(child, {
                     ...child.props,
-                    openChildWindow: (childIndex) => this.openChildWindow(childIndex, child.props.configIndex)
+                    openChildWindow: (childIndex, windowData) => this.openChildWindow(childIndex, child.props.configIndex, windowData)
                 }))
             )}
         </div>

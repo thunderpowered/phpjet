@@ -93,4 +93,14 @@ class Formatter
         }
         return $result;
     }
+
+    /**
+     * @param string $date
+     * @param string $format
+     * @return string
+     */
+    public function formatDateString(string $date, $format = 'd.m.Y H:i:s'): string
+    {
+        return date($format, strtotime($date));
+    }
 }
