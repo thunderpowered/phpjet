@@ -6,7 +6,7 @@ export class WindowAllPages extends Component {
     constructor() {
         super();
         this.state = {pages: []};
-        this.urlLoadPages = '/admin/pages/loadPages';
+        this.urlLoadPages = globalSystemRootURL + globalSystemActions['loadPages'];
         this.parentDivRef = React.createRef();
         this.tableID = 'AllPagesTable';
         this.loadPages();

@@ -24,7 +24,16 @@ class ControllerInfo extends Controller
     protected $methods = [
         'POST'
     ];
+    /**
+     * @var bool
+     */
+    protected $tokenRequired = true;
 
+    /**
+     * ControllerInfo constructor.
+     * @param string $name
+     * @param bool $enableTracker
+     */
     public function __construct(string $name = "", bool $enableTracker = false)
     {
         parent::__construct($name, $enableTracker);

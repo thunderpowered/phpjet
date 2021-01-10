@@ -6,7 +6,7 @@ export class Clocks extends Component {
         super();
         this.state = {time: '00:00:00', date: '00.00.0000', timeZone: ''};
         this.serverTimeCorrection = 0;
-        this.urlGetServerTime = '/admin/misc/getTime';
+        this.urlGetServerTime = globalSystemRootURL + globalSystemActions['getTime'];
         this.loadServerTime();
     }
 

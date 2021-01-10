@@ -3,8 +3,8 @@ import {fetch2} from "../helpers/fetch2";
 export class Authenticator {
 
     constructor() {
-        this.urlCheck = globalSystemHost + '/admin/auth/check';
-        this.urlLogout = globalSystemHost + '/admin/auth/logout';
+        this.urlCheck = globalSystemRootURL + '/auth/check';
+        this.urlLogout = globalSystemRootURL + '/auth/logout';
         this.recheckInterval = 60000;
     }
 
@@ -21,8 +21,8 @@ export class Authenticator {
     checkAuthentication(proceedAuthorization) {
         return fetch2(this.urlCheck, {}, {
             onSuccess: (result) => {
-                if (typeof result.data !== 'undefined' && typeof result.data.auth !== 'undefined') {
-                    proceedAuthorization(result.data.auth);
+                if (typeof result.data !== 'undefined') {
+                    proceedAuthorization(result.data.auth, result.data.urls);
                 }
             }
         });

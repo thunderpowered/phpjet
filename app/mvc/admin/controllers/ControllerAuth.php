@@ -44,7 +44,7 @@ class ControllerAuth extends Controller
     public function __construct(string $name = "")
     {
         parent::__construct($name, true);
-        $this->modelAdmin = new ModelAdmin();
+        $this->modelAdmin = new ModelAdmin('admin', $this->urlTokenURLKey, $this->urlTokenSessionKey);
     }
 
     /**
@@ -58,8 +58,10 @@ class ControllerAuth extends Controller
         // Like in this case -> everything is fine, we checked, so status is true
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         if ($isAdminAuthorized) {
+            $urls = $this->modelAdmin->getAdminAPIUrls(true);
             CloudStore::$app->tool->JSONOutput->setData([
-                'auth' => true
+                'auth' => true,
+                'urls' => $urls
             ]);
         } else {
             CloudStore::$app->tool->JSONOutput->setData([
@@ -98,9 +100,13 @@ class ControllerAuth extends Controller
 
         // is 2F enabled?
         if (!$result['2F']) {
+            CloudStore::$app->system->token->generateHash();
             CloudStore::$app->tool->JSONOutput->setStatusTrue();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Successfully authorized.');
             CloudStore::$app->tool->JSONOutput->setAction('S');
+            CloudStore::$app->tool->JSONOutput->setData([
+                'urls' => $result['urls']
+            ]);
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         } else {
             CloudStore::$app->tool->JSONOutput->setStatusTrue();
@@ -147,7 +153,7 @@ class ControllerAuth extends Controller
 
         $verificationCode = $json[$this->json2FVerificationField];
         $result = $this->modelAdmin->validate2FAuthentication($verificationCode);
-        if (!$result) {
+        if (!$result['valid']) {
             CloudStore::$app->tool->JSONOutput->setStatusFalse();
             CloudStore::$app->tool->JSONOutput->setMessageBoxText('Wrong verification code.');
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
@@ -156,6 +162,9 @@ class ControllerAuth extends Controller
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         CloudStore::$app->tool->JSONOutput->setMessageBoxText('Successfully authorized.');
         CloudStore::$app->tool->JSONOutput->setAction('S');
+        CloudStore::$app->tool->JSONOutput->setData([
+            'urls' => $result['urls']
+        ]);
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }
 }

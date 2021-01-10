@@ -66,8 +66,9 @@ class Error
      * @param $funcName
      * @param null $code
      * @param bool $sendMail
+     * @param string $errorID
      */
-    public function errorToFile($errno, $errStr, $errFile, $errLine, $funcName, $code = null, $sendMail = false)
+    public function errorToFile($errno, $errStr, $errFile, $errLine, $funcName, $code = null, $sendMail = false, $errorID = '')
     {
         if ($sendMail) {
             $this->errorToEmail($errno, $errStr, $errFile, $errLine, $funcName);
@@ -75,7 +76,9 @@ class Error
 
         header("HTTP/1.1 $code");
 
-        $text = "( " . date('Y-m-d H:i:s (T)') . " ) Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine . "\r\n";
+        $text = "( " . date('Y-m-d H:i:s (T)') . " ) ". ($errorID ? 'ID Ошибки: ' . $errorID . ' | ' : '')
+                . "Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine
+                . "Доп.сведения: [todo]\r\n";
 
         // TODO: disable before release
         if (!empty($_GET['debug'])) {
@@ -105,14 +108,7 @@ class Error
     public function errorToEmail($errno, $errStr, $errFile, $errLine, $funcName)
     {
         // disabled
-        return;
-
-        $from = Config::$config['service_email'];
-        $to = Config::$config['developer_email'];
-        $subject = 'Ошибка на сайте';
-        $text = "( " . date('Y-m-d H:i:s (T)') . " ) Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine . "\r\n";
-
-        CloudStore::$app->system->mail->sendMail($to, $from, $subject, $text);
+        // todo
     }
 
     /**
@@ -120,6 +116,7 @@ class Error
      */
     public function exceptionCatcher($e)
     {
+        $errorID = $this->generateErrorID();
         $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true);
         echo CloudStore::$app->router->errorPage500();
         CloudStore::$app->exit();
@@ -130,10 +127,18 @@ class Error
      */
     public function fatalErrorCatcher(): void
     {
+        $errorID = $this->generateErrorID();
         if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
-            //ob_end_clean();
             $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true);
             echo CloudStore::$app->router->errorPage500();
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function generateErrorID(): string
+    {
+        return hash('sha256', uniqid('ERROR', true));
     }
 }

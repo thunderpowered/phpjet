@@ -20,7 +20,11 @@ export class Desktop extends Component {
         return this.authenticator.isAdminAuthorized(this.proceedAuthorization.bind(this), true);
     }
 
-    proceedAuthorization(authorized) {
+    proceedAuthorization(authorized, urls) {
+        if (typeof urls !== 'undefined') {
+            globalSystemActions = urls;
+        }
+
         if (this.state.authorized !== authorized) {
             this.setState(() => ({'authorized': authorized}));
         }

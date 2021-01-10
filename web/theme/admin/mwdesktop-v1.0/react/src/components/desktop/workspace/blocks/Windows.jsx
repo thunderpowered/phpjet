@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 // import windows
 import {WindowAdminActions} from "./Windows/WindowAdminActions";
 import {WindowAllPages} from "./Windows/WindowAllPages";
-import {WindowPageBuilder} from "./Windows/WindowAllPages/WindowPageBuilder";
+import {WindowPageBuilder_v1} from "./Windows/WindowAllPages/WindowPageBuilder_v1";
 
 
 export class Windows extends Component {
@@ -17,7 +17,7 @@ export class Windows extends Component {
                 'icon': 'fa-columns',
                 'children': [
                     {
-                        'component': <WindowPageBuilder/>,
+                        'component': <WindowPageBuilder_v1/>,
                         'windowName': 'WindowPageBuilder',
                         'label': 'Page Builder',
                         'icon': 'fa-magic'

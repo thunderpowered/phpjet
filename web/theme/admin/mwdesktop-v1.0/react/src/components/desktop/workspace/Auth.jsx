@@ -7,14 +7,15 @@ import {BasicForm} from "../elements/forms/BasicForm";
 export class Auth extends Component {
     constructor(props) {
         super(props);
-        this.authActionStep1 = '/admin/auth';
-        this.authActionStep2 = '/admin/auth/verifyCode';
+        this.authActionStep1 = globalSystemRootURL + '/auth';
+        this.authActionStep2 = globalSystemRootURL + '/auth/verifyCode';
         this.state = {
             step: 1
         };
     }
 
     successfulAuthorization(data) {
+        globalSystemActions = data.urls;
         setTimeout(() => {
             if (typeof this.props.callback !== 'undefined') {
                 this.props.callback(true);
@@ -22,7 +23,7 @@ export class Auth extends Component {
         }, 1000);
     }
 
-    secondFactor() {
+    secondFactor(data) {
         this.setState(() => ({step: 2}));
     }
 

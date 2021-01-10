@@ -23,6 +23,10 @@ class ControllerPages extends Controller
         'POST'
     ];
     /**
+     * @var bool
+     */
+    protected $tokenRequired = true;
+    /**
      * @var ModelAdmin
      */
     private $modelAdmin;
@@ -30,6 +34,7 @@ class ControllerPages extends Controller
      * @var ModelPages
      */
     private $modelPages;
+
     /**
      * ControllerPages constructor.
      * @param string $name

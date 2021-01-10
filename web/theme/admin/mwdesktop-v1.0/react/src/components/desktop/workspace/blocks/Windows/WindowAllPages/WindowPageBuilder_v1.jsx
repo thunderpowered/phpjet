@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import {fetch2} from "../../../../../../helpers/fetch2";
 
-export class WindowPageBuilder extends Component {
+// MAIN PAGE BUILDER COMPONENT
+// VERSION 1
+export class WindowPageBuilder_v1 extends Component {
     constructor() {
         super();
-        this.urlLoadPage = '/admin/pages/loadPage'
+        this.urlLoadPage =  globalSystemRootURL + globalSystemActions['loadPage'];
     }
     componentDidMount() {
         this.loadPage(this.props.windowData.pageID);
@@ -29,8 +31,11 @@ export class WindowPageBuilder extends Component {
     }
 
     render() {
-        return <div>
-            Page Builder {this.props.parent}
+
+        return <div id={'PageBuilder'}>
+            <div className="PageBuilder__body">
+
+            </div>
         </div>
     }
 }

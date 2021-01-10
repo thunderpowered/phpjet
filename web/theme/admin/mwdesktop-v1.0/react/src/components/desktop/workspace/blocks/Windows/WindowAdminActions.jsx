@@ -5,7 +5,7 @@ import {setDataTable, setDataTableResponsive} from "../../../../../helpers/DataT
 export class WindowAdminActions extends Component {
     constructor() {
         super();
-        this.url = '/admin/statistics/getAdminActions';
+        this.url = globalSystemRootURL + globalSystemActions['getAdminActions'];
         this.state = {rows: []};
         this.tableID = 'WindowAdminActionsTable';
         this.parentDivRef = React.createRef();

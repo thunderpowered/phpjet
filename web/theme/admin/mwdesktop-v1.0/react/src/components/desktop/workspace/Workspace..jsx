@@ -10,10 +10,10 @@ import {fetch2} from "../../../helpers/fetch2";
 export class Workspace extends Component {
     constructor() {
         super();
-        this.urlSetMode = '/admin/misc/setMode';
-        this.urlGetMode = '/admin/misc/getMode';
-        this.urlSetDefaultWindow = '/admin/misc/setDefaultWindow';
-        this.urlGetDefaultWindow = '/admin/misc/getDefaultWindow';
+        this.urlSetMode = globalSystemRootURL + globalSystemActions['setPanelMode'];
+        this.urlGetMode = globalSystemRootURL + globalSystemActions['getPanelMode'];
+        this.urlSetDefaultWindow = globalSystemRootURL + globalSystemActions['setDefaultWindow'];
+        this.urlGetDefaultWindow = globalSystemRootURL + globalSystemActions['getDefaultWindow'];
         // i added some explanation because things became a little more complicated than i thought it would be, so it is just to keep in mind
         // i do not overuse comments!
         this.state = {

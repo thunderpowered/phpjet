@@ -7,8 +7,8 @@ export class Background extends Component {
     constructor() {
         super();
         this.state = {backgroundImage: '', mousePosition: {top: 0, left: 0}, contextMenu: false};
-        this.urlGetWallpaper = '/admin/misc/getWallpaper';
-        this.urlSetWallpaper = '/admin/misc/setWallpaper';
+        this.urlGetWallpaper = globalSystemRootURL + globalSystemActions['getWallpaper'];
+        this.urlSetWallpaper = globalSystemRootURL + globalSystemActions['setWallpaper'];
         this.loadWallpaper();
     }
 

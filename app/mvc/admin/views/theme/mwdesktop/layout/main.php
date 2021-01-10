@@ -50,7 +50,9 @@ use CloudStore\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
 
     <script type="text/javascript" class="globalVariables">
+        let globalSystemActions = {};
         const globalSystemHost = "<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>";
+        const globalSystemRootURL = "<?php echo \CloudStore\CloudStore::$app->router->getURL(); ?>";
         const globalDesktopMisc = JSON.parse('<?php echo json_encode([
             'logotype' => $this->widget->widgetMisc->getLogotype(),
             'engineVersion' => \CloudStore\CloudStore::$app->system->getEngineVersion()

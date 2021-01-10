@@ -52,14 +52,42 @@ class ModelAdmin extends Model
     private $panelStates = [
         'window', 'classic'
     ];
+    /**
+     * @var array
+     * @todo actually it is possible to automate this
+     */
+    private $adminAPIUrls = [
+        'getTime' => '/misc/getTime',
+        'setWallpaper' => '/misc/setWallpaper',
+        'getWallpaper' => '/misc/getWallpaper',
+        'setPanelMode' => '/misc/setMode',
+        'getPanelMode' => '/misc/getMode',
+        'setDefaultWindow' => '/misc/setDefaultWindow',
+        'getDefaultWindow' => '/misc/getDefaultWindow',
+        'loadPages' => '/pages/loadPages',
+        'loadPage' => '/pages/loadPage',
+        'getAdminActions' => '/statistics/getAdminActions'
+    ];
+    /**
+     * @var string
+     */
+    private $urlTokenURLKey;
+    /**
+     * @var string
+     */
+    private $urlTokenSessionKey;
 
     /**
      * ModelAdmin constructor.
      * @param string $name
+     * @param string $urlTokenURLKey
+     * @param string $urlTokenSessionKey
      */
-    public function __construct(string $name = "")
+    public function __construct(string $name = "", string $urlTokenURLKey = '', string $urlTokenSessionKey = '')
     {
         parent::__construct($name);
+        $this->urlTokenURLKey = $urlTokenURLKey;
+        $this->urlTokenSessionKey = $urlTokenSessionKey;
     }
 
     /**
@@ -87,7 +115,9 @@ class ModelAdmin extends Model
     /**
      * @param string $email
      * @param string $password
-     * @return bool
+     * @param string $urlTokenSessionKey
+     * @param string $urlTokenURLKey
+     * @return array
      */
     public function authorizeAdmin(string $email, string $password): array
     {
@@ -114,10 +144,10 @@ class ModelAdmin extends Model
 
         // Everything is fine
         if (!$admin->two_factor_auth) {
-            $this->grantAccess($admin);
+            $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
 
             $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
-            return ['valid' => true, '2F' => false];
+            return ['valid' => true, '2F' => false, 'urls' => $urls];
         } else {
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
@@ -147,15 +177,15 @@ class ModelAdmin extends Model
 
     /**
      * @param string $verificationCode
-     * @return bool
+     * @return array
      */
-    public function validate2FAuthentication(string $verificationCode): bool
+    public function validate2FAuthentication(string $verificationCode): array
     {
         $adminID = CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
         if (!$adminID) {
 
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Session.');
-            return false;
+            return ['valid' => false];
         }
 
         $fingerPrint = $this->getFingerprint();
@@ -163,26 +193,26 @@ class ModelAdmin extends Model
         if (!$fingerPrintSession || $fingerPrint !== $fingerPrintSession) {
 
             $this->recordActions('Auth', false, '2F verification failed - fingerprint incorrect.');
-            return false;
+            return ['valid' => false];
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
 
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Database.');
-            return false;
+            return ['valid' => false];
         }
 
         if (!password_verify($verificationCode, $admin->session_token)) {
 
             $this->recordActions('Auth', false, '2F verification failed - invalid verification code.');
-            return false;
+            return ['valid' => false];
         }
 
         // seems like everything is ok
         $this->recordActions('Auth', true, '2F verification successful - auth completed.');
-        $this->grantAccess($admin);
-        return true;
+        $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
+        return ['valid' => true, 'urls' => $urls];
     }
 
     /**
@@ -347,7 +377,7 @@ class ModelAdmin extends Model
      */
     public function getAdminActions(int $limit = 1000): array
     {
-        $actions =  Tracker_Authority::get([], ['id' => 'DESC'], [0, $limit]);
+        $actions = Tracker_Authority::get([], ['id' => 'DESC'], [0, $limit]);
         foreach ($actions as $key => $action) {
             $actions[$key]->status = $action->status ? 'Success' : 'Fail';
             $actions[$key]->authority_id = $action->authority_id ? $action->authority_id : 'Not authorized';
@@ -361,6 +391,33 @@ class ModelAdmin extends Model
             }
         }
         return $actions;
+    }
+
+    /**
+     * @param bool $includeToken
+     * @param string $token
+     * @param string $tokenURLKey
+     * @return array
+     */
+    public function getAdminAPIUrls(bool $includeToken = true, string $token = '', string $tokenURLKey = 'token'): array
+    {
+        if (!$includeToken) {
+            return $this->adminAPIUrls;
+        }
+
+        if (!$token) {
+            $token = CloudStore::$app->system->request->getSESSION($this->urlTokenSessionKey);
+        }
+
+        if (!$tokenURLKey) {
+            $tokenURLKey = $this->urlTokenURLKey;
+        }
+
+        $result = [];
+        foreach ($this->adminAPIUrls as $key => $url) {
+            $result[$key] = $url . "/?$tokenURLKey=$token";
+        }
+        return $result;
     }
 
     /**
@@ -399,16 +456,23 @@ class ModelAdmin extends Model
 
     /**
      * @param Authority $admin
+     * @param string $urlTokenURLKey
+     * @param string $urlTokenSessionKey
+     * @return array
      */
-    private function grantAccess(Authority $admin)
+    private function grantAccess(Authority $admin, string $urlTokenURLKey, string $urlTokenSessionKey)
     {
+        $token = CloudStore::$app->system->token->generateHash();
         CloudStore::$app->system->request->setSESSION($this->sessionAuthorizedKey, true);
         CloudStore::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
         CloudStore::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());
+        CloudStore::$app->system->request->setSESSION($urlTokenSessionKey, $token);
 
         $admin->last_login = CloudStore::$app->store->now();
         $admin->session_token = '';
         $admin->save();
+
+        return $this->getAdminAPIUrls(true, $token, $urlTokenURLKey);
     }
 
     /**

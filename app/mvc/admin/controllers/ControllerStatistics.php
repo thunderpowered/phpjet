@@ -21,6 +21,10 @@ class ControllerStatistics extends Controller
         'POST'
     ];
     /**
+     * @var bool
+     */
+    protected $tokenRequired = true;
+    /**
      * @var ModelAdmin
      */
     private $modelAdmin;
