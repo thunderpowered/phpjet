@@ -12,7 +12,7 @@ export class Clocks extends Component {
 
     loadServerTime() {
         return fetch2(this.urlGetServerTime, {}, {
-            onSuccess: (result) => {
+            onSuccess: result => {
                 if (typeof result.data !== 'undefined' && typeof result.data.serverTimeUTC !== 'undefined' && typeof result.data.serverTimeOffset !== 'undefined') {
                     this.startClocks(result.data.serverTimeOffset * 1000, result.data.serverTimeUTC * 1000);
                     this.setState(() => ({timeZone: result.data.serverTimeZone}));

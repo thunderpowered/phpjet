@@ -14,6 +14,14 @@
     background-color: #191919 !important;
 }
 
+.theme__background-color--accent-soft--hover:hover {
+    background-color: #d20000;
+}
+
+.theme__background-color--accent-soft {
+    background-color: #9b0000;
+}
+
 .theme__background-color--accent {
     background-color: #d20000;
 }
@@ -77,6 +85,14 @@
     right: 0;
     bottom: 0;
     top: 0;
+    margin: auto;
+}
+
+.theme__fixed-absolute--center-keep-width {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: auto;
 }
 
 .theme__border {
@@ -117,4 +133,21 @@
 
 .theme__cursor-pointer {
     cursor: pointer;
+}
+
+.theme__element-active {
+
+}
+
+.theme__element-inactive {
+    opacity: 0.45;
+}
+
+.theme__flex-basis-0 {
+    flex: 1 1 0;
+}
+
+.theme__flex-basis-auto {
+    flex: 1 1 auto;
+    /*min-width: 50%;*/
 }

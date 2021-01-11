@@ -17,7 +17,7 @@ export class Workspace extends Component {
         // i added some explanation because things became a little more complicated than i thought it would be, so it is just to keep in mind
         // i do not overuse comments!
         this.state = {
-            // classic or window
+            // classic or window or maybe something more will be added in the future
             panelMode: 'default',
             // in classic mode we have to load some window to fill empty space
             defaultWindow: 0,
@@ -172,7 +172,6 @@ export class Workspace extends Component {
                         }
                         // after panel state loaded, let's show the workspace!
                         // short delay is for reinsurance
-                        // todo: add loading animation
                         setTimeout(() => {
                             this.setState(() => ({opacity: 1}));
                         }, 100);

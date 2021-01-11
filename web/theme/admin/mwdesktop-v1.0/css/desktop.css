@@ -3,7 +3,7 @@
 * {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 14px;
-    transition: background-color .2s, opacity .2s;
+    transition: background-color .2s, opacity .2s, color .1s;
 }
 
 html, body {
@@ -46,11 +46,11 @@ html, body {
 }
 
 .Desktop__Workspace__Blocks--StartMenu-wrapper {
-    z-index:2;
+    z-index: 2;
 }
 
 .Desktop__Workspace__Blocks--StartMenu-wrapper--block {
-    z-index:5 !important;
+    z-index: 5 !important;
 }
 
 .Desktop__Workspace__Blocks--WindowSpace {
@@ -63,7 +63,7 @@ html, body {
 
 #Workspace .Desktop__Workspace__Blocks--TaskBar {
     z-index: 5 !important;
-    height:49px !important;
+    height: 49px !important;
     /*padding-left:0 !important;*/
 }
 
@@ -91,15 +91,15 @@ html, body {
 }
 
 .Desktop__Workspace__Blocks--StartMenu__Item {
-    width:400px;
+    width: 400px;
     max-width: 100%;
     cursor: pointer;
-    border-left:3px solid #9b0000;
+    border-left: 3px solid #9b0000;
 }
 
 .Desktop__Workspace__Blocks--StartMenu__Item .fa-container {
-    margin-right:15px !important;
-    margin-left:10px !important;
+    margin-right: 15px !important;
+    margin-left: 10px !important;
 }
 
 .Desktop__Workspace__Blocks--StartMenu__Rack {
@@ -108,18 +108,18 @@ html, body {
 }
 
 .Desktop__Elements__Windows--Window {
-    min-width:20%;
+    min-width: 20%;
     resize: both;
     max-width: 100%;
     max-height: 100%;
 }
 
 .Desktop__Elements__Windows--Window.display-none {
-    display:none !important;
+    display: none !important;
 }
 
 .Desktop__Elements__Windows--Window-title {
-    flex:1;
+    flex: 1;
     cursor: move;
 }
 
@@ -133,27 +133,27 @@ html, body {
 
 /* STATES OF WINDOW */
 .Desktop__Elements__Windows--Window.Desktop__Elements__Windows--Window--expanded {
-    height:calc(100% - 49px) !important;
+    height: calc(100% - 49px) !important;
 }
 
 .Desktop__Elements__Windows--Window--expand-center {
-    width:100% !important;
-    left:0 !important;
-    right:0 !important;
-    top:0 !important;
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
 }
 
 .Desktop__Elements__Windows--Window--expand-left {
-    width:50% !important;
-    left:0 !important;
-    top:0 !important;
+    width: 50% !important;
+    left: 0 !important;
+    top: 0 !important;
 }
 
 .Desktop__Elements__Windows--Window--expand-right {
-    width:50% !important;
-    left:unset !important;
-    right:0 !important;
-    top:0 !important;
+    width: 50% !important;
+    left: unset !important;
+    right: 0 !important;
+    top: 0 !important;
 }
 
 .Desktop__Elements__Windows--Window-content {
@@ -161,33 +161,33 @@ html, body {
 
 /* resize window */
 .window-resize--left, .window-resize--bottom, .window-resize--right {
-    position:absolute;
-    z-index:1488;
-    color:transparent;
+    position: absolute;
+    z-index: 1488;
+    color: transparent;
     user-select: none !important;
 }
 
 .window-resize--left {
-    left:0;
-    top:0;
-    bottom:0;
-    width:5px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
     cursor: w-resize;
 }
 
 .window-resize--bottom {
-    bottom:0;
-    left:0;
-    right:0;
-    height:5px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
     cursor: s-resize;
 }
 
 .window-resize--right {
-    right:0;
-    top:0;
-    bottom:0;
-    width:5px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
     cursor: e-resize;
 }
 
@@ -197,9 +197,9 @@ html, body {
 
 .Desktop__Workspace__Blocks__TaskBar__TaskList--TaskListItem {
     flex-basis: 100%;
-    max-width:200px;
+    max-width: 200px;
     cursor: pointer;
-    opacity:0.6;
+    opacity: 0.6;
 }
 
 .Desktop__Workspace__Blocks__TaskBar__TaskList--TaskListItem--active {
@@ -208,7 +208,7 @@ html, body {
 
 .Desktop__Elements__DropDowns--SimpleDropMenu {
     min-width: 300px;
-    z-index:15;
+    z-index: 15;
 }
 
 .Desktop__Elements__DropDowns--SimpleDropMenu-Item-wrapper {
@@ -236,11 +236,11 @@ html, body {
 
 /* CLASSIC MODE */
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper {
-    z-index:4 !important;
+    z-index: 4 !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper > div {
-    display:block !important;
+    display: block !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu-wrapper > div > div > div > div {
@@ -248,28 +248,28 @@ html, body {
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Rack > div:last-of-type {
-    border-bottom:1px solid #353635 !important;
+    border-bottom: 1px solid #353635 !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode #StartMenu {
-    height:100% !important;
+    height: 100% !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window {
     display: block !important;
-    left:400px !important;
-    top:0 !important;
+    left: 400px !important;
+    top: 0 !important;
     right: 0 !important;
     bottom: 49px !important;
-    width:calc(100% - 400px) !important;
-    height:calc(100% - 49px) !important;
+    width: calc(100% - 400px) !important;
+    height: calc(100% - 49px) !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--Windows {
-    z-index:3 !important;
+    z-index: 3 !important;
 }
 
-#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window  .Desktop__Elements__Windows--Window-controls .classic-hidden {
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Elements__Windows--Window .Desktop__Elements__Windows--Window-controls .classic-hidden {
     display: none !important;
 }
 
@@ -278,7 +278,7 @@ html, body {
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar {
-    height:49px !important;
+    height: 49px !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar #TaskList {
@@ -286,25 +286,45 @@ html, body {
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--TaskBar__Start {
-    display:none !important;
+    display: none !important;
 }
 
-#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--Background  {
+#Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--Background {
     display: none !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Item {
-    border-left-color:#353635 !important;
+    border-left-color: #353635 !important;
 }
 
 #Workspace.Desktop__Workspace--ClassicMode .Desktop__Workspace__Blocks--StartMenu__Item--active {
     border-left-color: #9b0000 !important;
 }
 
+/* PAGE BUILDER */
+
+.PageBuilder__body, .PageBuilder__container {
+    border: 1px dashed #424242;
+}
+
+.PageBuilder__container {
+    background-color: #1f1f1f;
+}
+
+.PageBuilder__chunk-container {
+    /*border-radius: 5px;*/
+    border: 3px solid #9b0000;
+    /* default container size */
+    height: 200px;
+}
+
+.PageBuilder__column-label {
+    color: #9b0000;
+}
 
 /* SOME TWEAKS */
 .fa-container {
-    position:relative;
+    position: relative;
     width: 25px;
     height: 25px;
     display: inline-block;
@@ -383,30 +403,30 @@ html, body {
     color: #ebebeb !important;
     background-color: #191919 !important;
     background: unset !important;
-    border:1px solid rgba(0,0,0,0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button {
-    color:#ebebeb !important;
+    color: #ebebeb !important;
     background: #191919 !important;
-    border:1px solid rgba(0,0,0,0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    color:#ebebeb !important;
+    color: #ebebeb !important;
     background: #282828 !important;
-    border:1px solid rgba(0,0,0,0.3);
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
     background: #2d2d2d !important;
-    color:#ebebeb !important;
-    border:1px solid rgba(0,0,0,0.3);
+    color: #ebebeb !important;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 html body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-    color:#ebebeb !important;
-    border:1px solid rgba(0,0,0,0.3);
+    color: #ebebeb !important;
+    border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
 thead input {
@@ -424,6 +444,7 @@ thead input {
     width: 80px;
     height: 80px;
 }
+
 .lds-dual-ring:after {
     content: " ";
     display: block;
@@ -435,6 +456,7 @@ thead input {
     border-color: #fff transparent #fff transparent;
     animation: lds-dual-ring 1.2s linear infinite;
 }
+
 @keyframes lds-dual-ring {
     0% {
         transform: rotate(0deg);

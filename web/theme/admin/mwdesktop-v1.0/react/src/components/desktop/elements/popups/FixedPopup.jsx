@@ -5,8 +5,6 @@ export class FixedPopup extends Component {
     constructor() {
         super();
         this.state = {height: 500};
-        // ref is reference, i.e. 'link'
-        // this.innerRef = React.createRef();
     }
 
     render() {
