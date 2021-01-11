@@ -38,7 +38,7 @@ export class WindowAllPages extends Component {
                 <tr>
                     <th>ID</th>
                     <th>URL</th>
-                    <th>Commentary</th>
+                    <th>Title</th>
                     <th>Created</th>
                     <th />
                 </tr>
@@ -48,7 +48,7 @@ export class WindowAllPages extends Component {
                     <tr>
                         <td>{item.id}</td>
                         <td>{item.url}</td>
-                        <td>{item.comment}</td>
+                        <td>{item.title}</td>
                         <td>{item.since}</td>
                         <td><div className={'p-2 text-center user-select-none theme__background-color--hover theme__background-color2 theme__cursor-pointer'} onClick={() => this.openPageBuilder(item.id)}>Open PageBuilder</div></td>
                     </tr>

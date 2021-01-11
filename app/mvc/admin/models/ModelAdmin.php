@@ -66,7 +66,8 @@ class ModelAdmin extends Model
         'getDefaultWindow' => '/misc/getDefaultWindow',
         'loadPages' => '/pages/loadPages',
         'loadPage' => '/pages/loadPage',
-        'getAdminActions' => '/statistics/getAdminActions'
+        'getAdminActions' => '/statistics/getAdminActions',
+        'loadPageBuilder' => '/pages/loadPageBuilder'
     ];
     /**
      * @var string

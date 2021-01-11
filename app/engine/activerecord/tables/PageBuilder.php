@@ -10,12 +10,20 @@ use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
  * Class Pages
  * @package CloudStore\App\Engine\ActiveRecord\Tables
  */
-class Pages extends ActiveRecord
+class PageBuilder extends ActiveRecord
 {
     /**
      * @var int
      */
     public $id;
+    /**
+     * @var string
+     */
+    public $type;
+    /**
+     * @var string
+     */
+    public $title;
     /**
      * @var string
      */

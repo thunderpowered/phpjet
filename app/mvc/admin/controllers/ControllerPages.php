@@ -4,7 +4,7 @@
 namespace CloudStore\App\MVC\Admin\Controllers;
 
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Pages;
+use CloudStore\App\Engine\ActiveRecord\Tables\PageBuilder;
 use CloudStore\App\Engine\Core\Controller;
 use CloudStore\App\MVC\Admin\Models\ModelAdmin;
 use CloudStore\App\MVC\Admin\Models\ModelPages;
@@ -38,7 +38,7 @@ class ControllerPages extends Controller
     /**
      * ControllerPages constructor.
      * @param string $name
-     * @param bool $enableTracker]
+     * @param bool $enableTracker ]
      */
     public function __construct(string $name = "", bool $enableTracker = false)
     {
@@ -91,9 +91,23 @@ class ControllerPages extends Controller
             return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
         }
 
+        // and also since we are using page builder, load all the data we need
         CloudStore::$app->tool->JSONOutput->setStatusTrue();
         CloudStore::$app->tool->JSONOutput->setData([
             'page' => $page
+        ]);
+        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+    }
+
+    /**
+     * @return string
+     */
+    public function actionLoadPageBuilder(): string
+    {
+        $pageBuilderData = CloudStore::$app->pageBuilder->getAllWorkspaceData();
+        CloudStore::$app->tool->JSONOutput->setStatusTrue();
+        CloudStore::$app->tool->JSONOutput->setData([
+            'pageBuilder' => $pageBuilderData
         ]);
         return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
     }

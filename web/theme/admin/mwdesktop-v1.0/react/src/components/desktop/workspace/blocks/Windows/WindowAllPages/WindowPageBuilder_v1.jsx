@@ -1,170 +1,58 @@
 import React, {Component} from 'react';
-import {fetch2} from "../../../../../../helpers/fetch2";
+import {PageBuilder} from "../../../../../../classes/PageBuilder";
 
 // MAIN PAGE BUILDER COMPONENT
 // VERSION 1
 export class WindowPageBuilder_v1 extends Component {
     constructor() {
         super();
-        this.state = {template: {}, page: {}};
-        this.urlLoadPage = globalSystemRootURL + globalSystemActions['loadPage'];
+        this.pageBuilder = new PageBuilder();
+        this.state = {
+            // edit|create
+            mode: 'edit',
+            // all available chunks
+            chunks: [],
+            // all available templates
+            templates: [],
+            // loaded template
+            template: {},
+            // rendered page (contains jsx array)
+            page: {}
+        };
     }
 
     componentDidMount() {
-        this.loadPage(this.props.windowData.pageID);
+        this.pageBuilder.loadPage(this.props.windowData.pageID, this.renderPage.bind(this));
+        this.pageBuilder.loadPageBuilderData(this.savePageBuilderData.bind(this));
     }
 
-    loadPage(pageID) {
-        return fetch2(this.urlLoadPage, {queryParams: {'page_id': pageID}}, {
-            onSuccess: (result) => {
-                if (typeof result.data !== 'undefined' && typeof result.data.page !== 'undefined' && result.data.page.id === pageID) {
-                    this.preparePageBuilder(result.data.page);
-                } else {
-                    Msg.error('Page Builder cannot be initialized. Please, try again.')
-                }
-            }
-        });
+    savePageBuilderData(data) {
+        this.setState(() => ({chunks: data.chunks, templates: data.templates}));
     }
 
-
-    preparePageBuilder(page) {
-
-        // some other preparations
-        // load all chunks
-        // load all templates
-        // select default template
-        this.setState(() => (
-            {
-                template: [
-                    // banner
-                    {
-                        'container': 'container-fluid',
-                        'rows': [
-                            {
-                                'row': 'col-12',
-                                'chunks': [
-                                    {
-                                        // banner chunk
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    // header
-                    {
-                        'container': 'container',
-                        'rows': [
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // logo
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-6',
-                                'chunks': [
-                                    {
-                                        // menu
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // search
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    // main content
-                    {
-                        'container': 'container',
-                        'rows': [
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // left sidebar
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-6',
-                                'chunks': [
-                                    {
-                                        // center content
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // right sidebar
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    // footer
-                    {
-                        'container': 'container',
-                        'rows': [
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // idk
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-6',
-                                'chunks': [
-                                    {
-                                        // idk
-                                    }
-                                ]
-                            },
-                            {
-                                'row': 'col-3',
-                                'chunks': [
-                                    {
-                                        // idk
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                ]
-            }
-        ), () => this.recreatePageByArray());
+    renderPage(page) {
+        this.setState(() => ({'page': page}), () => this.recreatePageByArray());
     }
 
+    // load and show the template
+    // we assume that everything is loaded fine and the structure is correct
     recreatePageByArray() {
-        // load and show the template
-        // we assume that everything is loaded fine and the structure is correct
-        let page = {};
-        page.elements = [...this.state.template];
-        page.elements.forEach((container, containerIndex) => {
-            // outer loop through containers
+        let page = {...this.state.page};
+        // outer loop through containers
+        page.content.forEach((container, containerIndex) => {
+            // middle loop through rows
             container.rows.forEach((row, rowIndex) => {
-                // middle loop through rows
+                // inner loop through chunks
                 row.chunks.forEach((chunk, chunkIndex) => {
-                    // inner loop through chunks
                     row.chunks[chunkIndex] = this._pb_createChunk(chunk);
                 });
                 container.rows[rowIndex] = this._pb_createRow(row.chunks, row.row);
             });
-            page.elements[containerIndex] = this._pb_createContainer(container.rows, container.container);
+            page.content[containerIndex] = this._pb_createContainer(container.rows, container.container);
         });
 
         this.setState(() => ({
-            'page': page
+            'page': {...this.state.page, rendered: page.content}
         }), () => this.props.onLoaded());
     }
 
@@ -210,8 +98,11 @@ export class WindowPageBuilder_v1 extends Component {
         console.log('save template');
     }
 
-    render() {
+    workspaceSaveDraft() {
+        console.log('save draft');
+    }
 
+    render() {
         return <div id={'PageBuilder'} className={'theme__background-color3'}>
             <div className="container-fluid">
                 <div className="row">
@@ -233,10 +124,14 @@ export class WindowPageBuilder_v1 extends Component {
                                 {/* page buttons */}
                                 <div
                                     className="PageBuilder__workspace-buttons d-flex justify-content-between align-items-center flex-nowrap">
-                                    <div onClick={this.workspaceSaveTemplate}
+                                    <div onClick={this.workspaceSaveDraft}
                                          className="p-3 theme__cursor-pointer theme__link-color--hover"
-                                         title={'//todo'}><i className="fas fa-file-export"/><span
-                                        className="p-3 pb-0 pt-0">Save as Template</span></div>
+                                         title={'//todo'}><i className="fas fa-file-signature"/><span
+                                        className="p-3 pb-0 pt-0">Save as draft</span></div>
+                                    {/*<div onClick={this.workspaceSaveTemplate}*/}
+                                    {/*     className="p-3 theme__cursor-pointer theme__link-color--hover"*/}
+                                    {/*     title={'//todo'}><i className="fas fa-paste"/><span*/}
+                                    {/*    className="p-3 pb-0 pt-0">Save as template</span></div>*/}
                                     <div onClick={this.workspaceSavePage}
                                          className="theme__flex-basis-0 text-center p-2 theme__cursor-pointer theme__background-color--accent-soft theme__background-color--accent-soft--hover"
                                          title={'Save the page'}>
@@ -259,7 +154,7 @@ export class WindowPageBuilder_v1 extends Component {
                                     Page Structure
                                 </span>
                                 {Object.keys(this.state.page).length &&
-                                this.state.page.elements
+                                this.state.page.rendered
                                 }
                             </div>
                         </div>
