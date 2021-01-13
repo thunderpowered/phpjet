@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\System\Settings;
-use CloudStore\CloudStore;
+use Jet\App\Engine\System\Settings;
+use Jet\PHPJet;
 
 /**
  * Class StringFormatter
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class Formatter
 {
@@ -23,14 +23,14 @@ class Formatter
      */
     public function numberAsPriceString(float $number)
     {
-        $priceTemplate = CloudStore::$app->system->request->getSESSION($this->priceTemplateSettingsName);
+        $priceTemplate = PHPJet::$app->system->request->getSESSION($this->priceTemplateSettingsName);
         if (!$priceTemplate) {
-            $priceTemplate = CloudStore::$app->system->settings->getContext($this->priceTemplateSettingsName);
+            $priceTemplate = PHPJet::$app->system->settings->getContext($this->priceTemplateSettingsName);
             if (!$priceTemplate) {
                 return $number;
             }
 
-            CloudStore::$app->system->request->setSESSION($this->priceTemplateSettingsName, $priceTemplate);
+            PHPJet::$app->system->request->setSESSION($this->priceTemplateSettingsName, $priceTemplate);
         }
 
         $resultString = @number_format($number, intval($priceTemplate['decimals']), $priceTemplate['decimal_delimiter'], $priceTemplate['thousands_delimiter']) . ' ' . $priceTemplate['price_currency'];

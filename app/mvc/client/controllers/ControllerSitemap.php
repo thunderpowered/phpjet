@@ -1,17 +1,17 @@
 <?php
 
-namespace CloudStore\App\Engine\Controllers;
+namespace Jet\App\Engine\Controllers;
 
-use CloudStore\App\Engine\Components\XMLMap;
-use CloudStore\App\Engine\Components\XMLProducts;
-use CloudStore\App\Engine\Components\YMLMap;
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\System;
+use Jet\App\Engine\Components\XMLMap;
+use Jet\App\Engine\Components\XMLProducts;
+use Jet\App\Engine\Components\YMLMap;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\Router;
+use Jet\App\Engine\Core\System;
 
 /**
  * Class ControllerSitemap
- * @package CloudStore\App\Engine\Controllers
+ * @package Jet\App\Engine\Controllers
  * @deprecated
  */
 class ControllerSitemap extends Controller

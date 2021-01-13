@@ -1,16 +1,16 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Admin\Controllers;
+namespace Jet\App\MVC\Admin\Controllers;
 
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Admin\Models\ModelAdmin;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\MVC\Admin\Models\ModelAdmin;
+use Jet\PHPJet;
 
 /**
  * Class ControllerInfo
- * @package CloudStore\App\MVC\Admin\Controllers
+ * @package Jet\App\MVC\Admin\Controllers
  */
 class ControllerInfo extends Controller
 {
@@ -40,13 +40,13 @@ class ControllerInfo extends Controller
         $this->modelAdmin = new ModelAdmin();
 
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+            PHPJet::$app->tool->JSONOutput->setStatusFalse();
+            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
 
             $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
             // force application to send output and stop
-            CloudStore::$app->router->immediateResponse($output);
+            PHPJet::$app->router->immediateResponse($output);
         }
     }
 }

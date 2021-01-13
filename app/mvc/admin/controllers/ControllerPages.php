@@ -1,18 +1,18 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Admin\Controllers;
+namespace Jet\App\MVC\Admin\Controllers;
 
 
-use CloudStore\App\Engine\ActiveRecord\Tables\PageBuilder;
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Admin\Models\ModelAdmin;
-use CloudStore\App\MVC\Admin\Models\ModelPages;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\PageBuilder;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\MVC\Admin\Models\ModelAdmin;
+use Jet\App\MVC\Admin\Models\ModelPages;
+use Jet\PHPJet;
 
 /**
  * Class ControllerPages
- * @package CloudStore\App\MVC\Admin\Controllers
+ * @package Jet\App\MVC\Admin\Controllers
  */
 class ControllerPages extends Controller
 {
@@ -47,13 +47,13 @@ class ControllerPages extends Controller
         $this->modelPages = new ModelPages();
 
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+            PHPJet::$app->tool->JSONOutput->setStatusFalse();
+            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
+            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
 
             $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
             // force application to send output and stop
-            CloudStore::$app->router->immediateResponse($output);
+            PHPJet::$app->router->immediateResponse($output);
         }
     }
 
@@ -65,11 +65,11 @@ class ControllerPages extends Controller
         $pages = $this->modelPages->loadPages();
         // even if no pages -> return empty array
 
-        CloudStore::$app->tool->JSONOutput->setStatusTrue();
-        CloudStore::$app->tool->JSONOutput->setData([
+        PHPJet::$app->tool->JSONOutput->setStatusTrue();
+        PHPJet::$app->tool->JSONOutput->setData([
             'pages' => $pages
         ]);
-        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
     }
 
     /**
@@ -77,26 +77,26 @@ class ControllerPages extends Controller
      */
     public function actionLoadPage(): string
     {
-        $pageID = CloudStore::$app->system->request->getJSON('page_id');
+        $pageID = PHPJet::$app->system->request->getJSON('page_id');
         if (!$pageID) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Field "page_id" cannot be empty');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+            PHPJet::$app->tool->JSONOutput->setStatusFalse();
+            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Field "page_id" cannot be empty');
+            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         }
 
         $page = $this->modelPages->loadPage($pageID);
         if (!$page) {
-            CloudStore::$app->tool->JSONOutput->setStatusFalse();
-            CloudStore::$app->tool->JSONOutput->setMessageBoxText('Page not found');
-            return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+            PHPJet::$app->tool->JSONOutput->setStatusFalse();
+            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Page not found');
+            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         }
 
         // and also since we are using page builder, load all the data we need
-        CloudStore::$app->tool->JSONOutput->setStatusTrue();
-        CloudStore::$app->tool->JSONOutput->setData([
+        PHPJet::$app->tool->JSONOutput->setStatusTrue();
+        PHPJet::$app->tool->JSONOutput->setData([
             'page' => $page
         ]);
-        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
     }
 
     /**
@@ -104,11 +104,11 @@ class ControllerPages extends Controller
      */
     public function actionLoadPageBuilder(): string
     {
-        $pageBuilderData = CloudStore::$app->pageBuilder->getAllWorkspaceData();
-        CloudStore::$app->tool->JSONOutput->setStatusTrue();
-        CloudStore::$app->tool->JSONOutput->setData([
+        $pageBuilderData = PHPJet::$app->pageBuilder->getAllWorkspaceData();
+        PHPJet::$app->tool->JSONOutput->setStatusTrue();
+        PHPJet::$app->tool->JSONOutput->setData([
             'pageBuilder' => $pageBuilderData
         ]);
-        return CloudStore::$app->tool->JSONOutput->returnJSONOutput();
+        return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
     }
 }

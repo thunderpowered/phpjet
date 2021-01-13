@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
 
-use CloudStore\App\Engine\Config\Config;
+use Jet\App\Engine\Config\Config;
 
 /**
  * Class API
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  * @deprecated
  */
 class API

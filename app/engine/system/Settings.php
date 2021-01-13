@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Context;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\Context;
+use Jet\PHPJet;
 
 /**
  * Class Settings
- * @package CloudStore\App\Engine\System
+ * @package Jet\App\Engine\System
  */
 class Settings
 {
@@ -82,7 +82,7 @@ class Settings
     public function getSettings(): array
     {
         if (!$this->settings) {
-            $this->settings = CloudStore::$app->store->load($this->tableName);
+            $this->settings = PHPJet::$app->store->load($this->tableName);
         }
         return $this->settings;
     }

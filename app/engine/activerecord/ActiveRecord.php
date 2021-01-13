@@ -6,13 +6,13 @@
  * Thanks @mixtech911 for the idea.
  */
 
-namespace CloudStore\App\Engine\ActiveRecord;
+namespace Jet\App\Engine\ActiveRecord;
 
-use CloudStore\CloudStore;
+use Jet\PHPJet;
 
 /**
  * Class ActiveRecord
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 abstract class ActiveRecord
 {
@@ -41,7 +41,7 @@ abstract class ActiveRecord
     {
         // if primary key does not exist
         if (!$this->_primaryKey) {
-            CloudStore::$app->exit('Primary Key Not Set');
+            PHPJet::$app->exit('Primary Key Not Set');
         }
         // _class contains the name of the class
         $this->_class = get_class($this);
@@ -75,7 +75,7 @@ abstract class ActiveRecord
         $table = self::convertClassNameIntoTableName($class);
 
         try {
-            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
+            $rows = PHPJet::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
         } catch (\Exception $e) {
             self::exceptionHandler($e);
         }
@@ -104,7 +104,7 @@ abstract class ActiveRecord
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
         try {
-            $rows = CloudStore::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
+            $rows = PHPJet::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
         } catch (\Exception $e) {
             self::exceptionHandler($e);
         }
@@ -134,7 +134,7 @@ abstract class ActiveRecord
         $table = self::convertClassNameIntoTableName($class);
 
         try {
-            $rows = CloudStore::$app->store->load2($table, $join, $conditions, $orderBy, $limit);
+            $rows = PHPJet::$app->store->load2($table, $join, $conditions, $orderBy, $limit);
         } catch (\Exception $e) {
             self::exceptionHandler($e);
         }
@@ -158,7 +158,7 @@ abstract class ActiveRecord
         $class = get_called_class();
         $table = self::convertClassNameIntoTableName($class);
         try {
-            $result = CloudStore::$app->store->count($table, $conditions);
+            $result = PHPJet::$app->store->count($table, $conditions);
         } catch (\Exception $e) {
             self::exceptionHandler($e);
         }
@@ -191,7 +191,7 @@ abstract class ActiveRecord
              * So i guess it's temporary
              */
             try {
-                $result = CloudStore::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
+                $result = PHPJet::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
             } catch (\Exception $e) {
                 self::exceptionHandler($e);
             }
@@ -201,7 +201,7 @@ abstract class ActiveRecord
              */
             $this->beforeInsert();
             try {
-                $result = CloudStore::$app->store->collect($table, $row);
+                $result = PHPJet::$app->store->collect($table, $row);
             } catch (\Exception $e) {
                 self::exceptionHandler($e);
             }
@@ -223,7 +223,7 @@ abstract class ActiveRecord
 
         $table = $this->convertClassNameIntoTableName($this->_class);
 
-        return CloudStore::$app->store->delete($table, [$this->_primaryKey => $this->$this->primaryKey]);
+        return PHPJet::$app->store->delete($table, [$this->_primaryKey => $this->$this->primaryKey]);
     }
 
     /**
@@ -231,7 +231,7 @@ abstract class ActiveRecord
      */
     protected static function exceptionHandler(\Exception $e)
     {
-        CloudStore::$app->error->exceptionCatcher($e);
+        PHPJet::$app->error->exceptionCatcher($e);
     }
 
     /**

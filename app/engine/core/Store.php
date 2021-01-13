@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 
 /**
  * Class Store2
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Store
 {
@@ -1006,7 +1006,7 @@ class Store
      */
     private function removeSpecialChars(array $result): array
     {
-        return CloudStore::$app->tool->utils->removeSpecialChars($result);
+        return PHPJet::$app->tool->utils->removeSpecialChars($result);
     }
 
     /**
@@ -1017,7 +1017,7 @@ class Store
     private function throwException(string $message, bool $die = false)
     {
         if ($die) {
-            CloudStore::$app->exit($message);
+            PHPJet::$app->exit($message);
         } else {
             throw new \Exception($message);
         }

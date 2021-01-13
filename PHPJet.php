@@ -1,14 +1,14 @@
 <?php
 
-namespace CloudStore;
+namespace Jet;
 
-use CloudStore\App\App;
+use Jet\App\App;
 
 /**
- * Class CloudStore
- * @package CloudStore\App\Engine
+ * Class PHPJet
+ * @package Jet\App\Engine
  */
-class CloudStore
+class PHPJet
 {
     /**
      * @var App
@@ -23,6 +23,6 @@ class CloudStore
 
     private static function defineConstants()
     {
-        define("NAMESPACE_ROOT", "CloudStore");
+        define("NAMESPACE_ROOT", "Jet");
     }
 }

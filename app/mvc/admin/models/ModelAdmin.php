@@ -1,16 +1,16 @@
 <?php
 
-namespace CloudStore\App\MVC\Admin\Models;
+namespace Jet\App\MVC\Admin\Models;
 
-use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
-use CloudStore\App\Engine\ActiveRecord\Tables\Authority;
-use CloudStore\App\Engine\ActiveRecord\Tables\Tracker_Authority;
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Tables\Authority;
+use Jet\App\Engine\ActiveRecord\Tables\Tracker_Authority;
+use Jet\App\Engine\Core\Model;
+use Jet\PHPJet;
 
 /**
  * Class ModelAdmin
- * @package CloudStore\App\MVC\Admin\Models
+ * @package Jet\App\MVC\Admin\Models
  */
 class ModelAdmin extends Model
 {
@@ -97,14 +97,14 @@ class ModelAdmin extends Model
     public function isAdminAuthorized(): bool
     {
         // basic auth check
-        $isAdminAuthorized = CloudStore::$app->system->request->getSESSION($this->sessionAuthorizedKey);
+        $isAdminAuthorized = PHPJet::$app->system->request->getSESSION($this->sessionAuthorizedKey);
         if (!$isAdminAuthorized) {
             return false;
         }
 
         // extended auth check
         $fingerprint = $this->getFingerprint();
-        $fingerprintSession = CloudStore::$app->system->request->getSESSION($this->sessionFingerprint);
+        $fingerprintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerprintSession || !$fingerprint || $fingerprintSession !== $fingerprint) {
             return false;
         }
@@ -122,7 +122,7 @@ class ModelAdmin extends Model
      */
     public function authorizeAdmin(string $email, string $password): array
     {
-        $emailValid = CloudStore::$app->tool->formatter->validateEmail($email);
+        $emailValid = PHPJet::$app->tool->formatter->validateEmail($email);
         if (!$emailValid) {
 
             $this->recordActions('Auth', false, 'attempt failed - invalid email.');
@@ -165,8 +165,8 @@ class ModelAdmin extends Model
      */
     private function start2FAuthentication(Authority $admin): int
     {
-        CloudStore::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
-        CloudStore::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());
+        PHPJet::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
+        PHPJet::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());
 
         $code = $this->generate2FAuthenticationCode();
         $codeHashed = $this->generatePasswordHash($code);
@@ -182,7 +182,7 @@ class ModelAdmin extends Model
      */
     public function validate2FAuthentication(string $verificationCode): array
     {
-        $adminID = CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
+        $adminID = PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
         if (!$adminID) {
 
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Session.');
@@ -190,7 +190,7 @@ class ModelAdmin extends Model
         }
 
         $fingerPrint = $this->getFingerprint();
-        $fingerPrintSession = CloudStore::$app->system->request->getSESSION($this->sessionFingerprint);
+        $fingerPrintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerPrintSession || $fingerPrint !== $fingerPrintSession) {
 
             $this->recordActions('Auth', false, '2F verification failed - fingerprint incorrect.');
@@ -221,7 +221,7 @@ class ModelAdmin extends Model
      */
     public function getAdminID(): int
     {
-        return (int)CloudStore::$app->system->request->getSESSION($this->sessionAdminID);
+        return (int)PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
     }
 
     public function logout(): bool
@@ -256,7 +256,7 @@ class ModelAdmin extends Model
             return '';
         }
 
-        return CloudStore::$app->system->settings->getContext($this->getAdminContextKey($contextName, $adminID));
+        return PHPJet::$app->system->settings->getContext($this->getAdminContextKey($contextName, $adminID));
     }
 
     /**
@@ -271,7 +271,7 @@ class ModelAdmin extends Model
             return false;
         }
 
-        return CloudStore::$app->system->settings->setContext($this->getAdminContextKey($contextName, $adminID), $data);
+        return PHPJet::$app->system->settings->setContext($this->getAdminContextKey($contextName, $adminID), $data);
     }
 
     /**
@@ -283,7 +283,7 @@ class ModelAdmin extends Model
     public function recordActions(string $action, bool $status, string $explanation = ''): bool
     {
         $adminID = (int)$this->getAdminID();
-        return CloudStore::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
+        return PHPJet::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
     }
 
     /**
@@ -295,7 +295,7 @@ class ModelAdmin extends Model
         if (!$wallpaper) {
             return '';
         }
-        return CloudStore::$app->tool->utils->getImageLink($wallpaper);
+        return PHPJet::$app->tool->utils->getImageLink($wallpaper);
     }
 
     /**
@@ -305,7 +305,7 @@ class ModelAdmin extends Model
     public function setAdminWallpaper(array $file): string
     {
         $currentWallpaper = $this->getAdminContext($this->contextKeyWallpaper);
-        $filePath = CloudStore::$app->tool->fileManager->saveNewFile('images/admin/wallpapers', $file);
+        $filePath = PHPJet::$app->tool->fileManager->saveNewFile('images/admin/wallpapers', $file);
         if (!$filePath) {
             return '';
         }
@@ -315,8 +315,8 @@ class ModelAdmin extends Model
             return '';
         }
 
-        CloudStore::$app->tool->fileManager->deleteFile($currentWallpaper);
-        return CloudStore::$app->tool->utils->getImageLink($filePath);
+        PHPJet::$app->tool->fileManager->deleteFile($currentWallpaper);
+        return PHPJet::$app->tool->utils->getImageLink($filePath);
     }
 
     /**
@@ -385,10 +385,10 @@ class ModelAdmin extends Model
             $actions[$key]->datetime = date("d.m.Y H:i:s", strtotime($action->datetime));
             if ($action->post) {
                 // since Store automatically removes special chars from data
-                $action->post = CloudStore::$app->tool->utils->revertRemoveSpecialCart($action->post);
+                $action->post = PHPJet::$app->tool->utils->revertRemoveSpecialCart($action->post);
                 $action->post = json_decode($action->post, true);
-                $action->post = CloudStore::$app->tool->formatter->arrayToListString($action->post);
-                $action->post = CloudStore::$app->tool->utils->removeSpecialChars($action->post);
+                $action->post = PHPJet::$app->tool->formatter->arrayToListString($action->post);
+                $action->post = PHPJet::$app->tool->utils->removeSpecialChars($action->post);
             }
         }
         return $actions;
@@ -407,7 +407,7 @@ class ModelAdmin extends Model
         }
 
         if (!$token) {
-            $token = CloudStore::$app->system->request->getSESSION($this->urlTokenSessionKey);
+            $token = PHPJet::$app->system->request->getSESSION($this->urlTokenSessionKey);
         }
 
         if (!$tokenURLKey) {
@@ -450,9 +450,9 @@ class ModelAdmin extends Model
      */
     private function forbidAccess()
     {
-        CloudStore::$app->system->request->unsetSESSION($this->sessionAuthorizedKey);
-        CloudStore::$app->system->request->unsetSESSION($this->sessionAdminID);
-        CloudStore::$app->system->request->unsetSESSION($this->sessionFingerprint);
+        PHPJet::$app->system->request->unsetSESSION($this->sessionAuthorizedKey);
+        PHPJet::$app->system->request->unsetSESSION($this->sessionAdminID);
+        PHPJet::$app->system->request->unsetSESSION($this->sessionFingerprint);
     }
 
     /**
@@ -463,13 +463,13 @@ class ModelAdmin extends Model
      */
     private function grantAccess(Authority $admin, string $urlTokenURLKey, string $urlTokenSessionKey)
     {
-        $token = CloudStore::$app->system->token->generateHash();
-        CloudStore::$app->system->request->setSESSION($this->sessionAuthorizedKey, true);
-        CloudStore::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
-        CloudStore::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());
-        CloudStore::$app->system->request->setSESSION($urlTokenSessionKey, $token);
+        $token = PHPJet::$app->system->token->generateHash();
+        PHPJet::$app->system->request->setSESSION($this->sessionAuthorizedKey, true);
+        PHPJet::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
+        PHPJet::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());
+        PHPJet::$app->system->request->setSESSION($urlTokenSessionKey, $token);
 
-        $admin->last_login = CloudStore::$app->store->now();
+        $admin->last_login = PHPJet::$app->store->now();
         $admin->session_token = '';
         $admin->save();
 
@@ -491,13 +491,13 @@ class ModelAdmin extends Model
     private function getFingerprint(): string
     {
         // pretty basic, but i'll extend it later
-        $userAgent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
-        $remoteAddr = CloudStore::$app->system->request->getSERVER('REMOTE_ADDR');
-        $originatedIP = CloudStore::$app->system->request->getSERVER('HTTP_X_FORWARDED_FOR');
+        $userAgent = PHPJet::$app->system->request->getSERVER('HTTP_USER_AGENT');
+        $remoteAddr = PHPJet::$app->system->request->getSERVER('REMOTE_ADDR');
+        $originatedIP = PHPJet::$app->system->request->getSERVER('HTTP_X_FORWARDED_FOR');
         $adminID = $this->getAdminID();
 
         $fingerprint = $userAgent . $remoteAddr . $originatedIP . $adminID;
-        return CloudStore::$app->system->token->hashString($fingerprint);
+        return PHPJet::$app->system->token->hashString($fingerprint);
     }
 
     /**

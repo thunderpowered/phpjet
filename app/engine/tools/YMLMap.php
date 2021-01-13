@@ -5,13 +5,13 @@
  * and open the template in the editor.
  */
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Core\Component;
-use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\Store;
-use CloudStore\App\Engine\Core\System;
+use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Core\Component;
+use Jet\App\Engine\Core\Router;
+use Jet\App\Engine\Core\Store;
+use Jet\App\Engine\Core\System;
 
 class YMLMap extends Component
 {
@@ -219,7 +219,7 @@ class YMLMap extends Component
     private static function updateSettings()
     {
 
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "yandex_yml"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "yandex_yml"]);
 
         if (!$current) {
 
@@ -268,7 +268,7 @@ class YMLMap extends Component
     {
 
         // Check datetime of last generation
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "yandex_yml"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "yandex_yml"]);
 
         // Temp
         // !$current

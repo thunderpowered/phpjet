@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \CloudStore\App\Engine\ActiveRecord\Tables\Soft[] $games
+ * @var \Jet\App\Engine\ActiveRecord\Tables\Soft[] $games
  */
 ?>
 <ul class="d-flex pb-3 m-0 flex-column p-0 js-plugin_niceScroll theme__border-color--accent theme__border-bottom theme__border--thicker theme__background-color2">

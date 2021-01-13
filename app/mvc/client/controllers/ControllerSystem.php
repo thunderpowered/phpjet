@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Controllers;
+namespace Jet\App\MVC\Client\Controllers;
 
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Controller;
+use Jet\PHPJet;
 
 /**
  * Class TaskController
- * @package CloudStore\App\MVC\Client\Controllers
+ * @package Jet\App\MVC\Client\Controllers
  * This controller is only for system purposes
  */
 class ControllerSystem extends Controller
@@ -27,9 +27,9 @@ class ControllerSystem extends Controller
     public function __construct(string $name = "", bool $enableTracker = false)
     {
         parent::__construct($name, $enableTracker);
-        $accessToken = CloudStore::$app->system->request->getGET('accessToken');
+        $accessToken = PHPJet::$app->system->request->getGET('accessToken');
         if (!$accessToken || $accessToken !== $this->accessToken) {
-            CloudStore::$app->router->goHome();
+            PHPJet::$app->router->goHome();
         }
     }
 
@@ -38,6 +38,6 @@ class ControllerSystem extends Controller
      */
     public function actionCacheManager(): bool
     {
-        return CloudStore::$app->tool->cache->manageCache();
+        return PHPJet::$app->tool->cache->manageCache();
     }
 }

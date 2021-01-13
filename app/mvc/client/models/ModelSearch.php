@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Models;
+namespace Jet\App\MVC\Client\Models;
 
 
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Model;
+use Jet\PHPJet;
 
 /**
  * Class ModelSearch
- * @package CloudStore\App\MVC\Client\Models
+ * @package Jet\App\MVC\Client\Models
  */
 class ModelSearch extends Model
 {
@@ -44,9 +44,9 @@ class ModelSearch extends Model
         }
 
         // check cache
-//        $cacheIdentifier = CloudStore::$app->tool->formatter->anyStringToURLString($searchValue);
+//        $cacheIdentifier = PHPJet::$app->tool->formatter->anyStringToURLString($searchValue);
         $cacheIdentifier = mb_strtolower(trim($searchValue));
-        $cache = CloudStore::$app->tool->cache->getCache(__FUNCTION__, $cacheIdentifier);
+        $cache = PHPJet::$app->tool->cache->getCache(__FUNCTION__, $cacheIdentifier);
         if ($cache) {
             return json_decode($cache, true);
         }
@@ -55,12 +55,12 @@ class ModelSearch extends Model
         foreach ($result as $key => $value) {
             $result[$key]['typeRU'] = $this->typeRU[$value['type']];
             if ($value['icon']) {
-                $result[$key]['icon'] = CloudStore::$app->tool->utils->getThumbnailLink($value['icon']);
+                $result[$key]['icon'] = PHPJet::$app->tool->utils->getThumbnailLink($value['icon']);
             }
         }
 
         // save into cache
-        CloudStore::$app->tool->cache->setCache(__FUNCTION__, $cacheIdentifier, json_encode($result));
+        PHPJet::$app->tool->cache->setCache(__FUNCTION__, $cacheIdentifier, json_encode($result));
         return $result;
     }
 
@@ -83,7 +83,7 @@ class ModelSearch extends Model
     public function searchInAllTables2(string $searchValue, int $limit = 10): array
     {
         // trim and remove chars to make search easier
-        $searchValue = CloudStore::$app->tool->formatter->anyStringToSearchString($searchValue);
+        $searchValue = PHPJet::$app->tool->formatter->anyStringToSearchString($searchValue);
         $searchArray = explode(' ', $searchValue);
 
         $gamesSQL  = '';
@@ -137,7 +137,7 @@ class ModelSearch extends Model
         $parameters[":relevance1"] = $requiredRelevance;
         $parameters[":relevance2"] = $requiredRelevance;
 
-        $result = CloudStore::$app->store->execGet($sql, $parameters);
+        $result = PHPJet::$app->store->execGet($sql, $parameters);
 
         return (array)$result;
     }

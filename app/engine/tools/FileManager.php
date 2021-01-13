@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\CloudStore;
+use Jet\PHPJet;
 
 /**
  * Class FileManager
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class FileManager
 {
@@ -56,7 +56,7 @@ class FileManager
         // this is for saving into database
         $fileURL = '';
         foreach ($pathArray as $path) {
-            $filePathHashed = CloudStore::$app->system->token->hashString($path, $this->hashingAlgorithm);
+            $filePathHashed = PHPJet::$app->system->token->hashString($path, $this->hashingAlgorithm);
             $filePath .= $filePathHashed . '/';
             $fileURL .= $filePathHashed . '/';
 
@@ -72,7 +72,7 @@ class FileManager
         }
 
         // let's generate random name?
-        $fileName = CloudStore::$app->system->token->generateHash($this->hashingAlgorithm) . ".{$fileExtension}";
+        $fileName = PHPJet::$app->system->token->generateHash($this->hashingAlgorithm) . ".{$fileExtension}";
         $filePath = $filePath . $fileName;
         $fileURL = $fileURL . $fileName;
 

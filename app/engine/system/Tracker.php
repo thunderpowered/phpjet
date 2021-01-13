@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Tracker_Authority;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\Tracker_Authority;
+use Jet\PHPJet;
 
 /**
  * Class Tracker
- * @package CloudStore\App\Engine\System
+ * @package Jet\App\Engine\System
  */
 class Tracker
 {
@@ -26,16 +26,16 @@ class Tracker
      */
     public function trackEverythingYouFind(string $type = '', string $explanation = ''): bool
     {
-        $tracker = new \CloudStore\App\Engine\ActiveRecord\Tables\Tracker();
-        $tracker->url = CloudStore::$app->router->getURL();
-        $tracker->method = CloudStore::$app->system->request->getSERVER('REQUEST_METHOD');
-        $tracker->referer = CloudStore::$app->system->request->getSERVER('HTTP_REFERER');
-        $tracker->user_agent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
-        $tracker->ip = CloudStore::$app->system->request->getUserIP();
+        $tracker = new \Jet\App\Engine\ActiveRecord\Tables\Tracker();
+        $tracker->url = PHPJet::$app->router->getURL();
+        $tracker->method = PHPJet::$app->system->request->getSERVER('REQUEST_METHOD');
+        $tracker->referer = PHPJet::$app->system->request->getSERVER('HTTP_REFERER');
+        $tracker->user_agent = PHPJet::$app->system->request->getSERVER('HTTP_USER_AGENT');
+        $tracker->ip = PHPJet::$app->system->request->getUserIP();
         $tracker->type = $type;
         $tracker->details = $explanation;
 
-        $post = CloudStore::$app->system->request->getPOST();
+        $post = PHPJet::$app->system->request->getPOST();
         if ($post) {
             $tracker->post = json_encode($post);
         }
@@ -53,15 +53,15 @@ class Tracker
     public function trackAdminActions(int $adminID, string $action, bool $status, string $details = ''): bool
     {
         $tracker = new Tracker_Authority();
-        $tracker->url = CloudStore::$app->router->getURL();
+        $tracker->url = PHPJet::$app->router->getURL();
         $tracker->authority_id = $adminID;
         $tracker->action = $action;
         $tracker->status = $status;
         $tracker->details = $details;
-        $tracker->ip = CloudStore::$app->system->request->getUserIP();
-        $tracker->user_agent = CloudStore::$app->system->request->getSERVER('HTTP_USER_AGENT');
+        $tracker->ip = PHPJet::$app->system->request->getUserIP();
+        $tracker->user_agent = PHPJet::$app->system->request->getSERVER('HTTP_USER_AGENT');
 
-        $post = CloudStore::$app->system->request->getPOST();
+        $post = PHPJet::$app->system->request->getPOST();
         if ($post) {
             $tracker->post = json_encode($post);
         }
@@ -83,6 +83,6 @@ class Tracker
     public function manageTable(): bool
     {
         $SQLString = 'delete from tracker where `datetime` < DATE_SUB(NOW(), interval 3 month)';
-        return CloudStore::$app->store->dangerouslySendQueryWithoutPreparation($SQLString);
+        return PHPJet::$app->store->dangerouslySendQueryWithoutPreparation($SQLString);
     }
 }

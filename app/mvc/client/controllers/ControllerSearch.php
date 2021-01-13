@@ -1,16 +1,16 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Controllers;
+namespace Jet\App\MVC\Client\Controllers;
 
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Client\Models\ModelSearch;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\MVC\Client\Models\ModelSearch;
+use Jet\PHPJet;
 
 /**
  * Class ControllerSearch
- * @package CloudStore\App\MVC\Client\Controllers
+ * @package Jet\App\MVC\Client\Controllers
  */
 class ControllerSearch extends Controller
 {
@@ -46,7 +46,7 @@ class ControllerSearch extends Controller
      */
     public function actionAJAXQuickSearch(): string
     {
-        $json = CloudStore::$app->system->request->getJSON();
+        $json = PHPJet::$app->system->request->getJSON();
         if (!$json) {
             return $this->view->returnJsonOutput(false);
         }

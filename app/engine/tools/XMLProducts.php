@@ -5,12 +5,12 @@
  * and open the template in the editor.
  */
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Core\Component;
-use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\Store;
+use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Core\Component;
+use Jet\App\Engine\Core\Router;
+use Jet\App\Engine\Core\Store;
 
 class XMLProducts extends Component
 {
@@ -188,7 +188,7 @@ class XMLProducts extends Component
     private static function updateSettings()
     {
 
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "google_xml"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "google_xml"]);
 
         if (!$current) {
 
@@ -237,7 +237,7 @@ class XMLProducts extends Component
     {
 
         // Check datetime of last generation
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "google_xml"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "google_xml"]);
 
         // Temp
         // !$current

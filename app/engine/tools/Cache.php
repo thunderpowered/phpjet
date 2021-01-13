@@ -1,11 +1,11 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
 /**
  * Class Cache
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class Cache
 {

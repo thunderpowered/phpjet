@@ -1,6 +1,6 @@
 <?php
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
 /**
  *
@@ -13,7 +13,7 @@ namespace CloudStore\App\Engine\System;
 
 /**
  * Class Buffer
- * @package CloudStore\App\Engine\System
+ * @package Jet\App\Engine\System
  */
 class Buffer
 {

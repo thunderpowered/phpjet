@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
 
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Widget;
+use Jet\PHPJet;
 
 /**
  * Class WidgetBanner
- * @package CloudStore\App\Engine\Components
+ * @package Jet\App\Engine\Components
  */
 class WidgetBanner extends Widget
 {
@@ -53,11 +53,11 @@ class WidgetBanner extends Widget
 
     private function loadBanner(): void
     {
-        $this->bannerState = CloudStore::$app->system->settings->getContext('banner_state');
+        $this->bannerState = PHPJet::$app->system->settings->getContext('banner_state');
 
         if ($this->bannerState) {
-            $this->banner = CloudStore::$app->system->settings->getContext('banner');
-            $this->banner = CloudStore::$app->tool->utils->getImageLink($this->banner);
+            $this->banner = PHPJet::$app->system->settings->getContext('banner');
+            $this->banner = PHPJet::$app->tool->utils->getImageLink($this->banner);
         }
     }
 }

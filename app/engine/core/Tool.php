@@ -1,18 +1,18 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Tools\Cache;
-use CloudStore\App\Engine\Tools\FileManager;
-use CloudStore\App\Engine\Tools\JSONOutput;
-use CloudStore\App\Engine\Tools\SEO;
-use CloudStore\App\Engine\Tools\Formatter;
-use CloudStore\App\Engine\Tools\Utils;
+use Jet\App\Engine\Tools\Cache;
+use Jet\App\Engine\Tools\FileManager;
+use Jet\App\Engine\Tools\JSONOutput;
+use Jet\App\Engine\Tools\SEO;
+use Jet\App\Engine\Tools\Formatter;
+use Jet\App\Engine\Tools\Utils;
 
 /**
  * Class Tool
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  * @description Tool is the class that contains other classes from directory "Tools"
  * @property Utils $utils
  * @property SEO $SEO

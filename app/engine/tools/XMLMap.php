@@ -1,13 +1,12 @@
 <?php
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\CloudStore;
-use CloudStore\App\Engine\Config\Config;
+use Jet\App\Engine\Config\Config;
 
 /**
  * Class XMLMap
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class XMLMap
 {
@@ -46,7 +45,7 @@ class XMLMap
             self::download($sitemap);
             return true;
         } catch (\Exception $e) {
-//            CloudStore::$app->exit('XML map generation failed');
+//            PHPJet::$app->exit('XML map generation failed');
             return false;
         }
     }
@@ -56,7 +55,7 @@ class XMLMap
      */
     private static function generate(string $directory)
     {
-        self::$host = CloudStore::$app->router->getHost();
+        self::$host = PHPJet::$app->router->getHost();
 
         // Generating products
         self::$products = self::generateProducts();
@@ -76,7 +75,7 @@ class XMLMap
      */
     private static function generateProducts(): bool
     {
-        $products = CloudStore::$app->store->load("products", ["avail" => 1, "price" => "!0"]);
+        $products = PHPJet::$app->store->load("products", ["avail" => 1, "price" => "!0"]);
 
         if (!$products) {
 
@@ -101,7 +100,7 @@ class XMLMap
      */
     private static function generateCategories(): bool
     {
-        $categories = CloudStore::$app->store->load("category");
+        $categories = PHPJet::$app->store->load("category");
 
         if (!$categories) {
             return false;
@@ -126,7 +125,7 @@ class XMLMap
     {
         $xmlGeneral = self::setItem(self::$host . "/");
 
-        $pages = CloudStore::$app->store->load("pages");
+        $pages = PHPJet::$app->store->load("pages");
         if ($pages) {
 
             foreach ($pages as $page) {
@@ -135,7 +134,7 @@ class XMLMap
             }
         }
 
-        $blog = CloudStore::$app->store->load("blog");
+        $blog = PHPJet::$app->store->load("blog");
         if ($blog) {
 
             $xmlGeneral .= self::setItem(self::$host . "/blog/");
@@ -270,7 +269,7 @@ class XMLMap
         $filename = self::$directory . Config::$config["site_id"] . "/" . Config::$config["site_id"] . "-" . $siteMap;
         if (!file_exists($filename)) {
 
-            CloudStore::$app->router->errorPage404();
+            PHPJet::$app->router->errorPage404();
         }
 
         header("Content-Type: text/xml");
@@ -280,12 +279,12 @@ class XMLMap
 
     private static function updateSettings()
     {
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "sitemap"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "sitemap"]);
 
         if (!$current) {
-            CloudStore::$app->store->collect("settings", ["settings_name" => "sitemap", "settings_value" => CloudStore::$app->store->now()]);
+            PHPJet::$app->store->collect("settings", ["settings_name" => "sitemap", "settings_value" => PHPJet::$app->store->now()]);
         } else {
-            CloudStore::$app->store->update("settings", ["settings_value" => CloudStore::$app->store->now()], ["settings_name" => "sitemap"]);
+            PHPJet::$app->store->update("settings", ["settings_value" => PHPJet::$app->store->now()], ["settings_name" => "sitemap"]);
         }
     }
 
@@ -296,7 +295,7 @@ class XMLMap
     private static function checkMap(): bool
     {
         // Check datetime of last generation
-        $current = CloudStore::$app->store->loadOne("settings", ["settings_name" => "sitemap"]);
+        $current = PHPJet::$app->store->loadOne("settings", ["settings_name" => "sitemap"]);
         if (!$current) {
 
             // It's not correct way of using XMLMap class

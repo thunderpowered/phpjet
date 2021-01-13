@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \CloudStore\App\Engine\Core\View $this
+ * @var \Jet\App\Engine\Core\View $this
  */
 ?>
 <!DOCTYPE html>
@@ -19,7 +19,7 @@
     <meta charset="UTF-8">
 
     <!-- CSRF TOKEN (CO) -->
-    <meta name="csrf_token" content="<?= \CloudStore\CloudStore::$app->system->token->generateToken() ?>">
+    <meta name="csrf_token" content="<?= \Jet\PHPJet::$app->system->token->generateToken() ?>">
 
     <!-- TODO don't forget to set it from widget-theme -->
     <meta name="theme-color" content="#000">
@@ -33,7 +33,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- END META -->
 
-    <?= \CloudStore\CloudStore::$app->tool->SEO->getMetaTags($this->controller) ?>
+    <?= \Jet\PHPJet::$app->tool->SEO->getMetaTags($this->controller) ?>
 
     <title><?php echo $this->controller->getTitle(); ?></title>
 
@@ -54,7 +54,7 @@
         <?php $this->widget->widgetTheme->getWidget(); ?>
     </style>
     <script>
-        const globalSystemHost = "<?= \CloudStore\CloudStore::$app->router->getHost() ?>";
+        const globalSystemHost = "<?= \Jet\PHPJet::$app->router->getHost() ?>";
     </script>
 
     <!-- WIDGET STATIC FILES -->

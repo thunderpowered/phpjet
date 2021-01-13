@@ -6,10 +6,10 @@
  * Time: 12:53
  */
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
-use CloudStore\CloudStore;
-use CloudStore\App\Engine\Core\Widget;
+use Jet\PHPJet;
+use Jet\App\Engine\Core\Widget;
 
 class WidgetSEO extends Widget
 {
@@ -43,7 +43,7 @@ class WidgetSEO extends Widget
     {
         $codes = [];
         foreach ($this->codeFields as $name) {
-            $codes[$name] = CloudStore::$app->system->settings->getContext($name);
+            $codes[$name] = PHPJet::$app->system->settings->getContext($name);
         }
         return $codes;
     }

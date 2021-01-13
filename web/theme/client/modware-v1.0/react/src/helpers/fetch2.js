@@ -1,4 +1,4 @@
-// CloudStore Engine requires every POST-query to have csrf-token
+// PHPJet Engine requires every POST-query to have csrf-token
 import {Token} from "./token";
 
 export function fetch2(url, options = {}, callbacks) {

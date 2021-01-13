@@ -1,4 +1,4 @@
-<?php $this->widget->widgetMenu->getBreadCrumbsCustom([["Карта сайта" => \CloudStore\App\Engine\Core\Router::getURL()]]); ?>
+<?php $this->widget->widgetMenu->getBreadCrumbsCustom([["Карта сайта" => \Jet\App\Engine\Core\Router::getURL()]]); ?>
 
 <h1 class="small--text-center">Карта сайта</h1>
 

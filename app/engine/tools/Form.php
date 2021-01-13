@@ -1,8 +1,8 @@
 <?php
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\Core\Component;
+use Jet\App\Engine\Core\Component;
 
 /**
  *
@@ -51,10 +51,10 @@ class Form extends Component
 
         if (empty($action[0]) OR empty($action[1])) {
 
-            $url = \CloudStore\App\Engine\Core\Router::getHost();
+            $url = \Jet\App\Engine\Core\Router::getHost();
         } else {
 
-            $url = \CloudStore\App\Engine\Core\Router::getHost() . "/" . $action[0] . "/" . $action[1];
+            $url = \Jet\App\Engine\Core\Router::getHost() . "/" . $action[0] . "/" . $action[1];
         }
 
         echo "<form autocomplete=\"off\" id=\"form-" . self::$check . "\" class=\"standart-form\" method=\"{$method}\" action=\"" . $url . "\">";
@@ -79,7 +79,7 @@ class Form extends Component
 
         // Not so easy :)
 
-        echo "<input type=\"hidden\" name=\"csrf\" value=\"" . \CloudStore\App\Engine\Tools\Utils::generateToken() . "\">";
+        echo "<input type=\"hidden\" name=\"csrf\" value=\"" . \Jet\App\Engine\Tools\Utils::generateToken() . "\">";
 
         if (self::$name) {
 

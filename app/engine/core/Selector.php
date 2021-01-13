@@ -1,8 +1,8 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\CloudStore;
+use Jet\PHPJet;
 
 /**
  *
@@ -17,7 +17,7 @@ use CloudStore\CloudStore;
 
 /**
  * Class Selector
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Selector
 {
@@ -31,7 +31,7 @@ class Selector
      */
     public function __construct()
     {
-        $this->site = CloudStore::$app->system->request->getSERVER('HTTP_HOST');
+        $this->site = PHPJet::$app->system->request->getSERVER('HTTP_HOST');
     }
 
     public function select()

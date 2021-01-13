@@ -1,10 +1,10 @@
 <?php
 
-namespace CloudStore\App\Engine\Config;
+namespace Jet\App\Engine\Config;
 
 /**
  * Class Database
- * @package CloudStore\App\Engine\Config
+ * @package Jet\App\Engine\Config
  * Connect to Database. MySQL with PDO extension in use.
  */
 class Database

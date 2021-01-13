@@ -1,9 +1,9 @@
 <?php
 
-namespace CloudStore\App\MVC\Admin\Widgets;
+namespace Jet\App\MVC\Admin\Widgets;
 
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Widget;
+use Jet\PHPJet;
 
 class WidgetMisc extends Widget
 {
@@ -26,11 +26,11 @@ class WidgetMisc extends Widget
      */
     public function getLogotype(): string
     {
-        $logotype = CloudStore::$app->system->settings->getContext($this->contextKeyLogotype);
+        $logotype = PHPJet::$app->system->settings->getContext($this->contextKeyLogotype);
         if (!$logotype) {
             return '';
         }
 
-        return CloudStore::$app->tool->utils->getImageLink($logotype);
+        return PHPJet::$app->tool->utils->getImageLink($logotype);
     }
 }

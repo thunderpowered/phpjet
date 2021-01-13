@@ -1,11 +1,11 @@
 <?php
 
-namespace CloudStore\App\MVC\Client\Models;
+namespace Jet\App\MVC\Client\Models;
 
 
-use CloudStore\App\Engine\Components\S;
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\App\Engine\Core\System;
+use Jet\App\Engine\Components\S;
+use Jet\App\Engine\Core\Model;
+use Jet\App\Engine\Core\System;
 
 class ModelSitemap extends Model
 {
@@ -34,7 +34,7 @@ class ModelSitemap extends Model
 
     private function getSiteMapCategories() : array
     {
-        $categories = CloudStore::$app->store->loadOne("settings", ["settings_name" => "menu"], false);
+        $categories = PHPJet::$app->store->loadOne("settings", ["settings_name" => "menu"], false);
         if (!$categories) {
             return [];
         }
@@ -157,7 +157,7 @@ class ModelSitemap extends Model
 
     private function getPages()
     {
-        $pages = CloudStore::$app->store->load("pages");
+        $pages = PHPJet::$app->store->load("pages");
         $pagesPrepared = [];
         if ($pages) {
             foreach ($pages as $key => $page) {

@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Models;
+namespace Jet\App\MVC\Client\Models;
 
 
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Model;
+use Jet\PHPJet;
 
 /**
  * Class ModelItems
- * @package CloudStore\App\MVC\Client\Models
+ * @package Jet\App\MVC\Client\Models
  */
 class ModelItems extends Model
 {
@@ -51,7 +51,7 @@ class ModelItems extends Model
     public function getItemsGroupedByDateWithASingleParent(string $group, string $orderBy, string $orderHow, int $limit = 20): array
     {
         $cacheIdentifier = __FUNCTION__ . $group . $orderBy . $orderHow . $$limit;
-        $result = CloudStore::$app->tool->cache->getCache(__CLASS__, $cacheIdentifier);
+        $result = PHPJet::$app->tool->cache->getCache(__CLASS__, $cacheIdentifier);
         if ($result) {
             return json_decode($result, true);
         }
@@ -61,7 +61,7 @@ class ModelItems extends Model
             $groupDays = $this->groupDays[$group];
         }
 
-        $store = CloudStore::$app->store;
+        $store = PHPJet::$app->store;
 
         $sql = "
             select i.id, i.name as item_name, i.url as item_url, i.users_id, i.icon, r.rating, truncate(r.rating, 1) as rating_display, r.reviews, datediff(now(), i.since) div {$groupDays} as date_order, p.name as parent_name, p.url parent_url from {$store->prepareTable('items')} i 
@@ -80,14 +80,14 @@ class ModelItems extends Model
 
         foreach ($result as $key => $item) {
             if ($item['icon']) {
-                $result[$key]['icon'] = CloudStore::$app->tool->utils->getThumbnailLink($item['icon']);
+                $result[$key]['icon'] = PHPJet::$app->tool->utils->getThumbnailLink($item['icon']);
             }
             $result[$key]['item_url'] = $this->getItemFullURL($item['item_url']);
             $result[$key]['parent_url'] = $this->getItemFullURL($item['parent_url']);
         }
 
         $result = $this->convertRowsToGroupedArray($result, 'date_order');
-        CloudStore::$app->tool->cache->setCache(__CLASS__, $cacheIdentifier, json_encode($result));
+        PHPJet::$app->tool->cache->setCache(__CLASS__, $cacheIdentifier, json_encode($result));
         return $result;
     }
 
@@ -132,6 +132,6 @@ class ModelItems extends Model
      */
     public function getItemFullURL(string $url): string
     {
-        return CloudStore::$app->router->getHost() . '/' . $url;
+        return PHPJet::$app->router->getHost() . '/' . $url;
     }
 }

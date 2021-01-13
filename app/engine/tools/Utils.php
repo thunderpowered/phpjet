@@ -1,11 +1,11 @@
 <?php
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\System;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Core\Router;
+use Jet\App\Engine\Core\System;
+use Jet\PHPJet;
 
 /**
  *
@@ -23,7 +23,7 @@ use CloudStore\CloudStore;
 
 /**
  * Class Utils
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class Utils
 {
@@ -33,7 +33,7 @@ class Utils
     public static function generateToken()
     {
 
-        // Generate CSRF-token. If you want to protect some action, write \CloudStore\App\Engine\Tools\Utils::generate_token(), then use validate to check it.
+        // Generate CSRF-token. If you want to protect some action, write \Jet\App\Engine\Tools\Utils::generate_token(), then use validate to check it.
         // This method will be improved in next version of SE.
         // After every action, the token will die and generate again.
         // It'll get more security for application. 
@@ -128,9 +128,9 @@ class Utils
     {
         // Creating link of image
         if ($fileName !== "" && file_exists(IMAGES . $fileName) && !is_dir(IMAGES . $fileName)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . IMAGES . $fileName;
+            $img_path = PHPJet::$app->router->getHost() . '/' . IMAGES . $fileName;
         } else {
-            $img_path = CloudStore::$app->router->getHost() . "/common/no_image.png";
+            $img_path = PHPJet::$app->router->getHost() . "/common/no_image.png";
         }
 
         return $img_path;
@@ -144,9 +144,9 @@ class Utils
     {
         // Creating link of thumbnail
         if ($fileName !== "" && file_exists(THUMBNAILS . $fileName) && !is_dir(THUMBNAILS . $fileName)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . THUMBNAILS . $fileName;
+            $img_path = PHPJet::$app->router->getHost() . '/' . THUMBNAILS . $fileName;
         } else {
-            $img_path = CloudStore::$app->router->getHost() . "/common/no_image.png";
+            $img_path = PHPJet::$app->router->getHost() . "/common/no_image.png";
         }
 
         return $img_path;
@@ -162,7 +162,7 @@ class Utils
     public static function getThumbnail(string $row = "", string $class = null, string $title = null)
     {
         if ($row !== "" && file_exists(THUMBNAILS . $row) && !is_dir(THUMBNAILS . $row)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . THUMBNAILS . $row;
+            $img_path = PHPJet::$app->router->getHost() . '/' . THUMBNAILS . $row;
         } else {
             $img_path = "/common/no_image.gif";
         }
@@ -183,7 +183,7 @@ class Utils
     public static function getImage(string $row = "", string $class = null, string $title = null)
     {
         if ($row !== "" && file_exists(IMAGES . $row) && !is_dir(IMAGES . $row)) {
-            $img_path = CloudStore::$app->router->getHost() . '/' . IMAGES . $row;
+            $img_path = PHPJet::$app->router->getHost() . '/' . IMAGES . $row;
         } else {
             $img_path = "/common/no_image.gif";
         }
@@ -252,10 +252,10 @@ class Utils
      */
     public static function asPrice(float $number): string
     {
-//        $priceTemplate = CloudStore::$app->
+//        $priceTemplate = PHPJet::$app->
         if (empty($_SESSION['price_template'])) {
 
-            $price_template = CloudStore::$app->store->loadOne("settings", ["settings_name" => "price_template"], false);
+            $price_template = PHPJet::$app->store->loadOne("settings", ["settings_name" => "price_template"], false);
             if (!$price_template) {
                 return $number;
             }
@@ -391,10 +391,10 @@ class Utils
 
         $main_page = System::getControllerObject()::GetPageAddress();
 
-        if (\CloudStore\App\Engine\Core\System::getControllerObject() === 'ControllerMain') {
+        if (\Jet\App\Engine\Core\System::getControllerObject() === 'ControllerMain') {
             //Действия со статическим URI. Тоже кастыль, но я придумаю что-нибудь
             if ($_GET["page"]) {
-                $page = \CloudStore\App\Engine\Tools\Utils::removeSpecialChars($_GET["page"]);
+                $page = \Jet\App\Engine\Tools\Utils::removeSpecialChars($_GET["page"]);
                 echo '
                     <li><a href="' . $main_page . '?page=' . $page . '&sort=price-asc">От дешевых к дорогим</a></li>
                     <li><a href="' . $main_page . '?page=' . $page . '&sort=price-desc">От дорогих в дешевым</a></li>
@@ -414,7 +414,7 @@ class Utils
         } else {
             //Действия со динамическим URI. 
             if ($_GET["page"]) {
-                $page = \CloudStore\App\Engine\Tools\Utils::removeSpecialChars($_GET["page"]);
+                $page = \Jet\App\Engine\Tools\Utils::removeSpecialChars($_GET["page"]);
                 echo '
                     <li><a href="' . $main_page . 'page=' . $page . '&sort=price-asc">От дешевых к дорогим</a></li>
                     <li><a href="' . $main_page . 'page=' . $page . '&sort=price-desc">От дорогих в дешевым</a></li>
@@ -461,8 +461,8 @@ class Utils
      */
     public static function strongRedirect($controller, $action)
     {
-        $route = \CloudStore\App\Engine\Core\Router::getRoute();
-        if (($route[1] !== $controller OR \CloudStore\App\Engine\Core\Router::getAction() !== $action) AND empty($route[3])) {
+        $route = \Jet\App\Engine\Core\Router::getRoute();
+        if (($route[1] !== $controller OR \Jet\App\Engine\Core\Router::getAction() !== $action) AND empty($route[3])) {
 
             header("Location: /$controller/$action", true, 301);
             exit();
@@ -480,8 +480,8 @@ class Utils
             self::homeRedirect();
         }
 
-        header("Location: " . CloudStore::$app->router->getHost() . "/" . $url, true, $code);
-        CloudStore::$app->exit();
+        header("Location: " . PHPJet::$app->router->getHost() . "/" . $url, true, $code);
+        PHPJet::$app->exit();
     }
 
     /**
@@ -489,8 +489,8 @@ class Utils
      */
     public static function homeRedirect()
     {
-        header("Location: " . CloudStore::$app->router->getHost(), true, 301);
-        CloudStore::$app->exit();
+        header("Location: " . PHPJet::$app->router->getHost(), true, 301);
+        PHPJet::$app->exit();
     }
 
     /**
@@ -548,7 +548,7 @@ class Utils
         }
 
 
-        $new_str = \CloudStore\App\Engine\Tools\Utils::rus2Lat((isset($new_str) ? $new_str : $str));
+        $new_str = \Jet\App\Engine\Tools\Utils::rus2Lat((isset($new_str) ? $new_str : $str));
         //$new_str = str_replace(' ', '-', trim($new_str));
         //$new_str = str_replace('\'', '', $new_str);
 
@@ -579,9 +579,9 @@ class Utils
         $mail->Host = "smtp.gmail.com";
         $mail->Port = 465; // or 587
         $mail->IsHTML(true);
-        $mail->Username = \CloudStore\App\Engine\Config\Config::$mail['email'];
-        $mail->Password = \CloudStore\App\Engine\Config\Config::$mail['password'];
-        $mail->SetFrom($mailFrom, \CloudStore\App\Engine\Config\Config::$config['site_name']);
+        $mail->Username = \Jet\App\Engine\Config\Config::$mail['email'];
+        $mail->Password = \Jet\App\Engine\Config\Config::$mail['password'];
+        $mail->SetFrom($mailFrom, \Jet\App\Engine\Config\Config::$config['site_name']);
         $mail->Subject = $subject;
         $mail->Body = $body;
         if ($data) {
@@ -594,10 +594,10 @@ class Utils
             }
         }
         $mail->AddAddress($mailTo);
-        //$mail->addReplyTo(\CloudStore\App\Engine\Config\Config::$config['developer_email'], $subject.' (replied)');
+        //$mail->addReplyTo(\Jet\App\Engine\Config\Config::$config['developer_email'], $subject.' (replied)');
 
         if (!$mail->Send()) {
-//            \CloudStore\App\Engine\Core\System::exceptionToFile($mail->ErrorInfo);
+//            \Jet\App\Engine\Core\System::exceptionToFile($mail->ErrorInfo);
             return false;
         }
 
@@ -684,8 +684,8 @@ class Utils
     public static function validateUser()
     {
         $id = Request::getSession("user_id");
-        $user = CloudStore::$app->store->loadOne("users", ["users_id" => $id]);
-        if ($user['users_session_token'] !== \CloudStore\App\Engine\Tools\Request::getSession("user_token")) {
+        $user = PHPJet::$app->store->loadOne("users", ["users_id" => $id]);
+        if ($user['users_session_token'] !== \Jet\App\Engine\Tools\Request::getSession("user_token")) {
             return false;
         }
         return true;

@@ -1,16 +1,16 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Items;
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\App\MVC\Client\Models\ModelItems;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\Items;
+use Jet\App\Engine\Core\Widget;
+use Jet\App\MVC\Client\Models\ModelItems;
+use Jet\PHPJet;
 
 /**
  * Class WidgetMenu
- * @package CloudStore\App\MVC\Client\Widgets
+ * @package Jet\App\MVC\Client\Widgets
  */
 class WidgetMenu extends Widget
 {
@@ -29,7 +29,7 @@ class WidgetMenu extends Widget
     public function __construct(Widget $widget = null)
     {
         parent::__construct($widget);
-        $this->host = CloudStore::$app->router->getHost() . '/';
+        $this->host = PHPJet::$app->router->getHost() . '/';
 
         // i still this about it, not sure it is a good idea to use model in widgets. seems weird to me. we'll see
         if (property_exists($this->parent->controller, 'modelItems')) {
@@ -44,14 +44,14 @@ class WidgetMenu extends Widget
      */
     public function getHeaderMenu(): string
     {
-        $menu = CloudStore::$app->system->settings->getContext('menu_header', false);
+        $menu = PHPJet::$app->system->settings->getContext('menu_header', false);
         if (!$menu) {
             return '';
         }
 
         $menu = json_decode($menu, true);
         foreach ($menu as $key => $item) {
-            $menu[$key]['url'] = CloudStore::$app->router->getHost() . $item['url'];
+            $menu[$key]['url'] = PHPJet::$app->router->getHost() . $item['url'];
         }
         return $this->render('widget_menu_header', [
             'menu' => $menu

@@ -1,16 +1,16 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
 
-use CloudStore\App\Engine\ActiveRecord\Tables\Mods;
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\Mods;
+use Jet\App\Engine\Core\Widget;
+use Jet\PHPJet;
 
 /**
  * Class WidgetHot
- * @package CloudStore\App\MVC\Client\Widgets
+ * @package Jet\App\MVC\Client\Widgets
  */
 class WidgetHot extends Widget
 {
@@ -37,7 +37,7 @@ class WidgetHot extends Widget
     public function __construct(Widget $widget = null)
     {
         parent::__construct($widget);
-        $this->host = CloudStore::$app->router->getHost() . '/';
+        $this->host = PHPJet::$app->router->getHost() . '/';
     }
 
     /**

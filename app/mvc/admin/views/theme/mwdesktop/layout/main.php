@@ -4,8 +4,8 @@
  * @var WidgetMisc $this->widget->widgetMisc
  */
 
-use CloudStore\App\Engine\Core\View;
-use CloudStore\App\MVC\Admin\Widgets\WidgetMisc; ?>
+use Jet\App\Engine\Core\View;
+use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>
 <html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
@@ -21,7 +21,7 @@ use CloudStore\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <meta charset="UTF-8">
 
     <!-- CSRF TOKEN (CO) -->
-    <meta name="csrf_token" content="<?= \CloudStore\CloudStore::$app->system->token->generateToken() ?>">
+    <meta name="csrf_token" content="<?= \Jet\PHPJet::$app->system->token->generateToken() ?>">
 
     <meta name="theme-color" content="#000">
     <!-- Color theme for Chrome, Firefox and Opera -->
@@ -51,11 +51,11 @@ use CloudStore\App\MVC\Admin\Widgets\WidgetMisc; ?>
 
     <script type="text/javascript" class="globalVariables">
         let globalSystemActions = {};
-        const globalSystemHost = "<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>";
-        const globalSystemRootURL = "<?php echo \CloudStore\CloudStore::$app->router->getURL(); ?>";
+        const globalSystemHost = "<?php echo \Jet\PHPJet::$app->router->getHost(); ?>";
+        const globalSystemRootURL = "<?php echo \Jet\PHPJet::$app->router->getURL(); ?>";
         const globalDesktopMisc = JSON.parse('<?php echo json_encode([
             'logotype' => $this->widget->widgetMisc->getLogotype(),
-            'engineVersion' => \CloudStore\CloudStore::$app->system->getEngineVersion()
+            'engineVersion' => \Jet\PHPJet::$app->system->getEngineVersion()
         ])?>');
     </script>
 

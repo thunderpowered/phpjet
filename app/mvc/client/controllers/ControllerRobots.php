@@ -6,14 +6,14 @@
  * Time: 7:50
  */
 
-namespace CloudStore\App\Engine\Controllers;
+namespace Jet\App\Engine\Controllers;
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\Engine\Core\Router;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\Router;
 
 /**
  * Class ControllerRobots
- * @package CloudStore\App\Engine\Controllers
+ * @package Jet\App\Engine\Controllers
  * @deprecated
  */
 class ControllerRobots extends Controller

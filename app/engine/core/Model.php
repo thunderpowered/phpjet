@@ -1,6 +1,6 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
 /**
  *
@@ -10,7 +10,7 @@ namespace CloudStore\App\Engine\Core;
  */
 /**
  * Class Model
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Model
 {

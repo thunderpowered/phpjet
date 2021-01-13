@@ -15,7 +15,7 @@
             <div class="col-3 header__logotype" data-background="<?php echo $this->widget->widgetLogotype->getLogotype(); ?>">
                 <div class="p-3 header__logotype-wrapper">
                     <div style="background-image: url('<?php echo $this->widget->widgetLogotype->getLogotype(); ?>')" class="header__logotype-image"></div>
-                    <a title="<?php echo \CloudStore\App\Engine\Config\Config::$config['site_name']; ?>" href="<?php echo \CloudStore\CloudStore::$app->router->getHost(); ?>" class="header__logotype-link"></a>
+                    <a title="<?php echo \Jet\App\Engine\Config\Config::$config['site_name']; ?>" href="<?php echo \Jet\PHPJet::$app->router->getHost(); ?>" class="header__logotype-link"></a>
                 </div>
             </div>
             <div class="col-6 flex-nowrap justify-content-start align-items-baseline header__menu-wrapper">

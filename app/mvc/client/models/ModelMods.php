@@ -1,15 +1,15 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Models;
+namespace Jet\App\MVC\Client\Models;
 
 
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Model;
+use Jet\PHPJet;
 
 /**
  * Class ModelMods
- * @package CloudStore\App\MVC\Client\Models
+ * @package Jet\App\MVC\Client\Models
  * @deprecated
  */
 class ModelMods extends Model
@@ -42,7 +42,7 @@ class ModelMods extends Model
      */
     public function getModsLastMonth(): array
     {
-        $result = CloudStore::$app->tool->cache->getCache(__CLASS__, __FUNCTION__);
+        $result = PHPJet::$app->tool->cache->getCache(__CLASS__, __FUNCTION__);
         if ($result) {
             return json_decode($result, true);
         }
@@ -52,7 +52,7 @@ class ModelMods extends Model
             $result = array_shift($result);
         }
 
-        CloudStore::$app->tool->cache->setCache(__CLASS__, __FUNCTION__, json_encode($result));
+        PHPJet::$app->tool->cache->setCache(__CLASS__, __FUNCTION__, json_encode($result));
         return $result;
     }
 }

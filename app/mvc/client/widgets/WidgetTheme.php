@@ -1,13 +1,13 @@
 <?php
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Widget;
+use Jet\PHPJet;
 
 /**
  * Class WidgetTheme
- * @package CloudStore\App\MVC\Client\Widgets
+ * @package Jet\App\MVC\Client\Widgets
  */
 class WidgetTheme extends Widget
 {
@@ -41,7 +41,7 @@ class WidgetTheme extends Widget
         return;
 
 
-        $theme = CloudStore::$app->system->settings->getContext('theme');
+        $theme = PHPJet::$app->system->settings->getContext('theme');
         if (!$theme) {
             return;
         }

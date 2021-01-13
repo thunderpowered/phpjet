@@ -17,7 +17,7 @@
         <p>Произошла ошибка на сайте. Мы уже получили сообщение об этом. Попробуйте, пожалуйста, еще раз через некоторое время.</p>
         <hr>
         <p>
-            <a href="<?= \CloudStore\CloudStore::$app->router->getHost() ?>" class="btn">Вернуться на главную</a>
+            <a href="<?= \Jet\PHPJet::$app->router->getHost() ?>" class="btn">Вернуться на главную</a>
         </p>
     </div>
     </body>

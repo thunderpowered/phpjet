@@ -1,10 +1,10 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App;
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+use Jet\App;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 
 /**
  *
@@ -15,7 +15,7 @@ use CloudStore\CloudStore;
 
 /**
  * Class Controller
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Controller
 {
@@ -71,6 +71,10 @@ class Controller
      * @var string
      */
     protected $urlTokenURLKey = 'token';
+    /**
+     * @var array
+     */
+    protected $routingRules = [];
 
     /**
      * Controller constructor.
@@ -84,17 +88,10 @@ class Controller
 
         global $app;
         $this->app = $app;
-
         if ($enableTracker) {
-            CloudStore::$app->system->tracker->manageTable();
-            CloudStore::$app->system->tracker->trackEverythingYouFind();
+            PHPJet::$app->system->tracker->manageTable();
+            PHPJet::$app->system->tracker->trackEverythingYouFind();
         }
-
-        if ($this->tokenRequired) {
-            $this->checkToken();
-        }
-
-        $this->checkQueryMethod();
     }
 
     /**
@@ -168,48 +165,36 @@ class Controller
      */
     public function getURLCanonical(): string
     {
-        return '<link rel="canonical" href="' . CloudStore::$app->router->getURL() . '">';
-    }
-
-    private function checkQueryMethod()
-    {
-        $method = CloudStore::$app->system->request->getSERVER('REQUEST_METHOD');
-        if (!in_array($method, $this->methods)) {
-            // it is not good idea actually to say which methods are allowed
-            // the less they know the better
-            // so just show 404
-            return CloudStore::$app->router->errorPage404(true);
-//            CloudStore::$app->exit("Only " . implode('/', $this->methods) .  " allowed.");
-        }
-
-        // POST queries should contain some data, at least only CSRF-token
-        if ($method === 'POST' && !CloudStore::$app->system->request->checkCSRFToken()) {
-
-            return CloudStore::$app->router->errorPage404(true);
-//            CloudStore::$app->exit('Empty POST-queries are not allowed.');
-        }
-        return true;
+        return '<link rel="canonical" href="' . PHPJet::$app->router->getURL() . '">';
     }
 
     /**
-     * @param bool $dieOnFalse
      * @return bool
      */
-    private function checkToken(bool $dieOnFalse = true): bool
+    public function isTokenRequired(): bool
     {
-        $urlToken = CloudStore::$app->system->request->getGET($this->urlTokenURLKey);
-        $urlTokenSession = CloudStore::$app->system->request->getSESSION($this->urlTokenSessionKey);
-        if (!$urlToken || !$urlTokenSession || $urlToken !== $urlTokenSession) {
-            if ($dieOnFalse) {
-                // not die, but show 404 page
-                // let fuckers know that there's nothing here by this url
-                return CloudStore::$app->router->errorPage404(true);
-            }
+        return $this->tokenRequired;
+    }
 
-            return false;
-        }
+    /**
+     * @return string
+     */
+    public function getURLTokenURLKey(): string
+    {
+        return $this->urlTokenURLKey;
+    }
 
-        return true;
+    public function getURLTokenSessionKey(): string
+    {
+        return $this->urlTokenSessionKey;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSupportedQueryMethods(): array
+    {
+        return $this->methods;
     }
 
     public function __clone()

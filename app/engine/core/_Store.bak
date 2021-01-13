@@ -1,13 +1,13 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 
 /**
  * Class Store
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  * @deprecated
  */
 class Store
@@ -526,10 +526,10 @@ class Store
         if (!in_array($table, $this->tables)) {
             // i decided not to put name of the table
             if (Config::$dev['debug']) {
-                CloudStore::$app->exit("Table {$table} does not exist.");
+                PHPJet::$app->exit("Table {$table} does not exist.");
             }
 
-            CloudStore::$app->exit('Database error. See logs for information.');
+            PHPJet::$app->exit('Database error. See logs for information.');
         }
 
         // check view
@@ -540,10 +540,10 @@ class Store
             $result = $this->dangerouslySendQueryWithoutPreparation($sql);
             if (!$result) {
                 if (Config::$dev['debug']) {
-                    CloudStore::$app->exit("View {$viewName} does not exist and it's impossible to create one.");
+                    PHPJet::$app->exit("View {$viewName} does not exist and it's impossible to create one.");
                 }
 
-                CloudStore::$app->exit("Database error. See logs for information.");
+                PHPJet::$app->exit("Database error. See logs for information.");
             }
 
             // everything is fine
@@ -560,10 +560,10 @@ class Store
             $result = $this->dangerouslySendQueryWithoutPreparation($sql);
             if (!$result) {
                 if (Config::$dev['debug']) {
-                    CloudStore::$app->exit("Trigger {$triggerName} does not exist and it's impossible to create one.");
+                    PHPJet::$app->exit("Trigger {$triggerName} does not exist and it's impossible to create one.");
                 }
 
-                CloudStore::$app->exit("Database error. See logs for information.");
+                PHPJet::$app->exit("Database error. See logs for information.");
             }
         }
 
@@ -890,12 +890,12 @@ class Store
     private function removeSpecialChars($result)
     {
         if (!is_array($result) AND !is_object($result)) {
-            return CloudStore::$app->tool->utils->removeSpecialChars($result);
+            return PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
 
         for ($i = 0; $i < count($result); $i++) {
             foreach ($result[$i] as $key => $value) {
-                $result[$i][$key] = CloudStore::$app->tool->utils->removeSpecialChars($value);
+                $result[$i][$key] = PHPJet::$app->tool->utils->removeSpecialChars($value);
             }
         }
 

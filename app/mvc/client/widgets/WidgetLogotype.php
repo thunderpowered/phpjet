@@ -1,13 +1,13 @@
 <?php
 
-namespace CloudStore\App\MVC\Client\Widgets;
+namespace Jet\App\MVC\Client\Widgets;
 
-use CloudStore\App\Engine\Core\Widget;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Widget;
+use Jet\PHPJet;
 
 /**
  * Class WidgetLogotype
- * @package CloudStore\App\MVC\Client\Widgets
+ * @package Jet\App\MVC\Client\Widgets
  */
 class WidgetLogotype extends Widget
 {
@@ -48,13 +48,13 @@ class WidgetLogotype extends Widget
 
     private function loadLogotype(): void
     {
-        $this->favicon = CloudStore::$app->system->settings->getContext('favicon');
-        $this->favicon = CloudStore::$app->tool->utils->getImageLink($this->favicon);
+        $this->favicon = PHPJet::$app->system->settings->getContext('favicon');
+        $this->favicon = PHPJet::$app->tool->utils->getImageLink($this->favicon);
     }
 
     private function loadFavicon(): void
     {
-        $this->logotype = CloudStore::$app->system->settings->getContext('logotype');
-        $this->logotype = CloudStore::$app->tool->utils->getImageLink($this->logotype);
+        $this->logotype = PHPJet::$app->system->settings->getContext('logotype');
+        $this->logotype = PHPJet::$app->tool->utils->getImageLink($this->logotype);
     }
 }

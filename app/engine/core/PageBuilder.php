@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\CloudStore;
+use Jet\PHPJet;
 
 /**
  * Class PageBuilder
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class PageBuilder
 {
@@ -23,7 +23,7 @@ class PageBuilder
         [
             //
             'id' => 'itemsGroupedByDate',
-            'name' => 'Items grouped by date',
+            'name' => 'Items Grouped By Date',
             'params' => [
                 'sort' => [
                     'what' => 'rating',
@@ -77,13 +77,13 @@ class PageBuilder
      */
     public function getTemplates(): array
     {
-        $templates = \CloudStore\App\Engine\ActiveRecord\Tables\PageBuilder::get(['type' => 'template'], [], [], false);
+        $templates = \Jet\App\Engine\ActiveRecord\Tables\PageBuilder::get(['type' => 'template'], [], [], false);
         if (!$templates) {
             return [];
         }
 
         foreach ($templates as $key => $template) {
-            $templates->content = json_decode($template->content, true);
+            $template->content = json_decode($template->content, true);
         }
         return $templates;
     }
@@ -127,6 +127,6 @@ class PageBuilder
     private function loadPageBuilderContext(string $contextName, bool $removeSpecialChars = true): string
     {
         $contextKey = $this->contextKeyPrefix . $contextName;
-        return CloudStore::$app->system->settings->getContext($contextKey, $removeSpecialChars);
+        return PHPJet::$app->system->settings->getContext($contextKey, $removeSpecialChars);
     }
 }

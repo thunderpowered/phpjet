@@ -1,13 +1,13 @@
 <?php
 
-namespace CloudStore\App\MVC\Admin\Controllers;
+namespace Jet\App\MVC\Admin\Controllers;
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Admin\Models\ModelAdmin;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\MVC\Admin\Models\ModelAdmin;
 
 /**
  * Class ControllerMain
- * @package CloudStore\App\MVC\Admin\Controllers
+ * @package Jet\App\MVC\Admin\Controllers
  */
 class ControllerMain extends Controller
 {

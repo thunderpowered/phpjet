@@ -1,6 +1,6 @@
 <?php
 
-namespace CloudStore\App;
+namespace Jet\App;
 
 /*
  *
@@ -9,21 +9,21 @@ namespace CloudStore\App;
  *
  */
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\Config\ConfigManager;
-use CloudStore\App\Engine\Config\Database;
-use CloudStore\App\Engine\Core\PageBuilder;
-use CloudStore\App\Engine\Core\Router;
-use CloudStore\App\Engine\Core\Selector;
-use CloudStore\App\Engine\Core\Store;
-use CloudStore\App\Engine\Core\System;
-use CloudStore\App\Engine\Core\Tool;
-use CloudStore\App\Engine\System\Error;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Config\ConfigManager;
+use Jet\App\Engine\Config\Database;
+use Jet\App\Engine\Core\PageBuilder;
+use Jet\App\Engine\Core\Router;
+use Jet\App\Engine\Core\Selector;
+use Jet\App\Engine\Core\Store;
+use Jet\App\Engine\Core\System;
+use Jet\App\Engine\Core\Tool;
+use Jet\App\Engine\System\Error;
+use Jet\PHPJet;
 
 /**
  * Class Startup
- * @package CloudStore\App\Engine
+ * @package Jet\App\Engine
  */
 class App
 {
@@ -114,9 +114,9 @@ class App
      */
     public function exit(string $message = '')
     {
-        CloudStore::$app->system->buffer->clearBuffer();
+        PHPJet::$app->system->buffer->clearBuffer();
         if ($message) {
-            $message = "\n\r" . 'CloudStore Engine Shutdown Message: ' . $message . "\n\r";
+            $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
         }
         exit($message);
     }

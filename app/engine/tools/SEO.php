@@ -1,12 +1,12 @@
 <?php
 
-namespace CloudStore\App\Engine\Tools;
+namespace Jet\App\Engine\Tools;
 
-use CloudStore\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\Controller;
 
 /**
  * Class SEO
- * @package CloudStore\App\Engine\Tools
+ * @package Jet\App\Engine\Tools
  */
 class SEO
 {

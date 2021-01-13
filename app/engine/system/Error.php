@@ -1,8 +1,8 @@
 <?php
 
-namespace CloudStore\App\Engine\System;
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+namespace Jet\App\Engine\System;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 use TheSeer\Tokenizer\Exception;
 
 /**
@@ -14,7 +14,7 @@ use TheSeer\Tokenizer\Exception;
 
 /**
  * Class ErrorHandler
- * @package CloudStore\App\Engine\Components
+ * @package Jet\App\Engine\Components
  */
 class Error
 {
@@ -55,7 +55,7 @@ class Error
         if (error_reporting()) {
             $this->errorToFile($errno, $errStr, $errFile, $errLine, 'errorCatcher');
         }
-//        CloudStore::$app->exit();
+//        PHPJet::$app->exit();
     }
 
     /**
@@ -118,8 +118,8 @@ class Error
     {
         $errorID = $this->generateErrorID();
         $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true);
-        echo CloudStore::$app->router->errorPage500();
-        CloudStore::$app->exit();
+        echo PHPJet::$app->router->errorPage500();
+        PHPJet::$app->exit();
     }
 
     /**
@@ -130,7 +130,7 @@ class Error
         $errorID = $this->generateErrorID();
         if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
             $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true);
-            echo CloudStore::$app->router->errorPage500();
+            echo PHPJet::$app->router->errorPage500();
         }
     }
 

@@ -1,9 +1,9 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 
 /**
  *
@@ -20,7 +20,7 @@ use CloudStore\CloudStore;
 
 /**
  * Class Widget
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Widget
 {
@@ -137,9 +137,9 @@ class Widget
 
         $widgetFilePath = WIDGET_TEMPLATES_PATH . $templateName . '.php';
         if (file_exists($widgetFilePath)) {
-            CloudStore::$app->system->buffer->createBuffer();
+            PHPJet::$app->system->buffer->createBuffer();
             require_once $widgetFilePath;
-            return CloudStore::$app->system->buffer->returnBuffer();
+            return PHPJet::$app->system->buffer->returnBuffer();
         }
 
         return '';
@@ -239,7 +239,7 @@ class Widget
     private function createConstants()
     {
         if (!defined('MVC_PATH')) {
-            CloudStore::$app->exit('MVC_PATH is not defined.');
+            PHPJet::$app->exit('MVC_PATH is not defined.');
         }
         if (defined('WIDGET_TEMPLATES_PATH')) {
             return;

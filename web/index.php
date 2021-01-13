@@ -30,7 +30,7 @@ define('IMAGES', 'storage/');
 define('THUMBNAILS', 'storage/thumbnails/');
 
 // Engine Core
-require_once(ROOT . 'CloudStore.php');
+require_once(ROOT . 'PHPJet.php');
 require_once(ROOT . 'app/App.php');
 
 // Load Composer's components
@@ -40,16 +40,16 @@ require_once(ROOT . 'vendor/autoload.php');
 require_once ENGINE . 'config/version.php';
 
 // Proceed everything
-\CloudStore\CloudStore::init();
-$result = \CloudStore\CloudStore::$app->start();
+\Jet\PHPJet::init();
+$result = \Jet\PHPJet::$app->start();
 echo $result;
 
 // Some debug info (temporary)
-if (!\CloudStore\CloudStore::$app->system->request->getPOST()) {
-    if (\CloudStore\App\Engine\Config\Config::$dev['debug']) {
+if (!\Jet\PHPJet::$app->system->request->getPOST()) {
+    if (\Jet\App\Engine\Config\Config::$dev['debug']) {
         echo '<!-- Generation time: ' .  (microtime(true) - $start) . ' s. -->';
-        echo '<!-- SQL-queries: ' .  \CloudStore\CloudStore::$app->store->getNumberOfQueries() . ' -->';
+        echo '<!-- SQL-queries: ' .  \Jet\PHPJet::$app->store->getNumberOfQueries() . ' -->';
     }
     // Just for Fun!
-    echo '<!-- ' .  \CloudStore\CloudStore::$app->system->getEngineVersion() . ' -->';
+    echo '<!-- ' .  \Jet\PHPJet::$app->system->getEngineVersion() . ' -->';
 }

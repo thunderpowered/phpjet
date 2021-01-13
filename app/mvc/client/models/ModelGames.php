@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Models;
+namespace Jet\App\MVC\Client\Models;
 
 
-use CloudStore\App\Engine\Core\Model;
+use Jet\App\Engine\Core\Model;
 
 /**
  * Class ModelGames
- * @package CloudStore\App\MVC\Client\Models
+ * @package Jet\App\MVC\Client\Models
  */
 class ModelGames extends Model
 {

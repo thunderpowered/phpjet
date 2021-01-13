@@ -1,15 +1,13 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Ajax\AjaxRouter;
-use CloudStore\App\Engine\Config;
-use CloudStore\App\MVC\Client\Controllers\ControllerPage;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config;
+use Jet\PHPJet;
 
 /**
  * Class Router
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class Router
 {
@@ -96,7 +94,7 @@ class Router
         $this->MVCSector = $this->rootURL ? $this->rootURL : Config\Config::$urlRules[''];
 
         define('MVC_SECTOR', $this->MVCSector);
-        define('MVC_PATH', CloudStore::$app->system->getMVCPath($this->rootURL));
+        define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->rootURL));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
         if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
@@ -105,15 +103,26 @@ class Router
             $this->controller = $this->getControllerObject();
         } else {
             // Default way
-            // CloudStore has a list of controller that may be included and executed
+            // PHPJet has a list of controller that may be included and executed
             // List of controllers is in the config
             $controllerName = $this->getControllerName(true);
-            if (!CloudStore::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
+            if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
                 return $this->errorPage404();
             }
 
             // Getting and including controller object
             $this->controller = $this->getControllerObject();
+        }
+
+        // check if this query method supported by controller
+        if (!$this->doesControllerSupportRequestMethod($this->controller)) {
+            return $this->errorPage404();
+        }
+
+        // check special url token
+        // mostly in use to 'hide' particular urls
+        if (!$this->checkURLToken($this->controller)) {
+            return $this->errorPage404();
         }
 
         // If there is no such controller
@@ -149,9 +158,9 @@ class Router
      */
     public function immediateResponse(string $content = '')
     {
-        CloudStore::$app->system->buffer->destroyBuffer();
+        PHPJet::$app->system->buffer->destroyBuffer();
         echo $content;
-        CloudStore::$app->exit();
+        PHPJet::$app->exit();
     }
     /**
      * @return string
@@ -207,7 +216,7 @@ class Router
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
             echo $result;
-            CloudStore::$app->exit();
+            PHPJet::$app->exit();
         }
 
         return $result;
@@ -227,7 +236,7 @@ class Router
         $part = $route[$part];
 
         // Using delimiters
-        $delimiterPosition = CloudStore::$app->tool->utils->strpos($part, $this->delimiter);
+        $delimiterPosition = PHPJet::$app->tool->utils->strpos($part, $this->delimiter);
         if ($delimiterPosition !== false && $cutToDelimiter) {
             $part = substr($part, 0, $delimiterPosition);
         }
@@ -248,11 +257,11 @@ class Router
             return $this->route;
         }
 
-        $requestURI = CloudStore::$app->system->request->getSERVER('REQUEST_URI');
+        $requestURI = PHPJet::$app->system->request->getSERVER('REQUEST_URI');
         $this->route = explode('/', $requestURI);
 
         if ($removeSpecialChars) {
-            $this->route = CloudStore::$app->tool->utils->removeSpecialChars($this->route);
+            $this->route = PHPJet::$app->tool->utils->removeSpecialChars($this->route);
         }
 
         return $this->route;
@@ -269,7 +278,7 @@ class Router
             $part = end($route);
         }
 
-        $delimiterPosition = CloudStore::$app->tool->utils->strpos($part, $this->delimiter);
+        $delimiterPosition = PHPJet::$app->tool->utils->strpos($part, $this->delimiter);
         if ($delimiterPosition !== false && $cut) {
             $part = substr($part, 0, $delimiterPosition);
         }
@@ -282,7 +291,7 @@ class Router
      */
     public function cutRouteString(string $string): string
     {
-        $delimiterPosition = CloudStore::$app->tool->utils->strpos($string, $this->delimiter);
+        $delimiterPosition = PHPJet::$app->tool->utils->strpos($string, $this->delimiter);
         return substr($string, 0, $delimiterPosition);
     }
     /**
@@ -293,7 +302,7 @@ class Router
         if (!empty(Config\Config::$config['domain'])) {
             return Config\Config::$config["domain"];
         }
-        return CloudStore::$app->system->request->getSERVER('HTTP_HOST');
+        return PHPJet::$app->system->request->getSERVER('HTTP_HOST');
     }
     /**
      * @return bool
@@ -308,7 +317,7 @@ class Router
      */
     public function getHost()
     {
-        $https = CloudStore::$app->system->request->getSERVER('HTTPS');
+        $https = PHPJet::$app->system->request->getSERVER('HTTPS');
         $scheme = "http://";
         if ($https) {
             $scheme = "https://";
@@ -321,10 +330,10 @@ class Router
      */
     public static function getRequestURI(bool $removeSpecialChars = true): string
     {
-        $request = CloudStore::$app->system->request->getSERVER('REQUEST_URI');
+        $request = PHPJet::$app->system->request->getSERVER('REQUEST_URI');
 
         if ($removeSpecialChars) {
-            return CloudStore::$app->tool->utils->removeSpecialChars($request);
+            return PHPJet::$app->tool->utils->removeSpecialChars($request);
         } else {
             return $request;
         }
@@ -335,7 +344,7 @@ class Router
      */
     public function getURN(): string
     {
-        return CloudStore::$app->system->request->getSERVER('REQUEST_URI');
+        return PHPJet::$app->system->request->getSERVER('REQUEST_URI');
     }
     /**
      * @param bool $addHost
@@ -343,7 +352,7 @@ class Router
      */
     public function getURL(bool $addHost = true): string
     {
-        $url = CloudStore::$app->system->request->getSERVER('REQUEST_URI');
+        $url = PHPJet::$app->system->request->getSERVER('REQUEST_URI');
         if ($addHost) {
             $url = $this->getHost() . $url;
         }
@@ -373,13 +382,13 @@ class Router
         // Namespace sector
         $MVCRoot = $this->rootURL ? ucfirst($this->rootURL) : ucfirst(Config\Config::$urlRules['']);
         // Create full controller name with namespace
-        $Class = "\CloudStore\App\MVC\\$MVCRoot\Controllers\\" . $name;
+        $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $name;
         // Create object
         if (class_exists($Class)) {
             $controller = new $Class($name, true);
         } else {
             // If there is no such class
-            CloudStore::$app->exit("Class '{$Class}' Not Found");
+            PHPJet::$app->exit("Class '{$Class}' Not Found");
         }
 
         // Create and set view
@@ -421,7 +430,7 @@ class Router
      */
     public function setControllerName(string $controllerName): bool
     {
-        if (!CloudStore::$app->system->isControllerActive($controllerName, $this->MVCSector, true)) {
+        if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector, true)) {
             return false;
         }
 
@@ -446,7 +455,7 @@ class Router
         $name = ucfirst($name);
         $name = 'Model' . $name;
 
-        $Class = '\CloudStore\App\Engine\Models\\' . $name;
+        $Class = '\Jet\App\Engine\Models\\' . $name;
         if (MVC_PATH !== ENGINE) {
             $Class = '\Site\Content\Models\\' . $name;
         }
@@ -502,7 +511,7 @@ class Router
     public function redirect(string $url, $code = 301): void
     {
         header("Location: " . $url, true, $code);
-        CloudStore::$app->exit();
+        PHPJet::$app->exit();
     }
     /**
      * @param string $url
@@ -515,6 +524,49 @@ class Router
     public function goHome(): void
     {
         header("Location: " . $this->getHost(), true, 301);
-        CloudStore::$app->exit();
+        PHPJet::$app->exit();
+    }
+
+    /**
+     * @param Controller $controller
+     * @return bool
+     */
+    private function doesControllerSupportRequestMethod(Controller $controller): bool
+    {
+        $supportedMethods = $controller->getSupportedQueryMethods();
+        $actualMethod = PHPJet::$app->system->request->getRequestMethod();
+        if (!in_array($actualMethod, $supportedMethods)) {
+            return false;
+        }
+
+        // and also check the special case
+        // by PHPJet agreement all POST-queries must contain valid csrf-token
+        if ($actualMethod === 'POST' && !PHPJet::$app->system->request->checkCSRFToken()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param Controller $controller
+     * @return bool
+     */
+    private function checkURLToken(Controller $controller): bool
+    {
+        $isURLTokenRequired = $controller->isTokenRequired();
+        if (!$isURLTokenRequired) {
+            return true;
+        }
+
+        $URLTokenURLKey = $controller->getURLTokenURLKey();
+        $URlTokenSessionKey = $controller->getURLTokenSessionKey();
+        $tokenInURL = PHPJet::$app->system->request->getGET($URLTokenURLKey);
+        $tokenInSession = PHPJet::$app->system->request->getSESSION($URlTokenSessionKey);
+        if (!$tokenInURL || !$tokenInURL || $tokenInURL !== $tokenInSession) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -1,19 +1,19 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Config;
-use CloudStore\App\Engine\System\Buffer;
-use CloudStore\App\Engine\System\Mail;
-use CloudStore\App\Engine\System\Request;
-use CloudStore\App\Engine\System\Settings;
-use CloudStore\App\Engine\System\Token;
-use CloudStore\App\Engine\System\Tracker;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config;
+use Jet\App\Engine\System\Buffer;
+use Jet\App\Engine\System\Mail;
+use Jet\App\Engine\System\Request;
+use Jet\App\Engine\System\Settings;
+use Jet\App\Engine\System\Token;
+use Jet\App\Engine\System\Tracker;
+use Jet\PHPJet;
 
 /**
  * Class System
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class System
 {
@@ -98,7 +98,7 @@ class System
      */
     public static function getSettingsSingle(string $setting_name)
     {
-        return CloudStore::$app->store->loadOne("settings", ["settings_name" => $setting_name], false);
+        return PHPJet::$app->store->loadOne("settings", ["settings_name" => $setting_name], false);
     }
 
     /**
@@ -109,7 +109,7 @@ class System
      */
     public static function getSettingsSection(string $section)
     {
-        return CloudStore::$app->store->loadOne("settings", ["settings_section" => $section]);
+        return PHPJet::$app->store->loadOne("settings", ["settings_section" => $section]);
     }
 
     /**
@@ -119,7 +119,7 @@ class System
      */
     public static function getAllSettings()
     {
-        return CloudStore::$app->store->load("settings");
+        return PHPJet::$app->store->load("settings");
     }
 
     /**

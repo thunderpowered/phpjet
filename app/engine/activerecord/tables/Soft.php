@@ -1,14 +1,14 @@
 <?php
 
 
-namespace CloudStore\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Engine\ActiveRecord\Tables;
 
 
-use CloudStore\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\ActiveRecord;
 
 /**
  * Class Games
- * @package CloudStore\App\Engine\ActiveRecord\Tables
+ * @package Jet\App\Engine\ActiveRecord\Tables
  * @deprecated
  */
 class Soft extends ActiveRecord

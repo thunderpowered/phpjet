@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Client\Controllers;
+namespace Jet\App\MVC\Client\Controllers;
 
-use CloudStore\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\Controller;
 
 /**
  * Class ControllerGames
- * @package CloudStore\App\MVC\Client\Controllers
+ * @package Jet\App\MVC\Client\Controllers
  */
 class ControllerGames extends Controller
 {

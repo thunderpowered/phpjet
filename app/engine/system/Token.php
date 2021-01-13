@@ -1,13 +1,13 @@
 <?php
 
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
-use CloudStore\CloudStore;
+use Jet\PHPJet;
 
 /**
  * Class Token
- * @package CloudStore\App\Engine\System
+ * @package Jet\App\Engine\System
  */
 class Token
 {
@@ -38,7 +38,7 @@ class Token
     {
         if (!$this->csrfToken) {
             $this->csrfToken = $this->generateHash();
-            CloudStore::$app->system->request->setSESSION($this->sessionCSRFTokenKey, $this->csrfToken);
+            PHPJet::$app->system->request->setSESSION($this->sessionCSRFTokenKey, $this->csrfToken);
         }
 
         return $this->csrfToken;

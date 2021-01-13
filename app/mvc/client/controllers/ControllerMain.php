@@ -1,14 +1,14 @@
 <?php
 
-namespace CloudStore\App\MVC\Client\Controllers;
+namespace Jet\App\MVC\Client\Controllers;
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\App\MVC\Client\Models\ModelItems;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Controller;
+use Jet\App\MVC\Client\Models\ModelItems;
+use Jet\PHPJet;
 
 /**
  * Class ControllerMain
- * @package CloudStore\App\MVC\Client\Controllers
+ * @package Jet\App\MVC\Client\Controllers
  */
 class ControllerMain extends Controller
 {
@@ -34,8 +34,8 @@ class ControllerMain extends Controller
         parent::__construct($name, $enableTracker);
 
         // load from settings
-        $this->SEO['description'] = CloudStore::$app->system->settings->getContext('site_description');
-        $this->SEO['title'] = CloudStore::$app->system->settings->getContext('site_name');
+        $this->SEO['description'] = PHPJet::$app->system->settings->getContext('site_description');
+        $this->SEO['title'] = PHPJet::$app->system->settings->getContext('site_name');
 
         $this->modelItems = new ModelItems();
     }

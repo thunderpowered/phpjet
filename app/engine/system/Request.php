@@ -1,9 +1,9 @@
 <?php
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
 
 /**
  *
@@ -148,7 +148,7 @@ class Request
         }
 
         if ($removeSpecialChars) {
-            $result = CloudStore::$app->tool->utils->removeSpecialChars($result);
+            $result = PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
 
         return $result;
@@ -184,7 +184,7 @@ class Request
         }
 
         if ($removeSpecialChars) {
-            $result = CloudStore::$app->tool->utils->removeSpecialChars($result);
+            $result = PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
 
         return $result;
@@ -241,7 +241,7 @@ class Request
         }
 
         if ($removeSpecialChars) {
-            $result = CloudStore::$app->tool->utils->removeSpecialChars($result);
+            $result = PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
 
         return $result;
@@ -341,9 +341,9 @@ class Request
     public function checkCSRFToken(bool $dieOnFalse = false): bool
     {
         $token = $this->post[$this->CSRFTokenKey] ?? null;
-        if (!$token || !CloudStore::$app->system->token->validateToken($token)) {
+        if (!$token || !PHPJet::$app->system->token->validateToken($token)) {
             if ($dieOnFalse) {
-                CloudStore::$app->exit('Invalid CSRF-Token.');
+                PHPJet::$app->exit('Invalid CSRF-Token.');
             }
             return false;
         }

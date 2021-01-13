@@ -1,16 +1,16 @@
 <?php
 
 
-namespace CloudStore\App\MVC\Admin\Models;
+namespace Jet\App\MVC\Admin\Models;
 
 
-use CloudStore\App\Engine\ActiveRecord\Tables\PageBuilder;
-use CloudStore\App\Engine\Core\Model;
-use CloudStore\CloudStore;
+use Jet\App\Engine\ActiveRecord\Tables\PageBuilder;
+use Jet\App\Engine\Core\Model;
+use Jet\PHPJet;
 
 /**
  * Class ModelPages
- * @package CloudStore\App\MVC\Admin\Models
+ * @package Jet\App\MVC\Admin\Models
  */
 class ModelPages extends Model
 {
@@ -21,7 +21,7 @@ class ModelPages extends Model
     {
         $pages = PageBuilder::get(['type' => 'page']);
         foreach ($pages as $key => $page) {
-            $page->since = CloudStore::$app->tool->formatter->formatDateString($page->since);
+            $page->since = PHPJet::$app->tool->formatter->formatDateString($page->since);
         }
         return $pages;
     }
@@ -38,7 +38,7 @@ class ModelPages extends Model
         }
 
         $page->content = json_decode($page->content, true);
-        $page->since = CloudStore::$app->tool->formatter->formatDateString($page->since);
+        $page->since = PHPJet::$app->tool->formatter->formatDateString($page->since);
         return $page;
     }
 }

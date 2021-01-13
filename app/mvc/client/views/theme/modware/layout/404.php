@@ -13,7 +13,7 @@
     <p>Запрашиваемой страницы не существует</p>
     <hr>
     <p>
-        <a href="<?= \CloudStore\CloudStore::$app->router->getHost() ?>" class="btn">Вернуться на главную</a>
+        <a href="<?= \Jet\PHPJet::$app->router->getHost() ?>" class="btn">Вернуться на главную</a>
     </p>
 </div>
 </body>

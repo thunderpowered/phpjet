@@ -1,10 +1,10 @@
 <?php
 
-namespace CloudStore\App\Engine\Core;
+namespace Jet\App\Engine\Core;
 
-use CloudStore\App\Engine\Config\Config;
-use CloudStore\App\Engine\System\Buffer;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\System\Buffer;
+use Jet\PHPJet;
 
 /**
  *
@@ -20,7 +20,7 @@ use CloudStore\CloudStore;
 
 /**
  * Class View
- * @package CloudStore\App\Engine\Core
+ * @package Jet\App\Engine\Core
  */
 class View
 {
@@ -80,7 +80,7 @@ class View
      * View constructor.
      * @param Controller|null $controller
      */
-    public function __construct(Controller $controller = null)
+    public function __construct(Controller $controller)
     {
         $this->themePath = MVC_SECTOR . '/';
         $this->loadTheme();
@@ -90,7 +90,7 @@ class View
         $this->widget = new Widget();
         $this->widget->setController($controller);
 
-        $this->buffer = CloudStore::$app->system->buffer;
+        $this->buffer = PHPJet::$app->system->buffer;
     }
 
     public function loadWidgets()
@@ -128,7 +128,7 @@ class View
      */
     public function returnHTMLOutput(string $templateName = "default", array $data = array()): string
     {
-        $templatePath = VIEW_PATH . 'pages/' . CloudStore::$app->router->getControllerName(true) . '/' . $templateName . '.php';
+        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
         if (!file_exists($templatePath)) {
             return "";
         }
@@ -273,10 +273,10 @@ class View
      */
     public function getTemplateName(): string
     {
-        $routes = CloudStore::$app->router->getRoute();
+        $routes = PHPJet::$app->router->getRoute();
 
         if (!empty($routes[1])) {
-            $this->defaultTemplate = strtolower(CloudStore::$app->tool->utils->removeSpecialChars($routes[1]));
+            $this->defaultTemplate = strtolower(PHPJet::$app->tool->utils->removeSpecialChars($routes[1]));
         }
         return $this->templatePrefix . $this->defaultTemplate;
     }
@@ -302,9 +302,9 @@ class View
 
     private function loadTheme()
     {
-        $theme = CloudStore::$app->system->settings->getContext('theme');
+        $theme = PHPJet::$app->system->settings->getContext('theme');
         if (!$theme) {
-            CloudStore::$app->exit('No theme to load. Open CloudStore Administrator Panel and select the theme.');
+            PHPJet::$app->exit('No theme to load. Open PHPJet Administrator Panel and select the theme.');
         }
 
         if (array_key_exists($theme, Config::$availableThemes[MVC_SECTOR])) {
@@ -327,7 +327,7 @@ class View
             return false;
         }
 
-        $host = CloudStore::$app->router->getHost();
+        $host = PHPJet::$app->router->getHost();
 
         // Creating constants for HTML-templates
         define("THEME_LAYOUT", Config::$availableThemes[MVC_SECTOR][$this->theme]['layout'] . '/');

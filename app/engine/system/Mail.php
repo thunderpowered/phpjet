@@ -1,11 +1,11 @@
 <?php
 
 
-namespace CloudStore\App\Engine\System;
+namespace Jet\App\Engine\System;
 
 /**
  * Class Mail
- * @package CloudStore\App\Engine\System
+ * @package Jet\App\Engine\System
  * @deprecated until fixed
  */
 class Mail
@@ -29,9 +29,9 @@ class Mail
         $mail->Host = "smtp.gmail.com";
         $mail->Port = 465; // or 587
         $mail->IsHTML(true);
-        $mail->Username = \CloudStore\App\Engine\Config\Config::$mail['email'];
-        $mail->Password = \CloudStore\App\Engine\Config\Config::$mail['password'];
-        $mail->SetFrom($mailFrom, \CloudStore\App\Engine\Config\Config::$config['site_name']);
+        $mail->Username = \Jet\App\Engine\Config\Config::$mail['email'];
+        $mail->Password = \Jet\App\Engine\Config\Config::$mail['password'];
+        $mail->SetFrom($mailFrom, \Jet\App\Engine\Config\Config::$config['site_name']);
         $mail->Subject = $subject;
         $mail->Body = $body;
         if ($data) {
@@ -44,10 +44,10 @@ class Mail
             }
         }
         $mail->AddAddress($mailTo);
-        //$mail->addReplyTo(\CloudStore\App\Engine\Config\Config::$config['developer_email'], $subject.' (replied)');
+        //$mail->addReplyTo(\Jet\App\Engine\Config\Config::$config['developer_email'], $subject.' (replied)');
 
         if (!$mail->Send()) {
-//            \CloudStore\App\Engine\Core\System::exceptionToFile($mail->ErrorInfo);
+//            \Jet\App\Engine\Core\System::exceptionToFile($mail->ErrorInfo);
             return false;
         }
 

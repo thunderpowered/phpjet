@@ -1,13 +1,13 @@
 <?php
 
-namespace CloudStore\App\MVC\Client\Controllers;
+namespace Jet\App\MVC\Client\Controllers;
 
-use CloudStore\App\Engine\Core\Controller;
-use CloudStore\CloudStore;
+use Jet\App\Engine\Core\Controller;
+use Jet\PHPJet;
 
 /**
  * Class ControllerPage
- * @package CloudStore\App\MVC\Client\Controllers
+ * @package Jet\App\MVC\Client\Controllers
  */
 class ControllerPage extends Controller
 {
@@ -25,17 +25,17 @@ class ControllerPage extends Controller
      */
     public function actionBasic(): string
     {
-        $url = CloudStore::$app->router->getURL(false);
+        $url = PHPJet::$app->router->getURL(false);
         // check exceptions first (for best performance)
-        $exception = CloudStore::$app->pageBuilder->getException($url);
+        $exception = PHPJet::$app->pageBuilder->getException($url);
         if ($exception) {
             return $this->executeAction($exception);
         }
 
         // ordinary way
-        $pageData = CloudStore::$app->pageBuilder->getPageData($url);
+        $pageData = PHPJet::$app->pageBuilder->getPageData($url);
         if (!$pageData) {
-            return CloudStore::$app->router->errorPage404();
+            return PHPJet::$app->router->errorPage404();
         }
 
         // quick note
@@ -57,6 +57,6 @@ class ControllerPage extends Controller
             return $object->$classAndFunction['function']();
         }
 
-        return CloudStore::$app->router->errorPage404();
+        return PHPJet::$app->router->errorPage404();
     }
 }
