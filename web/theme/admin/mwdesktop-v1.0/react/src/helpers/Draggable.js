@@ -5,6 +5,11 @@ export class Draggable {
         this.mouseCoordinates = this.prevCoordinates;
     }
 
+    setInitialCoordinates(mouseCoordinates, elementCoordinates) {
+        this.mouseCoordinates = mouseCoordinates;
+        this.elementCoordinates = elementCoordinates;
+    }
+
     dragElement(event, callback, preventOutOfScreen = true) {
         let differenceCoordinates = {
             top: event.clientY - this.mouseCoordinates.top,
@@ -20,10 +25,6 @@ export class Draggable {
             elementCoordinates.top = 0;
             // i feel like i should do the same for left, right and bottom
         }
-
-        console.log({top: event.clientY, left: event.clientX});
-        console.log(elementCoordinates);
-
         callback(elementCoordinates);
         this.elementCoordinates = elementCoordinates;
         this.mouseCoordinates = {top: event.clientY, left: event.clientX};

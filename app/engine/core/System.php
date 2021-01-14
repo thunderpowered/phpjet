@@ -152,7 +152,7 @@ class System
             $version = $version . ' (' . ENGINE_VER_RELEASE_NAME . ')';
         }
         if ($includeTitle) {
-            $version = 'Engine Version: ' . $version;
+            $version = 'PHPJet Version: ' . $version;
         }
 
         return $version;

@@ -530,6 +530,7 @@ class Router
     /**
      * @param Controller $controller
      * @return bool
+     * @deprecated
      */
     private function doesControllerSupportRequestMethod(Controller $controller): bool
     {
