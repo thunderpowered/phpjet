@@ -4,6 +4,7 @@ import {Draggable} from "../../../../../../helpers/Draggable";
 import Tab from 'react-bootstrap/Tab'
 import Tabs from 'react-bootstrap/Tabs';
 import {Chunk} from "./PageBuilderElements/Chunk";
+import {DefinitelyNotATree} from "../../../../../../structures/DefinitelyNotATree";
 
 // MAIN PAGE BUILDER COMPONENT
 // VERSION 1
@@ -24,8 +25,9 @@ export class WindowPageBuilder_v1 extends Component {
             },
             // rendered page (contains jsx array)
             page: {
-                // the same as with chunks
+                // js-object represents the page structure (including all content-json)
                 structure: {},
+                // array of processed React components (see recreatePageByArray function)
                 rendered: {}
             },
             // all available templates
@@ -34,7 +36,7 @@ export class WindowPageBuilder_v1 extends Component {
             template: {},
             // history of workspace changes (for undo/redo)
             history: [],
-            historyCursor: 0
+            historyCursor: -1
         };
 
         this.dictionary = {rows: {}};
@@ -51,7 +53,7 @@ export class WindowPageBuilder_v1 extends Component {
             chunks: {
                 structure: pageBuilderData.chunks,
                 rendered: pageBuilderData.chunks.map((chunk, index) => (
-                    <Chunk index={index} name={chunk.name} coordinates={{top: 0, left: 0}}
+                    <Chunk index={index} name={chunk.props.name} coordinates={{top: 0, left: 0}}
                            onDrugChunk={this.dragChunk.bind(this)}/>))
             },
             templates: pageBuilderData.templates
@@ -59,11 +61,48 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     renderPage(currentPage) {
-        this.setState(() => ({page: {...this.state.page, structure: currentPage}}), () => this.recreatePageByArray());
+        let pageContent = new DefinitelyNotATree(currentPage.content);
+        let pageRendered = this.recreatePageByArray2(pageContent.root);
+
+        this.setState(() => ({
+            page: {
+                structure: {...currentPage, content: pageContent},
+                rendered: pageRendered
+            },
+            history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
+                structure: {...currentPage, content: pageContent.returnSelf()},
+                rendered: pageRendered
+            }],
+            historyCursor: this.state.historyCursor + 1
+        }), () => {
+            this.props.onLoaded();
+        });
     }
 
-    // load and show the template
-    // we assume that everything is loaded fine and the structure is correct
+    recreatePageByArray2(root = this.state.page.structure.content.root, parentNodeIdentifier = []) {
+        let jsx = [];
+        for (let i = 0; i < root.children.length; i++) {
+            // that doesn't look right but at the moment i can't find other way
+            // (except, of course, using links to items, but i tried it and it complicates working with history way too much)
+            let nodeIdentifier = [...parentNodeIdentifier, i];
+
+            let childrenJsx = [];
+            if (typeof root.children[i].children !== 'undefined') {
+                childrenJsx = this.recreatePageByArray2(root.children[i], nodeIdentifier);
+            }
+
+            if (typeof root.children[i].type !== 'undefined') {
+                let type = root.children[i].type[0].toUpperCase() + root.children[i].type.slice(1);
+                jsx.push(this[`_pb_create${type}`](childrenJsx, root.children[i], nodeIdentifier)); // returns jsx
+            }
+        }
+
+        return jsx;
+    }
+
+    /**
+     * @deprecated
+     */
     recreatePageByArray() {
         let renderedPage = [];
         // outer loop through containers
@@ -87,7 +126,10 @@ export class WindowPageBuilder_v1 extends Component {
 
         this.setState(() => ({
             page: {...this.state.page, rendered: {content: renderedPage}},
-            history: [...this.state.history.splice(0, this.state.historyCursor + 1), {...this.state.page, rendered: {content: renderedPage}}]
+            history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
+                ...this.state.page,
+                rendered: {content: renderedPage}
+            }]
         }), () => {
             this.setState(() => ({
                 historyCursor: this.state.history.length - 1
@@ -96,8 +138,8 @@ export class WindowPageBuilder_v1 extends Component {
         });
     }
 
-    _pb_createContainer(innerJSX, container) {
-        return <div className={`PageBuilder__container theme__background-color3 mt-4 mb-4 p-3 ${container.container}`}>
+    _pb_createContainer(innerJSX, container, containerIdentifier) {
+        return <div className={`PageBuilder__container theme__background-color3 mt-4 mb-4 p-3 ${container.class}`}>
             <span className="PageBuilder__label d-block p-2 pt-3 pb-4">
                 Container
             </span>
@@ -107,35 +149,37 @@ export class WindowPageBuilder_v1 extends Component {
         </div>
     }
 
-    _pb_createRow(innerJSX, row = {}, tempContainerIndex, tempRowIndex) {
+    _pb_createRow(innerJSX, row, rowIdentifier) {
         // draggable target
         let columnRef = React.createRef();
         this.columnRefs.push(columnRef);
 
         // awful temp solution
         // todo add recursive level-free solution
-        let rowKey = tempContainerIndex.toString() + tempRowIndex.toString();
-        this.dictionary.rows[rowKey] = {tempContainer: tempContainerIndex, tempRow: tempRowIndex};
-        return <div className={`PageBuilder__column h-100 ${row.row}`}>
+        let rowKey = rowIdentifier.join();
+        this.dictionary.rows[rowKey] = rowIdentifier;
+        return <div className={`PageBuilder__column h-100 ${row.class}`}>
             <div data-rowkey={rowKey} ref={columnRef} title="Drag elements here"
                  className="PageBuilder__chunk-container PageBuilder__draggable-target d-flex flex-column justify-content-center align-items-center p-2 position-relative user-select-none">
                 {innerJSX}
                 {innerJSX.length < 1 &&
-                    <span className={'PageBuilder__column-label d-block position-absolute theme__fixed-absolute--center-keep-width fw-bold fs-3'}>{row.row}</span>
+                <span
+                    className={'PageBuilder__column-label d-block position-absolute theme__fixed-absolute--center-keep-width fw-bold fs-3'}>{row.class}</span>
                 }
             </div>
         </div>
     }
 
-    _pb_createChunk(chunk) {
+    _pb_createChunk(jsx, chunk, chunkIdentifier) {
         if (typeof chunk === 'object' && Object.keys(chunk).length) {
             return <div className={`PageBuilder__chunk p-2 w-100 h-100`}>
                 <div className="PageBuilder__chunk-inner p-3 d-flex justify-content-start align-items-center">
-                    <div className={'PageBuilder__chunk-name d-block p-2 pt-0 pb-0 d-flex justify-content-start align-items-center'}>
+                    <div
+                        className={'PageBuilder__chunk-name d-block p-2 pt-0 pb-0 d-flex justify-content-start align-items-center'}>
                         <div className="float-left">
                             <i className="fas fa-puzzle-piece fs-5"/>
                         </div>
-                        <div className={'p-3 pt-0 pb-0 float-left'}>{chunk.name}</div>
+                        <div className={'p-3 pt-0 pb-0 float-left'}>{chunk.props.name}</div>
                     </div>
                     <div className="PageBuilder__chunk-params">
 
@@ -145,32 +189,25 @@ export class WindowPageBuilder_v1 extends Component {
         }
     }
 
-    workspaceStateRollBack() {
-        let newHistoryCursor = this.state.historyCursor - 1;
+    workspaceStateRoll(newHistoryCursor) {
         if (typeof this.state.history[newHistoryCursor] === 'undefined') {
             return false;
         }
 
         this.setState(() => ({
-            page: this.state.history[newHistoryCursor],
-            historyCursor: newHistoryCursor
-        }));
-    }
-
-    workspaceStateRollForward() {
-        let newHistoryCursor = this.state.historyCursor + 1;
-        if (typeof this.state.history[newHistoryCursor] === 'undefined') {
-            return false;
-        }
-
-        this.setState(() => ({
-            page: this.state.history[newHistoryCursor],
+            page: {
+                structure: {...this.state.history[newHistoryCursor].structure, content: this.state.history[newHistoryCursor].structure.content.returnSelf()},
+                rendered: this.state.history[newHistoryCursor].rendered
+            },
             historyCursor: newHistoryCursor
         }));
     }
 
     workspaceSavePage() {
-        this.pageBuilder.savePage(this.state.page.structure);
+        this.pageBuilder.savePage({
+            ...this.state.page.structure,
+            content: this.state.page.structure.content.returnContent()
+        }, () => {});
     }
 
     workspaceSaveTemplate() {
@@ -216,17 +253,19 @@ export class WindowPageBuilder_v1 extends Component {
         this.mouseMoveCallback = (mouseMoveEvent) => {
             this.draggable.dragElement(mouseMoveEvent, (newCoordinates) => {
                 this.setState(() => (
-                    {chunks: {
-                        ...this.state.chunks,
-                        rendered: this.state.chunks.rendered.map((chunk, index) => (index === duplicatedIndex ? React.cloneElement(chunk, {
-                            ...chunk.props,
-                            style: {
-                                ...chunk.props.style,
-                                top: newCoordinates.top,
-                                left: newCoordinates.left
-                            }
-                        }) : chunk))
-                    }}
+                    {
+                        chunks: {
+                            ...this.state.chunks,
+                            rendered: this.state.chunks.rendered.map((chunk, index) => (index === duplicatedIndex ? React.cloneElement(chunk, {
+                                ...chunk.props,
+                                style: {
+                                    ...chunk.props.style,
+                                    top: newCoordinates.top,
+                                    left: newCoordinates.left
+                                }
+                            }) : chunk))
+                        }
+                    }
                 ));
 
                 // hide draggable element for a tiny moment
@@ -261,36 +300,24 @@ export class WindowPageBuilder_v1 extends Component {
         document.addEventListener('mouseup', () => {
             document.removeEventListener('mousemove', this.mouseMoveCallback);
             this.setState(() => (
-                {chunks: {...this.state.chunks, rendered: this.state.chunks.rendered.filter((item, index) => index !== duplicatedIndex)}}
+                {
+                    chunks: {
+                        ...this.state.chunks,
+                        rendered: this.state.chunks.rendered.filter((item, index) => index !== duplicatedIndex)
+                    }
+                }
             ));
             if (currentTarget) {
                 currentTarget.classList.remove('target-highlighted');
 
-                // put chunk into current target
-                // if it is not null -> mouse was up over it
+                // we stored rowKey into row itself
                 let chunk = this.state.chunks.structure[index];
                 let rowKey = currentTarget.getAttribute('data-rowkey');
-                let tempContainerIndex = this.dictionary.rows[rowKey].tempContainer;
-                let tempRowIndex = this.dictionary.rows[rowKey].tempRow;
+                let rowIdentifier = this.dictionary.rows[rowKey];
+                this.renderPage({
+                    ...this.state.page.structure, content: this.state.page.structure.content.insertElementByIndexArray(rowIdentifier, chunk).returnContent()
+                });
 
-                this.setState(() => (
-                    {
-                        page: {
-                            ...this.state.page,
-                            structure: {
-                                ...this.state.page.structure,
-                                content: [
-                                    ...this.state.page.structure.content,
-                                ]
-                            }
-                        }
-                    }
-                ));
-
-                this.dictionary.rows[rowKey].chunks.push(chunk);
-
-                // and force React to render component
-                this.setState(() => ({state: this.state}), () => this.recreatePageByArray());
                 currentTarget = null;
             }
         })
@@ -344,11 +371,11 @@ export class WindowPageBuilder_v1 extends Component {
                                 <div className="PageBuilder__workspace-controls d-flex">
                                     {/* page controls */}
                                     {/* todo: states (active/inactive) if no such available operations */}
-                                    <div onClick={this.workspaceStateRollBack.bind(this)}
+                                    <div onClick={() => this.workspaceStateRoll(this.state.historyCursor - 1)}
                                          className={`p-0 pt-3 pb-3 theme__cursor-pointer ${this.state.historyCursor > 0 ? 'theme__link-color--hover' : 'theme__element-inactive'}`}
                                          title={'Roll back to previous state'}><i className="fas fa-undo"/><span
                                         className="p-3 pb-0 pt-0">Undo</span></div>
-                                    <div onClick={this.workspaceStateRollForward.bind(this)}
+                                    <div onClick={() => this.workspaceStateRoll(this.state.historyCursor + 1)}
                                          className={`p-3 theme__cursor-pointer ${this.state.historyCursor < this.state.history.length - 1 ? 'theme__link-color--hover' : 'theme__element-inactive'}`}
                                          title={'Roll forward to next state'}><i className="fas fa-redo"/><span
                                         className="p-3 pb-0 pt-0">Redo</span></div>
@@ -386,7 +413,7 @@ export class WindowPageBuilder_v1 extends Component {
                                     Page Structure
                                 </span>
                                 {Object.keys(this.state.page.rendered).length &&
-                                this.state.page.rendered.content
+                                this.state.page.rendered
                                 }
                             </div>
                         </div>
@@ -408,14 +435,16 @@ export class WindowPageBuilder_v1 extends Component {
                                         className="PageBuilder__sidebar-section__item p-2 d-flex justify-content-start align-items-center">
                                         <input title={'Page URL'}
                                                className={'w-100 theme__border theme__border-color d-block p-2 theme__background-color3 theme__text-color'}
-                                               type={'text'} minLength={8} maxLength={60} placeholder={'Page URL...'} value={this.state.page.structure.url}
+                                               type={'text'} minLength={8} maxLength={60} placeholder={'Page URL...'}
+                                               value={this.state.page.structure.url}
                                                name={'pb_page_url'} id={'pb_page_url'}/>
                                     </div>
                                     <div
                                         className="PageBuilder__sidebar-section__item p-2 d-flex justify-content-start align-items-center">
                                         <input title={'Page title'}
                                                className={'w-100 theme__border theme__border-color d-block p-2 theme__background-color3 theme__text-color'}
-                                               type={'text'} minLength={8} maxLength={60} placeholder={'Page title...'} value={this.state.page.structure.title}
+                                               type={'text'} minLength={8} maxLength={60} placeholder={'Page title...'}
+                                               value={this.state.page.structure.title}
                                                name={'pb_page_title'} id={'pb_page_title'}/>
                                     </div>
 

@@ -38,7 +38,7 @@ class ModelPages extends Model
             return false;
         }
 
-        $page->content = json_decode($page->content, true);
+       $page->content = json_decode($page->content, true);
         $page->since = PHPJet::$app->tool->formatter->formatDateString($page->since);
         return $page;
     }
@@ -55,6 +55,12 @@ class ModelPages extends Model
 
         $url = PHPJet::$app->tool->formatter->anyStringToURLString($page['url']);
         $title = PHPJet::$app->tool->formatter->anyStringToSearchString($page['title']);
+
+        // todo validate content before just encoding
+        // things that should be checked
+        // 1. each node contains field 'type'
+        // 2. each chunk contains required info (described in PageBuilder)
+        // 3. each row contain either array of chunks or nothing
         $jsonContent = json_encode($page['content']);
         if (!$jsonContent) {
             return $this->sendResponseToController(false, 'Unable to serialize page structure');

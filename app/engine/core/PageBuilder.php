@@ -19,11 +19,15 @@ class PageBuilder
      * @var array
      */
     private $chunks = [
-        // todo find the way to organize it better
         [
-            //
-            'id' => 'itemsGroupedByDate',
-            'name' => 'Items Grouped By Date',
+            'props' => [
+                'id' => 'itemsGroupedByDate',
+                'name' => 'Items Grouped By Date',
+                'jet' => [
+                    'class' => 'ControllerMain',
+                    'function' => 'actionBasic'
+                ]
+            ],
             'params' => [
                 'sort' => [
                     'what' => 'rating',
@@ -33,8 +37,7 @@ class PageBuilder
                 'limit' => 20,
                 'single' => true
             ],
-            'class' => 'ControllerMain',
-            'function' => 'actionBasic'
+            'children' => []
         ]
     ];
     /**
@@ -99,11 +102,32 @@ class PageBuilder
     }
 
     /**
+     * @param bool $includeType
      * @return array
      */
-    public function getChunks(): array
+    public function getChunks(bool $includeType = true): array
     {
-        return $this->chunks;
+        if (!$includeType) {
+            return $this->chunks;
+        }
+
+        $chunks = [];
+        // since PageBuilder has recursive architecture, each node MUST contain field 'type' just to determine what to do
+        foreach ($this->chunks as $key => $chunk) {
+            $chunk['type'] = 'chunk';
+            $chunks[] = $chunk;
+        }
+        return $chunks;
+    }
+
+    /**
+     * @param bool $includeType
+     * @return array
+     */
+    public function getNodes(bool $includeType = true): array
+    {
+        // todo
+        return [];
     }
 
     /**
