@@ -6,6 +6,7 @@ namespace Jet\App\MVC\Admin\Models;
 
 use Jet\App\Engine\ActiveRecord\Tables\PageBuilder;
 use Jet\App\Engine\Core\Model;
+use Jet\App\Engine\Tools\ModelResponse;
 use Jet\PHPJet;
 
 /**
@@ -41,4 +42,43 @@ class ModelPages extends Model
         $page->since = PHPJet::$app->tool->formatter->formatDateString($page->since);
         return $page;
     }
+
+    /**
+     * @param array $page
+     * @return ModelResponse
+     */
+    public function savePage(array $page): ModelResponse
+    {
+        if (!isset($page['content']) || !isset($page['url']) || !isset($page['title'])) {
+            return $this->sendResponseToController(false, 'Request does not contain required fields');
+        }
+
+        $url = PHPJet::$app->tool->formatter->anyStringToURLString($page['url']);
+        $title = PHPJet::$app->tool->formatter->anyStringToSearchString($page['title']);
+        $jsonContent = json_encode($page['content']);
+        if (!$jsonContent) {
+            return $this->sendResponseToController(false, 'Unable to serialize page structure');
+        }
+
+        if (!isset($page['id'])) {
+            // todo create page
+        }
+
+        $pageBuilder = PageBuilder::getOne(['id' => $page['id']]);
+        if (!$pageBuilder) {
+            return $this->sendResponseToController(false, 'Page does not exist');
+        }
+
+        $pageBuilder->content = $jsonContent;
+        $pageBuilder->title = $title;
+        $pageBuilder->url = $url;
+
+        $result = $pageBuilder->save();
+        if (!$result) {
+            $this->sendResponseToController(false, 'Unable to create new page');
+        }
+
+        return $this->sendResponseToController(true, 'Page successfully updated');
+    }
+
 }

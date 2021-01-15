@@ -33,7 +33,8 @@ export class WindowPageBuilder_v1 extends Component {
             // loaded template
             template: {},
             // history of workspace changes (for undo/redo)
-            history: {}
+            history: [],
+            historyCursor: 0
         };
 
         this.dictionary = {rows: {}};
@@ -79,14 +80,20 @@ export class WindowPageBuilder_v1 extends Component {
                 row.chunks.forEach((chunk, chunkIndex) => {
                     renderedPage[containerIndex].rows[rowIndex].chunks[chunkIndex] = this._pb_createChunk(chunk);
                 });
-                renderedPage[containerIndex].rows[rowIndex] = this._pb_createRow(renderedPage[containerIndex].rows[rowIndex].chunks, row);
+                renderedPage[containerIndex].rows[rowIndex] = this._pb_createRow(renderedPage[containerIndex].rows[rowIndex].chunks, row, containerIndex, rowIndex);
             });
             renderedPage[containerIndex] = this._pb_createContainer(renderedPage[containerIndex].rows, container);
         });
 
         this.setState(() => ({
-            page: {...this.state.page, rendered: {content: renderedPage}}
-        }), () => {this.props.onLoaded(); console.log(this.state.page.rendered)});
+            page: {...this.state.page, rendered: {content: renderedPage}},
+            history: [...this.state.history.splice(0, this.state.historyCursor + 1), {...this.state.page, rendered: {content: renderedPage}}]
+        }), () => {
+            this.setState(() => ({
+                historyCursor: this.state.history.length - 1
+            }));
+            this.props.onLoaded();
+        });
     }
 
     _pb_createContainer(innerJSX, container) {
@@ -100,16 +107,17 @@ export class WindowPageBuilder_v1 extends Component {
         </div>
     }
 
-    _pb_createRow(innerJSX, row = {}) {
+    _pb_createRow(innerJSX, row = {}, tempContainerIndex, tempRowIndex) {
         // draggable target
         let columnRef = React.createRef();
         this.columnRefs.push(columnRef);
 
-        let newRowKey = Object.keys(this.dictionary.rows).length;
-        this.dictionary.rows[newRowKey] = row;
-        // todo rename .row to .rowType or .rowClass or something
+        // awful temp solution
+        // todo add recursive level-free solution
+        let rowKey = tempContainerIndex.toString() + tempRowIndex.toString();
+        this.dictionary.rows[rowKey] = {tempContainer: tempContainerIndex, tempRow: tempRowIndex};
         return <div className={`PageBuilder__column h-100 ${row.row}`}>
-            <div data-rowkey={newRowKey} ref={columnRef} title="Drag elements here"
+            <div data-rowkey={rowKey} ref={columnRef} title="Drag elements here"
                  className="PageBuilder__chunk-container PageBuilder__draggable-target d-flex flex-column justify-content-center align-items-center p-2 position-relative user-select-none">
                 {innerJSX}
                 {innerJSX.length < 1 &&
@@ -138,15 +146,31 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     workspaceStateRollBack() {
-        console.log('roll back');
+        let newHistoryCursor = this.state.historyCursor - 1;
+        if (typeof this.state.history[newHistoryCursor] === 'undefined') {
+            return false;
+        }
+
+        this.setState(() => ({
+            page: this.state.history[newHistoryCursor],
+            historyCursor: newHistoryCursor
+        }));
     }
 
     workspaceStateRollForward() {
-        console.log('roll forward');
+        let newHistoryCursor = this.state.historyCursor + 1;
+        if (typeof this.state.history[newHistoryCursor] === 'undefined') {
+            return false;
+        }
+
+        this.setState(() => ({
+            page: this.state.history[newHistoryCursor],
+            historyCursor: newHistoryCursor
+        }));
     }
 
     workspaceSavePage() {
-        console.log('save page');
+        this.pageBuilder.savePage(this.state.page.structure);
     }
 
     workspaceSaveTemplate() {
@@ -246,6 +270,23 @@ export class WindowPageBuilder_v1 extends Component {
                 // if it is not null -> mouse was up over it
                 let chunk = this.state.chunks.structure[index];
                 let rowKey = currentTarget.getAttribute('data-rowkey');
+                let tempContainerIndex = this.dictionary.rows[rowKey].tempContainer;
+                let tempRowIndex = this.dictionary.rows[rowKey].tempRow;
+
+                this.setState(() => (
+                    {
+                        page: {
+                            ...this.state.page,
+                            structure: {
+                                ...this.state.page.structure,
+                                content: [
+                                    ...this.state.page.structure.content,
+                                ]
+                            }
+                        }
+                    }
+                ));
+
                 this.dictionary.rows[rowKey].chunks.push(chunk);
 
                 // and force React to render component
@@ -303,12 +344,12 @@ export class WindowPageBuilder_v1 extends Component {
                                 <div className="PageBuilder__workspace-controls d-flex">
                                     {/* page controls */}
                                     {/* todo: states (active/inactive) if no such available operations */}
-                                    <div onClick={this.workspaceStateRollBack}
-                                         className="p-0 pt-3 pb-3 theme__cursor-pointer theme__link-color--hover"
+                                    <div onClick={this.workspaceStateRollBack.bind(this)}
+                                         className={`p-0 pt-3 pb-3 theme__cursor-pointer ${this.state.historyCursor > 0 ? 'theme__link-color--hover' : 'theme__element-inactive'}`}
                                          title={'Roll back to previous state'}><i className="fas fa-undo"/><span
                                         className="p-3 pb-0 pt-0">Undo</span></div>
-                                    <div onClick={this.workspaceStateRollForward}
-                                         className="p-3 theme__cursor-pointer theme__element-inactive"
+                                    <div onClick={this.workspaceStateRollForward.bind(this)}
+                                         className={`p-3 theme__cursor-pointer ${this.state.historyCursor < this.state.history.length - 1 ? 'theme__link-color--hover' : 'theme__element-inactive'}`}
                                          title={'Roll forward to next state'}><i className="fas fa-redo"/><span
                                         className="p-3 pb-0 pt-0">Redo</span></div>
                                 </div>
@@ -323,7 +364,7 @@ export class WindowPageBuilder_v1 extends Component {
                                     {/*     className="p-3 theme__cursor-pointer theme__link-color--hover"*/}
                                     {/*     title={'//todo'}><i className="fas fa-paste"/><span*/}
                                     {/*    className="p-3 pb-0 pt-0">Save as template</span></div>*/}
-                                    <div onClick={this.workspaceSavePage}
+                                    <div onClick={this.workspaceSavePage.bind(this)}
                                          className="theme__flex-basis-0 text-center p-2 theme__cursor-pointer theme__background-color--accent-soft theme__background-color--accent-soft--hover"
                                          title={'Save the page'}>
                                         <i className="fas fa-file-export"/>

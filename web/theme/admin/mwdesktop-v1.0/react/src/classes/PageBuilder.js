@@ -4,6 +4,7 @@ export class PageBuilder {
     constructor() {
         this.urlLoadPageBuilder = globalSystemRootURL + globalSystemActions['loadPageBuilder'];
         this.urlLoadPage = globalSystemRootURL + globalSystemActions['loadPage'];
+        this.urlSavePage = globalSystemRootURL + globalSystemActions['savePage'];
     }
 
     loadPageBuilderData(callback) {
@@ -30,4 +31,9 @@ export class PageBuilder {
         });
     }
 
+    savePage(page, callback) {
+        return fetch2(this.urlSavePage, {queryParams: {'page': page}}, {
+            onSuccess: () => callback()
+        })
+    }
 }

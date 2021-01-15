@@ -67,7 +67,8 @@ class ModelAdmin extends Model
         'loadPages' => '/pages/loadPages',
         'loadPage' => '/pages/loadPage',
         'getAdminActions' => '/statistics/getAdminActions',
-        'loadPageBuilder' => '/pages/loadPageBuilder'
+        'loadPageBuilder' => '/pages/loadPageBuilder',
+        'savePage' => '/pages/savePage'
     ];
     /**
      * @var string

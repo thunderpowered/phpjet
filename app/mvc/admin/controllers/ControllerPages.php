@@ -111,4 +111,24 @@ class ControllerPages extends Controller
         ]);
         return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
     }
+
+    /**
+     * @return string
+     */
+    public function actionSavePage(): string
+    {
+        $page = PHPJet::$app->system->request->getJSON('page');
+        $result = $this->modelPages->savePage($page);
+        if (!$result->status) {
+            // i'm not sure if i should record this
+            PHPJet::$app->tool->JSONOutput->setStatusFalse();
+        } else {
+            $this->modelAdmin->recordActions('PageBuilder', true, $result->message);
+            PHPJet::$app->tool->JSONOutput->setStatusTrue();
+        }
+
+        PHPJet::$app->tool->JSONOutput->setMessageBoxText($result->message);
+        return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+    }
+
 }

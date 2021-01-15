@@ -15,6 +15,10 @@ class Formatter
     /**
      * @var string
      */
+    private $urlDefaultRegexp = '/[^A-Za-z0-9\/_-]/';
+    /**
+     * @var string
+     */
     private $priceTemplateSettingsName = 'price_template';
 
     /**
@@ -45,10 +49,10 @@ class Formatter
     {
         // trim it
         $string = trim($string);
-        // remove multiple spaces
-        $string = preg_replace('/\s+/', ' ', $string);
         // remove all symbols except latin/cyrillic letters and numbers
         $string = preg_replace('/[^A-Za-zА-Яа-яЁё0-9-]/u', ' ', $string);
+        // remove multiple spaces
+        $string = preg_replace('/\s+/', ' ', $string);
         return $string;
     }
 
@@ -56,13 +60,27 @@ class Formatter
      * @param string $string
      * @return string
      */
-    public function anyStringToURLString(string $string): string
+    public function anyStringToURLEntityString(string $string): string
     {
+        return $this->anyStringToURLString($string, '/[^A-Za-z0-9_-]/');
+    }
+
+    /**
+     * @param string $string
+     * @param string $regexp
+     * @return string
+     */
+    public function anyStringToURLString(string $string, string $regexp = ''): string
+    {
+        if (!$regexp) {
+            $regexp = $this->urlDefaultRegexp;
+        }
+
         $string = trim($string);
         // replace all spaces with score
         $string = preg_replace('/\s+/', '-', $string);
         // remove all characters that not comply with regex (A-z, 0-9, _, -)
-        $string = preg_replace('/[^A-Za-z0-9_-]/', '', $string);
+        $string = preg_replace($regexp, '', $string);
         // cast to lowercase
         $string = strtolower($string);
         return $string;
