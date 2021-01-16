@@ -230,8 +230,12 @@ export class Window extends Component {
         this.mouseCoordinates = {top: event.clientY, left: event.clientX};
     }
 
-    onLoaded(callBack) {
-        this.setState(() => ({loaded: true, active: true}), callBack);
+    onLoaded(callback) {
+        this.setState(() => ({loaded: true, active: true}), callback);
+    }
+
+    onUnloaded(callback) {
+        this.setState(() => ({loaded: false, active: true}), callback);
     }
 
     shouldThisWindowBeDisabled() {
@@ -304,6 +308,7 @@ export class Window extends Component {
                         React.cloneElement(child, {
                             ...child.props,
                             onLoaded: this.onLoaded.bind(this),
+                            onUnloaded: this.onUnloaded.bind(this),
                             openChildWindow: this.props.openChildWindow,
                             parent: this.props.parent,
                             key: this.state.childrenKey,

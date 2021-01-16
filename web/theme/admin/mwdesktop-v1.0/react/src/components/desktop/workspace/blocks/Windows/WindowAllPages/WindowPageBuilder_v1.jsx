@@ -41,6 +41,7 @@ export class WindowPageBuilder_v1 extends Component {
 
         this.dictionary = {rows: {}};
         this.columnRefs = [];
+        this.input = {};
     }
 
     componentDidMount() {
@@ -204,10 +205,13 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     workspaceSavePage() {
+        this.props.onUnloaded();
         this.pageBuilder.savePage({
             ...this.state.page.structure,
-            content: this.state.page.structure.content.returnContent()
-        }, () => {});
+            content: this.state.page.structure.content.returnContent(),
+            url: typeof this.input['pb_page_url'] !== 'undefined' ? this.input['pb_page_url'] : this.state.page.structure.url,
+            title: typeof this.input['pb_page_title'] !== 'undefined' ? this.input['pb_page_title'] : this.state.page.structure.title
+        }, () => {this.props.onLoaded()});
     }
 
     workspaceSaveTemplate() {
@@ -220,6 +224,20 @@ export class WindowPageBuilder_v1 extends Component {
 
     changeSelectedTemplate() {
         console.log('set new template');
+    }
+
+    onInputText(event, property) {
+        // i'm 100% sure it is not good for performance
+        // todo
+        this.setState(() => ({
+            page: {
+                ...this.state.page,
+                structure: {
+                    ...this.state.page.structure,
+                    [property]: event.target.value
+                }
+            }
+        }));
     }
 
     dragChunk(event, index) {
@@ -392,7 +410,7 @@ export class WindowPageBuilder_v1 extends Component {
                                     {/*     title={'//todo'}><i className="fas fa-paste"/><span*/}
                                     {/*    className="p-3 pb-0 pt-0">Save as template</span></div>*/}
                                     <div onClick={this.workspaceSavePage.bind(this)}
-                                         className="theme__flex-basis-0 text-center p-2 theme__cursor-pointer theme__background-color--accent-soft theme__background-color--accent-soft--hover"
+                                         className="theme__flex-basis-0 text-center p-2 theme__cursor-pointer theme__background-color--accent-soft theme__background-color--accent-soft--hover theme__background-color--accent-soft--active"
                                          title={'Save the page'}>
                                         <i className="fas fa-file-export"/>
                                         <span className="p-2 pb-0 pt-0">Save</span>
@@ -437,7 +455,8 @@ export class WindowPageBuilder_v1 extends Component {
                                                className={'w-100 theme__border theme__border-color d-block p-2 theme__background-color3 theme__text-color'}
                                                type={'text'} minLength={8} maxLength={60} placeholder={'Page URL...'}
                                                value={this.state.page.structure.url}
-                                               name={'pb_page_url'} id={'pb_page_url'}/>
+                                               name={'pb_page_url'} id={'pb_page_url'}
+                                               onInput={(event) => this.onInputText(event, 'url')}/>
                                     </div>
                                     <div
                                         className="PageBuilder__sidebar-section__item p-2 d-flex justify-content-start align-items-center">
@@ -445,7 +464,8 @@ export class WindowPageBuilder_v1 extends Component {
                                                className={'w-100 theme__border theme__border-color d-block p-2 theme__background-color3 theme__text-color'}
                                                type={'text'} minLength={8} maxLength={60} placeholder={'Page title...'}
                                                value={this.state.page.structure.title}
-                                               name={'pb_page_title'} id={'pb_page_title'}/>
+                                               name={'pb_page_title'} id={'pb_page_title'}
+                                               onInput={(event) => this.onInputText(event, 'title')}/>
                                     </div>
 
                                     {/* sidebar footer */}

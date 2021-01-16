@@ -8,7 +8,7 @@ export class DefinitelyNotATree {
         return new DefinitelyNotATree(JSON.parse(JSON.stringify(this.root.children)))
     }
 
-    serialize(returnSelf = true) {
+    serialize(returnContent = true) {
         if (!this.serialized) {
             this.root = JSON.stringify(this.root);
             this.serialized = true;

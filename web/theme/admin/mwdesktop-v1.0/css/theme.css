@@ -18,6 +18,10 @@
     background-color: #d20000;
 }
 
+.theme__background-color--accent-soft--active:active {
+    background-color: #ff0000;
+}
+
 .theme__background-color--accent-soft {
     background-color: #9b0000;
 }
