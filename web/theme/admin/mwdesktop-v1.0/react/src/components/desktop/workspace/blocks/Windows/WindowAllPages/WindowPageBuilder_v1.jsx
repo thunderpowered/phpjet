@@ -21,14 +21,16 @@ export class WindowPageBuilder_v1 extends Component {
                 // js-objects representing chunk structure (in terms of PageBuilder)
                 structure: [],
                 // react-objects needed for display info and generate events
-                rendered: []
+                ready: [],
+                // array of components that already placed into the page
+                placed: {}
             },
             // rendered page (contains jsx array)
             page: {
                 // js-object represents the page structure (including all content-json)
                 structure: {},
                 // array of processed React components (see recreatePageByArray function)
-                rendered: {}
+                ready: {}
             },
             // all available templates
             templates: [],
@@ -42,6 +44,24 @@ export class WindowPageBuilder_v1 extends Component {
         this.dictionary = {rows: {}};
         this.columnRefs = [];
         this.input = {};
+
+        // since js does not have 'map' and 'filter' functions for Objects, let's write them!
+        Object.prototype.map = function(callback) {
+            let entries = Object.entries(this);
+            let map = entries.map(([index, item]) => [index, callback(item, index)]);
+            return Object.fromEntries(map.filter(entry => entry));
+        };
+        Object.prototype.filter = function(callback) {
+            let entries = Object.entries(this);
+            let filtered = entries.filter(([index, item]) => {
+                let callbackResult = callback(item, index);
+                if (!callbackResult) {
+                    return false;
+                }
+                return [index, item];
+            });
+            return Object.fromEntries(filtered.filter(entry => entry));
+        }
     }
 
     componentDidMount() {
@@ -52,9 +72,12 @@ export class WindowPageBuilder_v1 extends Component {
     savePageBuilderData(pageBuilderData) {
         this.setState(() => ({
             chunks: {
+                ...this.state.chunks,
                 structure: pageBuilderData.chunks,
-                rendered: pageBuilderData.chunks.map((chunk, index) => (
-                    <Chunk index={index} name={chunk.props.name} coordinates={{top: 0, left: 0}}
+                ready: pageBuilderData.chunks.map((chunk, index) => (
+                    <Chunk index={index}
+                           name={chunk.props.name}
+                           coordinates={{top: 0, left: 0}}
                            onDrugChunk={this.dragChunk.bind(this)}/>))
             },
             templates: pageBuilderData.templates
@@ -68,11 +91,11 @@ export class WindowPageBuilder_v1 extends Component {
         this.setState(() => ({
             page: {
                 structure: {...currentPage, content: pageContent},
-                rendered: pageRendered
+                ready: pageRendered
             },
             history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
                 structure: {...currentPage, content: pageContent.returnSelf()},
-                rendered: pageRendered
+                ready: pageRendered
             }],
             historyCursor: this.state.historyCursor + 1
         }), () => {
@@ -126,10 +149,10 @@ export class WindowPageBuilder_v1 extends Component {
         });
 
         this.setState(() => ({
-            page: {...this.state.page, rendered: {content: renderedPage}},
+            page: {...this.state.page, ready: {content: renderedPage}},
             history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
                 ...this.state.page,
-                rendered: {content: renderedPage}
+                ready: {content: renderedPage}
             }]
         }), () => {
             this.setState(() => ({
@@ -155,8 +178,6 @@ export class WindowPageBuilder_v1 extends Component {
         let columnRef = React.createRef();
         this.columnRefs.push(columnRef);
 
-        // awful temp solution
-        // todo add recursive level-free solution
         let rowKey = rowIdentifier.join();
         this.dictionary.rows[rowKey] = rowIdentifier;
         return <div className={`PageBuilder__column h-100 ${row.class}`}>
@@ -172,8 +193,33 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     _pb_createChunk(jsx, chunk, chunkIdentifier) {
+        let chunkIndex = chunkIdentifier.join("");
+        if (typeof this.state.chunks.placed[chunkIndex] !== 'undefined') {
+            return this.state.chunks.placed[chunkIndex];
+        }
+        let chunkRef = React.createRef();
+        let chunkComponent = <Chunk index={chunkIndex}
+                                    structureIndex={0}
+                                    name={chunk.props.name}
+                                    coordinates={{top: 0, left: 0}}
+                                    inPlace={true}
+                                    identifier={chunkIdentifier}
+                                    ref={chunkRef}
+                                    onDrugChunk={(event) => this.dragChunk(event, chunkIndex, false, false)}/>;
+        this.setState(() => ({
+                chunks: {
+                    ...this.state.chunks,
+                    placed: {
+                        ...this.state.chunks.placed,
+                        [chunkIndex]: chunkComponent
+                    }
+                }
+        }));
+        return chunkComponent;
+
+        // old but will be deleted later
         if (typeof chunk === 'object' && Object.keys(chunk).length) {
-            return <div className={`PageBuilder__chunk p-2 w-100 h-100`}>
+            return <div className={`PageBuilder__chunk p-2 w-100 h-100 theme__cursor-pointer`}>
                 <div className="PageBuilder__chunk-inner p-3 d-flex justify-content-start align-items-center">
                     <div
                         className={'PageBuilder__chunk-name d-block p-2 pt-0 pb-0 d-flex justify-content-start align-items-center'}>
@@ -198,7 +244,7 @@ export class WindowPageBuilder_v1 extends Component {
         this.setState(() => ({
             page: {
                 structure: {...this.state.history[newHistoryCursor].structure, content: this.state.history[newHistoryCursor].structure.content.returnSelf()},
-                rendered: this.state.history[newHistoryCursor].rendered
+                ready: this.state.history[newHistoryCursor].ready
             },
             historyCursor: newHistoryCursor
         }));
@@ -208,9 +254,7 @@ export class WindowPageBuilder_v1 extends Component {
         this.props.onUnloaded();
         this.pageBuilder.savePage({
             ...this.state.page.structure,
-            content: this.state.page.structure.content.returnContent(),
-            url: typeof this.input['pb_page_url'] !== 'undefined' ? this.input['pb_page_url'] : this.state.page.structure.url,
-            title: typeof this.input['pb_page_title'] !== 'undefined' ? this.input['pb_page_title'] : this.state.page.structure.title
+            content: this.state.page.structure.content.returnContent()
         }, () => {this.props.onLoaded()});
     }
 
@@ -240,29 +284,61 @@ export class WindowPageBuilder_v1 extends Component {
         }));
     }
 
-    dragChunk(event, index) {
-        // duplicate chunk
+    dragChunk(event, index, ready = true, cloneOnDrugging = true, targetContainerSelector = '.PageBuilder__draggable-target') {
+        // this works fine for now
+        // but in the future it'd be greater to make it more flexible
+
+        // contains chunks that is ready to be placed (most likely there are in the top element list)
+        let chunkArrayKey = 'ready';
+        if (!ready) {
+            // contains chunks already placed into page
+            chunkArrayKey = 'placed';
+        }
+
         let duplicatedRef = React.createRef();
-        console.log(duplicatedRef);
-        let duplicatedItem = React.cloneElement(this.state.chunks.rendered[index], {
-            ...this.state.chunks.rendered[index].props,
+        if (!cloneOnDrugging) {
+            duplicatedRef = this.state.chunks[chunkArrayKey][index].ref;
+        }
+
+        // when user tries to grab chunk from elements menu, we should copy it, since each chunk can be reused infinite amount of times
+        // but if user grabs chunk from the page we shouldn't copy it, just put in the different place or delete
+        let duplicatedItem = React.cloneElement(this.state.chunks[chunkArrayKey][index], {
+            ...this.state.chunks[chunkArrayKey][index].props,
             passRef: duplicatedRef,
             style: {
-                ...this.state.chunks.rendered[index].props.style,
+                ...this.state.chunks[chunkArrayKey][index].props.style,
                 position: 'fixed',
                 top: event.clientY - event.currentTarget.offsetHeight / 2,
                 left: event.clientX - event.currentTarget.offsetWidth / 2,
-                zIndex: 9
+                zIndex: 11
             }
         });
-        let duplicatedIndex = this.state.chunks.rendered.length;
-        this.setState(() => (
-            {
-                chunks: {...this.state.chunks, rendered: [...this.state.chunks.rendered, duplicatedItem]}
-            }
-        ), () => {
-            //
-        });
+
+        let duplicatedIndex = index;
+        let chunkStructureIdentifier = index;
+        if (!ready) {
+            chunkStructureIdentifier = this.state.chunks[chunkArrayKey][index].props.identifier;
+        }
+
+        if (cloneOnDrugging && ready) {
+            duplicatedIndex = this.state.chunks[chunkArrayKey].length;
+            this.setState(() => (
+                {
+                    chunks: {...this.state.chunks, [chunkArrayKey]: [...this.state.chunks[chunkArrayKey], duplicatedItem]}
+                }
+            ));
+        } else if (!cloneOnDrugging && !ready) {
+            console.log('wood-de-doo');
+            this.setState(() => (
+                {
+                    chunks: {...this.state.chunks, [chunkArrayKey]: this.state.chunks[chunkArrayKey].map((chunk, _index) => _index === duplicatedIndex ? duplicatedItem : chunk)}
+                }
+            ))
+        } else {
+            // giving up
+            Msg.error('Impossible to accomplish the task');
+            return false;
+        }
 
         this.draggable.setInitialCoordinates({top: event.clientY, left: event.clientX}, duplicatedItem.props.style);
 
@@ -274,14 +350,15 @@ export class WindowPageBuilder_v1 extends Component {
                     {
                         chunks: {
                             ...this.state.chunks,
-                            rendered: this.state.chunks.rendered.map((chunk, index) => (index === duplicatedIndex ? React.cloneElement(chunk, {
+                            // i've no idea, but if i put this array to variable, it won't work
+                            [chunkArrayKey]: this.state.chunks[chunkArrayKey].map((chunk, _index) => _index === duplicatedIndex ? React.cloneElement(chunk, {
                                 ...chunk.props,
                                 style: {
                                     ...chunk.props.style,
                                     top: newCoordinates.top,
                                     left: newCoordinates.left
                                 }
-                            }) : chunk))
+                            }) : chunk)
                         }
                     }
                 ));
@@ -296,7 +373,7 @@ export class WindowPageBuilder_v1 extends Component {
                     return false;
                 }
 
-                let newTarget = potentialTarget.closest('.PageBuilder__draggable-target');
+                let newTarget = potentialTarget.closest(targetContainerSelector);
                 if (newTarget !== currentTarget) {
 
                     // disable highlighting for current target (if it exists)
@@ -310,35 +387,59 @@ export class WindowPageBuilder_v1 extends Component {
                     }
                 }
             });
+
+            // temporary solution, i swear i'll bring better solution very soon
+            // todo
+            if (!ready) {
+                this.renderPage({
+                    ...this.state.page.structure, content: this.state.page.structure.content.returnContent()
+                });
+            }
         };
         document.addEventListener('mousemove', this.mouseMoveCallback);
         // detect if the element above place where it should be placed
 
         // and don't forget to unset it
-        document.addEventListener('mouseup', () => {
+        this.mouseUpCallback = () => {
             document.removeEventListener('mousemove', this.mouseMoveCallback);
+            // delete visible draggable element
             this.setState(() => (
                 {
                     chunks: {
                         ...this.state.chunks,
-                        rendered: this.state.chunks.rendered.filter((item, index) => index !== duplicatedIndex)
+                        [chunkArrayKey]: this.state.chunks[chunkArrayKey].filter((item, index) => index !== duplicatedIndex)
                     }
                 }
-            ));
-            if (currentTarget) {
-                currentTarget.classList.remove('target-highlighted');
+            ), () => {
+                // if the mouse is over target -> drop object into it
+                if (currentTarget) {
+                    currentTarget.classList.remove('target-highlighted');
 
-                // we stored rowKey into row itself
-                let chunk = this.state.chunks.structure[index];
-                let rowKey = currentTarget.getAttribute('data-rowkey');
-                let rowIdentifier = this.dictionary.rows[rowKey];
-                this.renderPage({
-                    ...this.state.page.structure, content: this.state.page.structure.content.insertElementByIndexArray(rowIdentifier, chunk).returnContent()
-                });
+                    // we stored rowKey into row itself
+                    let chunk = this.state.chunks.structure[index];
+                    if (!ready) {
+                        chunk = this.state.page.structure.content.findByIndexArray(chunkStructureIdentifier);
+                    }
 
-                currentTarget = null;
-            }
-        })
+                    let rowKey = currentTarget.getAttribute('data-rowkey');
+                    let rowIdentifier = this.dictionary.rows[rowKey];
+
+                    this.renderPage({
+                        ...this.state.page.structure, content: this.state.page.structure.content.insertElementByIndexArray(rowIdentifier, chunk).returnContent()
+                    });
+
+                    currentTarget = null;
+                }
+
+                if (!ready) {
+                    this.renderPage({
+                        ...this.state.page.structure, content: this.state.page.structure.content.deleteElementByIndexArray(chunkStructureIdentifier).returnContent()
+                    });
+                }
+            });
+            document.removeEventListener('mouseup',  this.mouseUpCallback);
+        };
+        document.addEventListener('mouseup', this.mouseUpCallback);
     }
 
     render() {
@@ -373,7 +474,7 @@ export class WindowPageBuilder_v1 extends Component {
                                 <Tab title={'Chunks'} eventKey={'chunks'}>
                                     <div
                                         className="PageBuilder__elements-container p-2 pb-0 pt-3 d-flex justify-content-start align-items-center position-relative">
-                                        {this.state.chunks.rendered}
+                                        {this.state.chunks.ready}
                                     </div>
                                 </Tab>
                             </Tabs>
@@ -430,8 +531,8 @@ export class WindowPageBuilder_v1 extends Component {
                                 <span className="PageBuilder__label d-block p-2 pt-3">
                                     Page Structure
                                 </span>
-                                {Object.keys(this.state.page.rendered).length &&
-                                this.state.page.rendered
+                                {Object.keys(this.state.page.ready).length &&
+                                this.state.page.ready
                                 }
                             </div>
                         </div>

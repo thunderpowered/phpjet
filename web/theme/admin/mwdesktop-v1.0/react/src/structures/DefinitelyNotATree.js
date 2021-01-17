@@ -4,7 +4,7 @@ export class DefinitelyNotATree {
         this.serialized = false;
     }
 
-    returnSelf () {
+    returnSelf() {
         return new DefinitelyNotATree(JSON.parse(JSON.stringify(this.root.children)))
     }
 
@@ -55,6 +55,22 @@ export class DefinitelyNotATree {
             return this.returnSelf();
         } else {
             return true;
+        }
+    }
+
+    deleteElementByIndexArray(indexArray, returnStructure = true) {
+        let arraySliced = indexArray.slice(0, indexArray.length - 1);
+        let currentNode = this.findByIndexArray(arraySliced);
+        let result = false;
+        if (typeof currentNode !== 'undefined' && typeof currentNode.children !== 'undefined') {
+            currentNode.children.splice(indexArray[length - 1], 1);
+            result = true;
+        }
+
+        if (returnStructure) {
+            return this.returnSelf();
+        } else {
+            return result;
         }
     }
 
