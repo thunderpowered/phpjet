@@ -5,6 +5,7 @@ import Tab from 'react-bootstrap/Tab'
 import Tabs from 'react-bootstrap/Tabs';
 import {Chunk} from "./PageBuilderElements/Chunk";
 import {DefinitelyNotATree} from "../../../../../../structures/DefinitelyNotATree";
+import {Formatter} from "../../../../../../helpers/Formatter";
 
 // MAIN PAGE BUILDER COMPONENT
 // VERSION 1
@@ -13,6 +14,7 @@ export class WindowPageBuilder_v1 extends Component {
         super();
         this.pageBuilder = new PageBuilder();
         this.draggable = new Draggable();
+        this.formatter = new Formatter();
         this.state = {
             // edit|create
             mode: 'edit',
@@ -250,12 +252,24 @@ export class WindowPageBuilder_v1 extends Component {
         }));
     }
 
-    workspaceSavePage() {
-        this.props.onUnloaded();
+    workspaceSavePage(callback) {
+        // this.props.onUnloaded();
         this.pageBuilder.savePage({
             ...this.state.page.structure,
             content: this.state.page.structure.content.returnContent()
-        }, () => {this.props.onLoaded()});
+        }, () => {
+            this.props.onLoaded();
+            if (typeof callback === 'function') {
+                callback();
+            }
+        });
+    }
+
+    workspaceVisitPage() {
+        let pageURL = this.formatter.formatRelativeURL(this.state.page.structure.url);
+        pageURL = globalSystemHost + pageURL;
+        let win = window.open(pageURL, '_blank');
+        win.focus();
     }
 
     workspaceSaveTemplate() {
@@ -271,14 +285,22 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     onInputText(event, property) {
-        // i'm 100% sure it is not good for performance
-        // todo
+        if (typeof event.target === 'undefined' || typeof event.target.value === 'undefined') {
+            return false;
+        }
+        let value = event.target.value;
+        // todo make it more flexible
+        // this is the question about basic automatic frontend validation (see todoist)
+        if (property === 'url') {
+            value = this.formatter.formatRelativeURL(value);
+        }
+
         this.setState(() => ({
             page: {
                 ...this.state.page,
                 structure: {
                     ...this.state.page.structure,
-                    [property]: event.target.value
+                    [property]: value
                 }
             }
         }));
@@ -502,6 +524,10 @@ export class WindowPageBuilder_v1 extends Component {
                                 {/* page buttons */}
                                 <div
                                     className="PageBuilder__workspace-buttons d-flex justify-content-between align-items-center flex-nowrap">
+                                    <div onClick={this.workspaceVisitPage.bind(this)}
+                                         className="p-3 theme__cursor-pointer theme__link-color--hover"
+                                         title={'Open a new tab and jump to the actual page'}><i className="fas fa-share-square"/><span
+                                        className="p-3 pb-0 pt-0">Visit the page</span></div>
                                     <div onClick={this.workspaceSaveDraft}
                                          className="p-3 theme__cursor-pointer theme__link-color--hover"
                                          title={'//todo'}><i className="fas fa-file-signature"/><span
