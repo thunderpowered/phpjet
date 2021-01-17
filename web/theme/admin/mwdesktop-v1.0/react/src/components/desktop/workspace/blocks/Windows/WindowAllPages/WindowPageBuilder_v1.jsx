@@ -17,7 +17,7 @@ export class WindowPageBuilder_v1 extends Component {
         this.formatter = new Formatter();
         this.state = {
             // edit|create
-            mode: 'edit',
+            mode: '',
             // all available chunks
             chunks: {
                 // js-objects representing chunk structure (in terms of PageBuilder)
@@ -47,28 +47,22 @@ export class WindowPageBuilder_v1 extends Component {
         this.columnRefs = [];
         this.input = {};
 
-        // since js does not have 'map' and 'filter' functions for Objects, let's write them!
-        Object.prototype.map = function(callback) {
-            let entries = Object.entries(this);
-            let map = entries.map(([index, item]) => [index, callback(item, index)]);
-            return Object.fromEntries(map.filter(entry => entry));
-        };
-        Object.prototype.filter = function(callback) {
-            let entries = Object.entries(this);
-            let filtered = entries.filter(([index, item]) => {
-                let callbackResult = callback(item, index);
-                if (!callbackResult) {
-                    return false;
-                }
-                return [index, item];
-            });
-            return Object.fromEntries(filtered.filter(entry => entry));
-        }
+        this.objectPrototypeMapDefault = Object.prototype.map;
+        this.objectPrototypeFilterDefault = Object.prototype.filter;
     }
 
     componentDidMount() {
-        this.pageBuilder.loadPage(this.props.windowData.pageID, this.renderPage.bind(this));
-        this.pageBuilder.loadPageBuilderData(this.savePageBuilderData.bind(this));
+        let setMode = '';
+        if (typeof this.props.windowData !== 'undefined' && typeof this.props.windowData.pageID !== 'undefined' && this.props.windowData.pageID) {
+            this.pageBuilder.loadPage(this.props.windowData.pageID, this.renderPage.bind(this));
+            setMode = 'edit';
+        } else {
+            setMode = 'create';
+        }
+
+        this.setState(() => ({
+            mode: setMode
+        }), () => this.pageBuilder.loadPageBuilderData(this.savePageBuilderData.bind(this)));
     }
 
     savePageBuilderData(pageBuilderData) {
@@ -83,7 +77,22 @@ export class WindowPageBuilder_v1 extends Component {
                            onDrugChunk={this.dragChunk.bind(this)}/>))
             },
             templates: pageBuilderData.templates
-        }));
+        }), () => {
+            if (this.state.mode === 'create') {
+                this.loadTemplate();
+            }
+        });
+    }
+
+    loadTemplate(templateID = 0) {
+        // todo save default template
+        let template = this.state.templates[templateID];
+        if (typeof template === 'undefined') {
+            Msg.error('Template does not exist');
+            return false;
+        }
+
+        this.renderPage({...template, id: 0});
     }
 
     renderPage(currentPage) {
@@ -257,11 +266,16 @@ export class WindowPageBuilder_v1 extends Component {
         this.pageBuilder.savePage({
             ...this.state.page.structure,
             content: this.state.page.structure.content.returnContent()
-        }, () => {
-            this.props.onLoaded();
-            if (typeof callback === 'function') {
-                callback();
-            }
+        }, (resultID) => {
+            this.setState(() => ({
+                page: {
+                    ...this.state.page,
+                    structure: {
+                        ...this.state.page.structure,
+                        id: resultID
+                    }
+                }
+            }));
         });
     }
 
@@ -309,6 +323,24 @@ export class WindowPageBuilder_v1 extends Component {
     dragChunk(event, index, ready = true, cloneOnDrugging = true, targetContainerSelector = '.PageBuilder__draggable-target') {
         // this works fine for now
         // but in the future it'd be greater to make it more flexible
+
+        // since js does not have 'map' and 'filter' functions for Objects, let's write them!
+        Object.prototype.map = function(callback) {
+            let entries = Object.entries(this);
+            let map = entries.map(([index, item]) => [index, callback(item, index)]);
+            return Object.fromEntries(map.filter(entry => entry));
+        };
+        Object.prototype.filter = function(callback) {
+            let entries = Object.entries(this);
+            let filtered = entries.filter(([index, item]) => {
+                let callbackResult = callback(item, index);
+                if (!callbackResult) {
+                    return false;
+                }
+                return [index, item];
+            });
+            return Object.fromEntries(filtered.filter(entry => entry));
+        };
 
         // contains chunks that is ready to be placed (most likely there are in the top element list)
         let chunkArrayKey = 'ready';
@@ -460,6 +492,9 @@ export class WindowPageBuilder_v1 extends Component {
                 }
             });
             document.removeEventListener('mouseup',  this.mouseUpCallback);
+
+            Object.prototype.map = this.objectPrototypeMapDefault;
+            Object.prototype.filter = this.objectPrototypeFilterDefault;
         };
         document.addEventListener('mouseup', this.mouseUpCallback);
     }

@@ -17,4 +17,8 @@ class ModelResponse
      * @var string
      */
     public $message = 'Error';
+    /**
+     * @var \stdClass
+     */
+    public $customData;
 }

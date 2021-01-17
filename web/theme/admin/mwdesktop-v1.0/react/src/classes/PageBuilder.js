@@ -33,7 +33,14 @@ export class PageBuilder {
 
     savePage(page, callback) {
         return fetch2(this.urlSavePage, {queryParams: {'page': page}}, {
-            onSuccess: () => callback()
+            onSuccess: (result) => {
+                if (typeof result.data !== 'undefined' && typeof result.data.id !== 'undefined' && result.data.id) {
+                    callback(result.data.id);
+                } else {
+                    // don't need it anymore, because server sends messages
+                    // Msg.error('Server seems to returning data, but required fields are empty. Probably, authentication error. Try sign out then sign in again.')
+                }
+            }
         })
     }
 }

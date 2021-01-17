@@ -64,7 +64,12 @@ export function setDataTableResponsive(dataTable, parentDivRef, parentDivObject)
         }
 
         if (parentDivObject.parentDivDimensions.width !== parentDivRef.current.offsetWidth || parentDivObject.parentDivDimensions.height !== parentDivRef.current.offsetHeight) {
-            dataTable.responsive.recalc();
+            try {
+                dataTable.responsive.recalc();
+            }catch (e) {
+                Msg.error('DataTables error. Again. Please, save changes and reload the page.');
+                return document.removeEventListener('mousemove', callback);
+            }
 
             parentDivObject.parentDivDimensions = {
                 width: parentDivRef.current.offsetWidth,

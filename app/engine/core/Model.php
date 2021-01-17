@@ -41,13 +41,15 @@ class Model
     /**
      * @param bool $status
      * @param string $message
+     * @param array $customData
      * @return ModelResponse
      */
-    protected function sendResponseToController(bool $status = false, string $message = ''): ModelResponse
+    protected function sendResponseToController(bool $status = false, string $message = '', array $customData = []): ModelResponse
     {
         $response = new ModelResponse();
         $response->status = $status;
         $response->message = $message;
+        $response->customData = (object)$customData;
         return $response;
     }
 

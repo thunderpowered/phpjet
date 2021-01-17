@@ -303,11 +303,11 @@ html, body {
 
 /* PAGE BUILDER */
 
-.PageBuilder__body, .PageBuilder__container, .PageBuilder__elements-item {
+.PageBuilder__body, .PageBuilder__container, .PageBuilder__elements-item, .PageBuilder__tools-item {
     border: 1px dashed #424242;
 }
 
-.PageBuilder__elements-item {
+.PageBuilder__elements-item, .PageBuilder__tools-item {
     width:125px;
     height:125px;
 }
@@ -422,7 +422,7 @@ html, body {
 }
 
 #msg .msg-progress {
-    display: none;
+    display: none !important;
 }
 
 #msg .close {

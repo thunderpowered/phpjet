@@ -227,6 +227,14 @@ abstract class ActiveRecord
     }
 
     /**
+     * @return int
+     */
+    public function lastInsertId(): int
+    {
+        return (int)PHPJet::$app->store->getLastInsertId();
+    }
+
+    /**
      * @param \Exception $e
      */
     protected static function exceptionHandler(\Exception $e)

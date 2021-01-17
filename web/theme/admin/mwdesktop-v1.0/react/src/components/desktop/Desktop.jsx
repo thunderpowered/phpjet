@@ -10,6 +10,17 @@ export class Desktop extends Component {
         this.state = {};
         this.authenticator = new Authenticator();
         this.checkAuthorization();
+
+        window.onerror = function(message, file, line, col, error) {
+            Msg.error("Desktop crashed. Error information automatically reported to development team, we will handle this as soon as possible. The Desktop will be automatically reloaded in 5 sec.");
+
+            // todo report frontend errors too
+            console.log(message);
+            setTimeout(() => {
+                window.location.reload();
+            });
+            return false;
+        };
     }
 
     logout() {

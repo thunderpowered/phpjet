@@ -66,25 +66,44 @@ class ModelPages extends Model
             return $this->sendResponseToController(false, 'Unable to serialize page structure');
         }
 
-        if (!isset($page['id'])) {
-            // todo create page
+        if (empty($page['id'])) {
+            // and also combination [type, url] must be unique
+            $urlExists = PageBuilder::getOne(['url' => $url, 'type' => 'page']);
+            if ($urlExists) {
+                return $this->sendResponseToController(false, 'Page with the same URL already exists');
+            }
+
+            // create new one
+            $pageBuilder = new PageBuilder();
+            $pageBuilder->url = $url;
+            $pageBuilder->content = $jsonContent;
+            $pageBuilder->title = $title;
+            $pageBuilder->type = 'page';
+            $result = $pageBuilder->save();
+
+            if (!$result) {
+                return $this->sendResponseToController(false, 'Unable to create new page');
+            }
+
+            return $this->sendResponseToController(true, 'Page successfully created', ['id' => $pageBuilder->lastInsertId()]);
+        } else {
+
+            // edit existing
+            $pageBuilder = PageBuilder::getOne(['id' => $page['id'], 'type' => 'page']);
+            if (!$pageBuilder) {
+                return $this->sendResponseToController(false, 'Page does not exist');
+            }
+            $pageBuilder->content = $jsonContent;
+            $pageBuilder->title = $title;
+            $pageBuilder->url = $url;
+            $result = $pageBuilder->save();
+
+            if (!$result) {
+                return $this->sendResponseToController(false, 'Unable to update the page');
+            }
+
+            return $this->sendResponseToController(true, 'Page successfully updated', ['id' => $pageBuilder->id]);
         }
-
-        $pageBuilder = PageBuilder::getOne(['id' => $page['id']]);
-        if (!$pageBuilder) {
-            return $this->sendResponseToController(false, 'Page does not exist');
-        }
-
-        $pageBuilder->content = $jsonContent;
-        $pageBuilder->title = $title;
-        $pageBuilder->url = $url;
-
-        $result = $pageBuilder->save();
-        if (!$result) {
-            $this->sendResponseToController(false, 'Unable to create new page');
-        }
-
-        return $this->sendResponseToController(true, 'Page successfully updated');
     }
 
 }

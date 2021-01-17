@@ -128,6 +128,9 @@ class ControllerPages extends Controller
         }
 
         PHPJet::$app->tool->JSONOutput->setMessageBoxText($result->message);
+        PHPJet::$app->tool->JSONOutput->setData([
+            'id' => $result->customData->id
+        ]);
         return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
     }
 

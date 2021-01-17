@@ -77,11 +77,6 @@ export class StartMenu extends Component {
                             Set this window as Default
                         </div>
                     </div>
-                    <div onMouseDown={(e) => e.stopPropagation()}>
-                        <div className={'w-100 h-100 p-4 pt-2 pb-2 d-block theme__cursor-pointer'} onClick={(e) => {console.log('todo')}}>
-                            Refresh window (//todo)
-                        </div>
-                    </div>
                 </SimpleDropMenu>
 
             </div>

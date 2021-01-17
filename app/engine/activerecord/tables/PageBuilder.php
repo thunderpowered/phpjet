@@ -41,6 +41,10 @@ class PageBuilder extends ActiveRecord
      */
     public $since;
     /**
+     * @var bool
+     */
+    public $cache;
+    /**
      * @var string
      */
     protected $_primaryKey = 'id';

@@ -59,20 +59,20 @@ export class Workspace extends Component {
 
     // this is temporary function, i'll find better solution later
     tempLoadChildWindow(index = [], windowData = {}) {
-        let window = this.state.windowConfig[index[0]];
+        let newWindow = this.state.windowConfig[index[0]];
         for (let i = 1; i < index.length; i++) {
-            window = window.children[index[i]];
+            newWindow = newWindow.children[index[i]];
         }
 
-        if (typeof window === 'undefined') {
+        if (typeof newWindow === 'undefined') {
             console.log('window is undefined');
             return false;
         }
 
-        window.parentIndex = index.length - 2;
+        newWindow.parentIndex = index.length - 2;
         index = this.state.windowConfig.length;
         this.setState(() => (
-            {windowConfig: [...this.state.windowConfig, window]}
+            {windowConfig: [...this.state.windowConfig, newWindow]}
             // proceed as usual
         ), () => {
             this.onClickMenu(index, windowData);

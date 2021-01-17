@@ -134,6 +134,13 @@ class Store
     /**
      * @return string
      */
+    public function getLastInsertId(): string
+    {
+        return $this->db->lastInsertId();
+    }
+    /**
+     * @return string
+     */
     public function getPartitionColumnName()
     {
         return $this->partitionColumnName;
