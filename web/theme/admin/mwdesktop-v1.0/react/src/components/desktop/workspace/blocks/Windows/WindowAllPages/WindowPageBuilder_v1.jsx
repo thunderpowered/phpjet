@@ -325,6 +325,8 @@ export class WindowPageBuilder_v1 extends Component {
         // but in the future it'd be greater to make it more flexible
 
         // since js does not have 'map' and 'filter' functions for Objects, let's write them!
+        // upd. seems like DataTables also implements Object.prototype methods, and it causes crash of entire application
+        // so it is important to restore 'default' values when we don't need em
         Object.prototype.map = function(callback) {
             let entries = Object.entries(this);
             let map = entries.map(([index, item]) => [index, callback(item, index)]);

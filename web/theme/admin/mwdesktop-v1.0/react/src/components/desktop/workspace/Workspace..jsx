@@ -58,7 +58,7 @@ export class Workspace extends Component {
     }
 
     // this is temporary function, i'll find better solution later
-    tempLoadChildWindow(index = [], windowData = {}) {
+    tempLoadChildWindow(index = [], windowData = {}, reloadWindow = true) {
         let newWindow = this.state.windowConfig[index[0]];
         for (let i = 1; i < index.length; i++) {
             newWindow = newWindow.children[index[i]];
@@ -75,7 +75,7 @@ export class Workspace extends Component {
             {windowConfig: [...this.state.windowConfig, newWindow]}
             // proceed as usual
         ), () => {
-            this.onClickMenu(index, windowData);
+            this.onClickMenu(index, windowData, reloadWindow);
             this.setState(() => (
                 // and delete it from config
                 {windowConfig: this.state.windowConfig.filter((window, _index) => index !== _index)}
@@ -84,7 +84,7 @@ export class Workspace extends Component {
     }
 
     // If menu item is chosen -> create new window
-    onClickMenu(index, windowData = {}) {
+    onClickMenu(index, windowData = {}, reloadWindow = false) {
         // if index doesn't exist
         if (typeof this.state.windowConfig[index] === 'undefined') {
             return false;
@@ -95,9 +95,16 @@ export class Workspace extends Component {
         let indexExisting = this.state.windowComponents.findIndex(window => (
             window.props.title === label
         ));
+
         if (indexExisting > -1) {
-            // just push it on top
-            return this.onSortWindows(indexExisting);
+            // window is already exists
+            if (reloadWindow) {
+                // destroy existing (and then create new ofc)
+                this.destroyWindow(indexExisting, index);
+            } else {
+                // just push it on top
+                return this.onSortWindows(indexExisting);
+            }
         }
 
         // Prepare component, Window component is wrapper that should wrap each Window
@@ -140,7 +147,9 @@ export class Workspace extends Component {
 
     // delete window
     destroyWindow(index, configIndex, event) {
-        event.stopPropagation();
+        if (typeof event !== 'undefined') {
+            event.stopPropagation();
+        }
         if (typeof this.state.windowComponents[index] !== 'undefined') {
             this.setState(() => ({
                 windowComponents: this.state.windowComponents.filter((component, _index) => index !== _index)

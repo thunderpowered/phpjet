@@ -40,8 +40,8 @@ export class Windows extends Component {
         delete this.windowsConfig;
     }
 
-    openChildWindow(childIndex, parentIndex, windowData) {
-        this.props.onLoadChildWindow([parentIndex, childIndex], windowData);
+    openChildWindow(childIndex, parentIndex, windowData, reloadExisting = true) {
+        this.props.onLoadChildWindow([parentIndex, childIndex], windowData, reloadExisting);
     }
 
     render() {
