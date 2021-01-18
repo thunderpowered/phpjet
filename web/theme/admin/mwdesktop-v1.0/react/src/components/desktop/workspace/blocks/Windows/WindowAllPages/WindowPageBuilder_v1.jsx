@@ -503,6 +503,8 @@ export class WindowPageBuilder_v1 extends Component {
                 }
             ), () => {
                 // if the mouse is over target -> drop object into it
+                let newContent = this.state.page.structure.content.returnSelf();
+
                 if (currentTarget) {
                     currentTarget.classList.remove('target-highlighted');
 
@@ -515,18 +517,19 @@ export class WindowPageBuilder_v1 extends Component {
                     let rowKey = currentTarget.getAttribute('data-rowkey');
                     let rowIdentifier = this.dictionary.rows[rowKey];
 
-                    this.renderPage({
-                        ...this.state.page.structure, content: this.state.page.structure.content.insertElementByIndexArray(rowIdentifier, chunk).returnContent()
-                    }, true);
-
+                    newContent = newContent.insertElementByIndexArray(rowIdentifier, chunk);
                     currentTarget = null;
                 }
 
                 if (!ready) {
-                    this.renderPage({
-                        ...this.state.page.structure, content: this.state.page.structure.content.deleteElementByIndexArray(chunkStructureIdentifier).returnContent()
-                    });
+                    // both delete if no target and delete while moving
+                    newContent = newContent.deleteElementByIndexArray(chunkStructureIdentifier);
                 }
+
+                this.renderPage({
+                    ...this.state.page.structure, content: newContent.returnContent()
+                }, true);
+
             });
             document.removeEventListener('mouseup',  this.mouseUpCallback);
 
