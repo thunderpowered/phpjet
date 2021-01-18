@@ -21,6 +21,20 @@ class PageBuilder
     private $chunks = [
         [
             'props' => [
+                'id' => 'SampleWidget',
+                'name' => 'Sample Widget',
+                'jet' => [
+                    'class' => 'SampleWidget',
+                    'function' => 'getWidget'
+                ]
+            ],
+            'params' => [
+
+            ],
+            'children' => []
+        ],
+        [
+            'props' => [
                 'id' => 'itemsGroupedByDate',
                 'name' => 'Items Grouped By Date',
                 'jet' => [
@@ -33,7 +47,7 @@ class PageBuilder
                     'what' => 'rating',
                     'how' => 'desc'
                 ],
-                'group' => 'month',
+//                'group' => 'month', // todo add selector
                 'limit' => 20,
                 'single' => true
             ],

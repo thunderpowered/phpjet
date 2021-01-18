@@ -23,7 +23,7 @@ export class PageBuilder {
         return fetch2(this.urlLoadPage, {queryParams: {'page_id': pageID}}, {
             onSuccess: (result) => {
                 if (typeof result.data !== 'undefined' && typeof result.data.page !== 'undefined' && result.data.page.id === pageID) {
-                    callback(result.data.page);
+                    callback(result.data.page, true);
                 } else {
                     Msg.error('Page Builder cannot be initialized. Please, try again.')
                 }

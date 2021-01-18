@@ -32,7 +32,7 @@ export class DefinitelyNotATree {
         return this.root.children;
     }
 
-    findByIndexArray(indexArray) {
+    findByIndexArray(indexArray, copy = false) {
         let currentNode = this.root;
         for (let i = 0; i < indexArray.length; i++) {
             if (typeof currentNode.children === 'undefined') {
@@ -40,7 +40,28 @@ export class DefinitelyNotATree {
             }
             currentNode = currentNode.children[indexArray[i]];
         }
-        return currentNode;
+        if (copy) {
+            return JSON.parse(JSON.stringify(currentNode));
+        } else {
+            return currentNode;
+        }
+    }
+
+    updateElementByIndexArray(indexArray, newNode, returnStructure = true) {
+        let rowIndex = indexArray.slice(0, indexArray.length - 1);
+        let nodeIndex = indexArray[indexArray.length - 1];
+        let row = this.findByIndexArray(rowIndex, false);
+        if (typeof row === 'undefined' || typeof row.children === 'undefined' || typeof row.children[nodeIndex] === 'undefined') {
+            return false;
+        }
+
+        row.children[nodeIndex] = newNode;
+        // since we got 'reference' to the original array, we needn't bother further
+        if (returnStructure) {
+            return this.returnSelf();
+        } else {
+            return true;
+        }
     }
 
     insertElementByIndexArray(indexArray, element, returnStructure = true) {
@@ -50,7 +71,7 @@ export class DefinitelyNotATree {
         }
 
         currentNode.children.push(element);
-        // since we got 'link' to the original array, we needn't bother further
+        // since we got 'reference' to the original array, we needn't bother further
         if (returnStructure) {
             return this.returnSelf();
         } else {
@@ -63,7 +84,7 @@ export class DefinitelyNotATree {
         let currentNode = this.findByIndexArray(arraySliced);
         let result = false;
         if (typeof currentNode !== 'undefined' && typeof currentNode.children !== 'undefined') {
-            currentNode.children.splice(indexArray[length - 1], 1);
+            currentNode.children.splice(indexArray[indexArray.length - 1], 1);
             result = true;
         }
 

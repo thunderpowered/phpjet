@@ -92,10 +92,10 @@ export class WindowPageBuilder_v1 extends Component {
             return false;
         }
 
-        this.renderPage({...template, id: 0});
+        this.renderPage({...template, id: 0}, true);
     }
 
-    renderPage(currentPage) {
+    renderPage(currentPage, recordHistory = false) {
         let pageContent = new DefinitelyNotATree(currentPage.content);
         let pageRendered = this.recreatePageByArray2(pageContent.root);
 
@@ -104,14 +104,20 @@ export class WindowPageBuilder_v1 extends Component {
                 structure: {...currentPage, content: pageContent},
                 ready: pageRendered
             },
-            history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
-                structure: {...currentPage, content: pageContent.returnSelf()},
-                ready: pageRendered
-            }],
-            historyCursor: this.state.historyCursor + 1
         }), () => {
             this.props.onLoaded();
         });
+
+        if (recordHistory) {
+            console.log('record ' + this.state.historyCursor);
+            this.setState(() => ({
+                history: [...this.state.history.splice(0, this.state.historyCursor + 1), {
+                    structure: {...currentPage, content: pageContent.returnSelf()},
+                    ready: pageRendered
+                }],
+                historyCursor: this.state.historyCursor + 1
+            }));
+        }
     }
 
     recreatePageByArray2(root = this.state.page.structure.content.root, parentNodeIdentifier = []) {
@@ -189,7 +195,7 @@ export class WindowPageBuilder_v1 extends Component {
         let columnRef = React.createRef();
         this.columnRefs.push(columnRef);
 
-        let rowKey = rowIdentifier.join();
+        let rowKey = rowIdentifier.join("");
         this.dictionary.rows[rowKey] = rowIdentifier;
         return <div className={`PageBuilder__column h-100 ${row.class}`}>
             <div data-rowkey={rowKey} ref={columnRef} title="Drag elements here"
@@ -215,7 +221,9 @@ export class WindowPageBuilder_v1 extends Component {
                                     coordinates={{top: 0, left: 0}}
                                     inPlace={true}
                                     identifier={chunkIdentifier}
-                                    ref={chunkRef}
+                                    passRef={chunkRef}
+                                    params={chunk.params}
+                                    onChangeParams={this.onChangeChunkParams.bind(this)}
                                     onDrugChunk={(event) => this.dragChunk(event, chunkIndex, false, false)}/>;
         this.setState(() => ({
                 chunks: {
@@ -248,6 +256,10 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     workspaceStateRoll(newHistoryCursor) {
+        console.log(newHistoryCursor);
+        console.log(this.state.history);
+        console.log(this.state.history[newHistoryCursor]);
+
         if (typeof this.state.history[newHistoryCursor] === 'undefined') {
             return false;
         }
@@ -320,6 +332,17 @@ export class WindowPageBuilder_v1 extends Component {
         }));
     }
 
+    onChangeChunkParams(chunkIdentifier, params) {
+        // you think this is easy task? well well...
+        // since 'structure' is kinda tree and it can have (theoretically) infinite number of levels we cannot just use 'set state'
+        // so do something like dis
+        let chunk = this.state.page.structure.content.findByIndexArray(chunkIdentifier, true);
+        chunk.params = params;
+        this.renderPage({
+            ...this.state.page.structure, content: this.state.page.structure.content.updateElementByIndexArray(chunkIdentifier, chunk).returnContent()
+        }, true);
+    }
+
     dragChunk(event, index, ready = true, cloneOnDrugging = true, targetContainerSelector = '.PageBuilder__draggable-target') {
         // this works fine for now
         // but in the future it'd be greater to make it more flexible
@@ -353,7 +376,7 @@ export class WindowPageBuilder_v1 extends Component {
 
         let duplicatedRef = React.createRef();
         if (!cloneOnDrugging) {
-            duplicatedRef = this.state.chunks[chunkArrayKey][index].ref;
+            duplicatedRef = this.state.chunks[chunkArrayKey][index].props.passRef;
         }
 
         // when user tries to grab chunk from elements menu, we should copy it, since each chunk can be reused infinite amount of times
@@ -366,16 +389,22 @@ export class WindowPageBuilder_v1 extends Component {
                 position: 'fixed',
                 top: event.clientY - event.currentTarget.offsetHeight / 2,
                 left: event.clientX - event.currentTarget.offsetWidth / 2,
-                zIndex: 11
+                zIndex: 11,
+                // width: duplicatedRef.current.offsetWidth
             }
         });
+
+        // we want element to have the same width it used to have, so remove class w-100
+        if (duplicatedRef.current && typeof duplicatedRef.current.classList !== 'undefined') {
+            duplicatedRef.current.style.width = duplicatedRef.current.offsetWidth + 'px';
+            duplicatedRef.current.classList.remove('w-100');
+        }
 
         let duplicatedIndex = index;
         let chunkStructureIdentifier = index;
         if (!ready) {
             chunkStructureIdentifier = this.state.chunks[chunkArrayKey][index].props.identifier;
         }
-
         if (cloneOnDrugging && ready) {
             duplicatedIndex = this.state.chunks[chunkArrayKey].length;
             this.setState(() => (
@@ -389,7 +418,8 @@ export class WindowPageBuilder_v1 extends Component {
                 {
                     chunks: {...this.state.chunks, [chunkArrayKey]: this.state.chunks[chunkArrayKey].map((chunk, _index) => _index === duplicatedIndex ? duplicatedItem : chunk)}
                 }
-            ))
+            ), () => {
+            })
         } else {
             // giving up
             Msg.error('Impossible to accomplish the task');
@@ -458,6 +488,11 @@ export class WindowPageBuilder_v1 extends Component {
         // and don't forget to unset it
         this.mouseUpCallback = () => {
             document.removeEventListener('mousemove', this.mouseMoveCallback);
+            // give back element its class
+            if (duplicatedRef.current && typeof duplicatedRef.current.classList !== 'undefined') {
+                duplicatedRef.current.classList.add('w-100');
+            }
+
             // delete visible draggable element
             this.setState(() => (
                 {
@@ -482,7 +517,7 @@ export class WindowPageBuilder_v1 extends Component {
 
                     this.renderPage({
                         ...this.state.page.structure, content: this.state.page.structure.content.insertElementByIndexArray(rowIdentifier, chunk).returnContent()
-                    });
+                    }, true);
 
                     currentTarget = null;
                 }
