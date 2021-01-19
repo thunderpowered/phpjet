@@ -46,6 +46,13 @@ class WidgetLogotype extends Widget
         return $this->logotype;
     }
 
+    public function _temp_pb__getLogotype()
+    {
+        return $this->render('_pb__widgetlogotype', [
+            'logotype' => $this->logotype
+        ]);
+    }
+
     private function loadLogotype(): void
     {
         $this->favicon = PHPJet::$app->system->settings->getContext('favicon');

@@ -24,5 +24,8 @@ class PHPJet
     private static function defineConstants()
     {
         define("NAMESPACE_ROOT", "Jet");
+        define("NAMESPACE_ROOT_CLIENT", NAMESPACE_ROOT . "\App\MVC\Client");
+        define("NAMESPACE_ROOT_ADMIN", NAMESPACE_ROOT . "\App\MVC\Admin");
+        define("NAMESPACE_ROOT_COMMON", NAMESPACE_ROOT . "\App\MVC\Common");
     }
 }

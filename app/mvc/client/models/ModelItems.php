@@ -47,10 +47,11 @@ class ModelItems extends Model
      * @param string $orderHow
      * @param int $limit
      * @return array
+     * @throws \Exception
      */
     public function getItemsGroupedByDateWithASingleParent(string $group, string $orderBy, string $orderHow, int $limit = 20): array
     {
-        $cacheIdentifier = __FUNCTION__ . $group . $orderBy . $orderHow . $$limit;
+        $cacheIdentifier = __FUNCTION__ . $group . $orderBy . $orderHow . $limit;
         $result = PHPJet::$app->tool->cache->getCache(__CLASS__, $cacheIdentifier);
         if ($result) {
             return json_decode($result, true);

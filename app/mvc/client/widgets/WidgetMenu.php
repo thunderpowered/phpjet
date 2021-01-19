@@ -32,7 +32,7 @@ class WidgetMenu extends Widget
         $this->host = PHPJet::$app->router->getHost() . '/';
 
         // i still this about it, not sure it is a good idea to use model in widgets. seems weird to me. we'll see
-        if (property_exists($this->parent->controller, 'modelItems')) {
+        if (isset($this->parent->controller) && property_exists($this->parent->controller, 'modelItems')) {
             $this->modelItems = $this->parent->controller->modelItems;
         } else {
             $this->modelItems = new ModelItems();

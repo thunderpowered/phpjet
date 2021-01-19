@@ -41,19 +41,20 @@ class ControllerMain extends Controller
     }
 
     /**
-     * @return mixed
+     * @param array $_pb__Data
+     * @return string
      * @throws \Exception
      */
-    public function actionBasic()
+    public function actionBasic(object $_pb__Data)
     {
         if ($this->SEO['title']) {
             $this->title = $this->SEO['title'];
         }
 
         $bestLastItems = $this->modelItems->getItemsGroupedByDateWithASingleParent('month', 'rating', 'desc');
-
         return $this->view->render('view_main', [
-            'bestLastItems' => $bestLastItems
+            'bestLastItems' => $bestLastItems,
+            '_pb__Data' => $_pb__Data
         ]);
     }
 }

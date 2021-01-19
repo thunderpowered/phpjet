@@ -256,9 +256,6 @@ export class WindowPageBuilder_v1 extends Component {
     }
 
     workspaceStateRoll(newHistoryCursor) {
-        console.log(newHistoryCursor);
-        console.log(this.state.history);
-        console.log(this.state.history[newHistoryCursor]);
 
         if (typeof this.state.history[newHistoryCursor] === 'undefined') {
             return false;
@@ -280,6 +277,7 @@ export class WindowPageBuilder_v1 extends Component {
             content: this.state.page.structure.content.returnContent()
         }, (resultID) => {
             this.setState(() => ({
+                mode: 'edit',
                 page: {
                     ...this.state.page,
                     structure: {

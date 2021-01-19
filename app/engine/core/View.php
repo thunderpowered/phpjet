@@ -75,6 +75,14 @@ class View
      * @var string
      */
     private $themePath;
+    /**
+     * @var bool
+     */
+    private $includeLayout = true;
+    /**
+     * @var string
+     */
+    private $forcedTemplateName;
 
     /**
      * View constructor.
@@ -107,8 +115,18 @@ class View
      */
     public function render(string $templateName = "default", array $data = array()): string
     {
+        // sometimes we need ignore controller's template name and force own (i.e. in PageBuilder)
+        // i still think i can find better solution
+        // todo think about it
+        if ($this->forcedTemplateName) {
+            $templateName = $this->forcedTemplateName;
+        }
+
         // This variable will be echoed in layout
         $this->view = $this->returnHTMLOutput($templateName, $data);
+        if (!$this->includeLayout) {
+            return $this->view;
+        }
 
         // Create compressed buffer
         $this->buffer->createBuffer();
@@ -144,7 +162,7 @@ class View
         }
 
         // Include view
-        require_once $templatePath;
+        include $templatePath;
 
         // Return html
         return $this->buffer->returnBuffer();
@@ -345,5 +363,32 @@ class View
         define("VIEW_PATH", MVC_PATH . "views/theme/" . THEME);
 
         return true;
+    }
+
+    /**
+     * These four functions are created especially for PageBuilder
+     * It is highly not recommended to use em outside PageBuilder
+     */
+    public function _pb__disableLayout()
+    {
+        $this->includeLayout = false;
+    }
+
+    public function _pb__enableLayout()
+    {
+        $this->includeLayout = true;
+    }
+
+    /**
+     * @param string $forcedTemplateName
+     */
+    public function _pb__setForcedTemplateName(string $forcedTemplateName)
+    {
+        $this->forcedTemplateName = $forcedTemplateName;
+    }
+
+    public function _pb__unsetForcedTemplateName()
+    {
+        $this->forcedTemplateName = null;
     }
 }

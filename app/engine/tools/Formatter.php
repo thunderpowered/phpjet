@@ -121,4 +121,34 @@ class Formatter
     {
         return date($format, strtotime($date));
     }
+
+    /**
+     * @param string $string
+     * @return array
+     */
+    public function splitStringByCapitalLetter(string $string): array
+    {
+        $result = preg_split('/(?=[A-Z])/', $string);
+        // returns either array or false
+        if (!$result) {
+            return [];
+        }
+
+        return $this->removeEmptyElementsFromArray($result);
+    }
+
+    /**
+     * @param array $array
+     * @return array
+     */
+    public function removeEmptyElementsFromArray(array $array): array
+    {
+        foreach ($array as $key => $value) {
+            if (!$value) {
+                array_splice($array, $key, 1);
+            }
+        }
+
+        return $array;
+    }
 }

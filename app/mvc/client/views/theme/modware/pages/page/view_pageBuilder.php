@@ -1,1 +1,5 @@
-PageBuilder prepared
+<?php
+/**
+ * @var object $page
+ */
+echo $page->html;

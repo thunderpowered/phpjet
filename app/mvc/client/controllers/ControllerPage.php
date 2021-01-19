@@ -38,9 +38,13 @@ class ControllerPage extends Controller
             return PHPJet::$app->router->errorPage404();
         }
 
+        $pageData = PHPJet::$app->pageBuilder->generatePage($pageData, $this->view);
+
         // quick note
         // use router->errorPage404(true) inside of pageBuilder chunks to execute immediate show up of page 404 (or 500 using errorPage500)
         // because each chunk proceeds apart from others and ordinary call will lead to putting error message inside single block while others will proceed normally
+        $this->view->setLayout('pageBuilder');
+        $this->view->_pb__enableLayout();
         return $this->view->render('view_pageBuilder', [
             'page' => $pageData
         ]);

@@ -52,6 +52,10 @@
 
     <style id="WidgetTheme" class="theme-adjust">
         <?php $this->widget->widgetTheme->getWidget(); ?>
+        /** TEMP MVP */
+        body {
+            min-height: 100vh;
+        }
     </style>
     <script>
         const globalSystemHost = "<?= \Jet\PHPJet::$app->router->getHost() ?>";
@@ -71,11 +75,6 @@
 
 <!-- ROOT DIV -->
 <div class="theme__background-color" id="root">
-
-    <!-- HEADER -->
-    <header>
-        <?php echo $this->includePart('header'); ?>
-    </header>
 
     <!-- MAIN CONTENT -->
     <?php echo $this->view; ?>

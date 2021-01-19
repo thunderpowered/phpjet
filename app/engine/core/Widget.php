@@ -62,7 +62,7 @@ class Widget
     /**
      * @param Controller $controller
      */
-    public function setController (Controller $controller)
+    public function setController(Controller $controller)
     {
         $this->controller = $controller;
     }
@@ -71,7 +71,8 @@ class Widget
      * @return string
      * This function should be extended
      */
-    public function getWidget(): string {
+    public function getWidget(): string
+    {
         return false;
     }
 
@@ -126,7 +127,7 @@ class Widget
      * @return string
      * Note that this function should be called ONLY inside of templates, or inside of function that called inside of templates
      */
-    public function render(string $templateName, array $data = array()): string
+    protected function render(string $templateName, array $data = array()): string
     {
         // create variables from array
         if ($data) {
@@ -138,7 +139,7 @@ class Widget
         $widgetFilePath = WIDGET_TEMPLATES_PATH . $templateName . '.php';
         if (file_exists($widgetFilePath)) {
             PHPJet::$app->system->buffer->createBuffer();
-            require_once $widgetFilePath;
+            include $widgetFilePath;
             return PHPJet::$app->system->buffer->returnBuffer();
         }
 

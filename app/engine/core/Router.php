@@ -417,7 +417,9 @@ class Router
             }
         }
 
-        if (!$lowerCase) {
+        if ($lowerCase) {
+            $this->controllerName = strtolower($this->controllerName);
+        } else {
             $this->controllerName = ucfirst($this->controllerName);
         }
 

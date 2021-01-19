@@ -19,12 +19,28 @@ class PageBuilder
      * @var array
      */
     private $chunks = [
+        // todo organize it
+        // widgets
         [
             'props' => [
-                'id' => 'SampleWidget',
-                'name' => 'Sample Widget',
+                'id' => 'Logotype',
+                'name' => 'Logotype',
                 'jet' => [
-                    'class' => 'SampleWidget',
+                    'class' => 'WidgetLogotype',
+                    'function' => '_temp_pb__getLogotype'
+                ]
+            ],
+            'params' => [
+
+            ],
+            'children' => []
+        ],
+        [
+            'props' => [
+                'id' => 'Banner',
+                'name' => 'Banner',
+                'jet' => [
+                    'class' => 'WidgetBanner',
                     'function' => 'getWidget'
                 ]
             ],
@@ -33,6 +49,21 @@ class PageBuilder
             ],
             'children' => []
         ],
+        [
+            'props' => [
+                'id' => 'Menu',
+                'name' => 'Menu',
+                'jet' => [
+                    'class' => 'WidgetMenu',
+                    'function' => 'getHeaderMenu'
+                ]
+            ],
+            'params' => [
+
+            ],
+            'children' => []
+        ],
+        // controllers
         [
             'props' => [
                 'id' => 'itemsGroupedByDate',
@@ -68,6 +99,10 @@ class PageBuilder
      * @var string
      */
     private $contextKeyPrefix = 'pagebuilder__';
+    /**
+     * @var string
+     */
+    private $templatePrefix = '_pb__';
 
     /**
      * @param string $url
@@ -81,12 +116,12 @@ class PageBuilder
 
     /**
      * @param string $url
-     * @return array
+     * @return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder|void
      */
-    public function getPageData(string $url): array
+    public function getPageData(string $url)
     {
-        // todo
-        return [];
+        // todo prepare url
+        return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder::getOne(['url' => $url, 'type' => 'page'], [], [], false);
     }
 
     /**
@@ -156,6 +191,143 @@ class PageBuilder
         ];
     }
 
+    /**
+     * @param \Jet\App\Engine\ActiveRecord\Tables\PageBuilder $pageData
+     * @param View $view
+     * @param bool $jsonEncoded
+     * @return object
+     */
+    public function generatePage(\Jet\App\Engine\ActiveRecord\Tables\PageBuilder $pageData, View $view, bool $jsonEncoded = true): object
+    {
+        if ($jsonEncoded) {
+            $pageData->content = json_decode($pageData->content);
+        }
+
+        // todo better use custom class for this
+        $page = new \stdClass();
+        $page->pageData = $page;
+        $page->html = $this->proceedContent($pageData->content, $view);
+        return $page;
+    }
+
+    /**
+     * @param array $pageData
+     * @param View $view
+     * @return string
+     */
+    private function proceedContent(array $pageData, View $view): string
+    {
+        $html = '';
+        foreach ($pageData as $key => $element) {
+            $children = '';
+            if (!empty($element->children) && is_array($element->children)) {
+                // do the same with children
+                $children = $this->proceedContent($element->children, $view);
+            }
+
+            $html .= $this->proceedElement($element, $children, $view);
+        }
+        return $html;
+    }
+
+    /**
+     * @param object $element
+     * @param string $children
+     * @param View $view
+     * @return string
+     */
+    private function proceedElement(object $element, string $children, View $view): string
+    {
+        // todo also check if props->jet exists
+        if ($element->type === 'chunk') {
+            return $this->proceedChunk($element, $children, $view);
+        } else {
+            // just return plain string, there's nothing to worry about
+            $templateName = $this->templatePrefix . $element->type;
+            $view->_pb__disableLayout();
+            $view->_pb__unsetForcedTemplateName();
+            return $view->render($templateName, [
+                'element' => $element,
+                'children' => $children
+            ]);
+        }
+    }
+
+    /**
+     * @param object $chunk
+     * @param string $children
+     * @param View $view
+     * @return string
+     */
+    private function proceedChunk(object $chunk, string $children, View $view): string
+    {
+        // first of all we have to learn what type of class is it
+        $type = $this->getChunkType($chunk->props->jet->class);
+        // maybe it's me, but it looks unsafe
+        switch ($type) {
+            case 'controller':
+                $className = NAMESPACE_ROOT_CLIENT . "\Controllers\\" . $chunk->props->jet->class;
+                break;
+            case 'widget':
+                $className = NAMESPACE_ROOT_CLIENT . "\Widgets\\" . $chunk->props->jet->class;
+                break;
+            default:
+                // there's nothing to do anymore
+                return '';
+                break;
+        }
+
+        if (!class_exists($className) || !method_exists($className, $chunk->props->jet->function) || !is_callable([$className, $chunk->props->jet->function])) {
+            return '';
+        }
+
+        // that's not very good, actually
+        $object = new $className();
+        if (method_exists($object, 'setView')) {
+            // there is huge possibility that we deal with Controller
+            // since each action requires layout and have it's own template, disable layout and force template we need
+            $forcedTemplateName = $this->generateTemplateString($chunk->props->jet);
+            $view->_pb__disableLayout();
+            $view->_pb__setForcedTemplateName($forcedTemplateName);
+            $object->setView($view);
+        }
+        // note: if class is not controller, we have to implement render functionality
+        // or use class view
+        return $object->{$chunk->props->jet->function}($chunk, $children);
+    }
+
+    /**
+     * @param object $jet
+     * @return string
+     */
+    private function generateTemplateString(object $jet): string
+    {
+        $className = PHPJet::$app->tool->formatter->splitStringByCapitalLetter($jet->class);
+        if (!$className || !isset($className[1])) {
+            $className = 'default';
+        } else {
+            $className = strtolower($className[1]);
+        }
+
+        $functionName = PHPJet::$app->tool->formatter->splitStringByCapitalLetter($jet->function);
+        if (!$functionName || !isset($functionName[1])) {
+            $functionName = 'function';
+        } else {
+            $functionName = strtolower($functionName[1]);
+        }
+
+        return $this->templatePrefix . $className . $functionName;
+    }
+
+    /**
+     * @param string $className
+     * @return string
+     */
+    private function getChunkType(string $className): string
+    {
+        $classArray = PHPJet::$app->tool->formatter->splitStringByCapitalLetter($className);
+        return isset($classArray[0]) ? strtolower($classArray[0]) : '';
+    }
 
     /**
      * @param string $contextName

@@ -17,7 +17,7 @@ export class Desktop extends Component {
             // todo report frontend errors too
             console.log(message);
             setTimeout(() => {
-                // window.location.reload();
+                window.location.reload();
             }, 5000);
             return false;
         };
