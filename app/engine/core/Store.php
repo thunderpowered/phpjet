@@ -797,14 +797,17 @@ class Store
             }
 
             foreach ($joinCondition as $joinField => $mainField) {
-                if (!$this->fields[$table]) {
+                if (!isset($this->fields[$table])) {
                     $this->setFields($table);
                 }
-                if (!$this->fields[$joinTable]) {
+                if (!isset($this->fields[$joinTable])) {
                     $this->setFields($joinTable);
                 }
 
                 if (!array_key_exists($mainField, $this->fields[$table]) || !array_key_exists($joinField, $this->fields[$joinTable])) {
+
+                    var_dump($this->fields[$table]);
+                    exit();
                     $this->throwException("JOIN: Given field does not exist in the table", $dieIfIncorrect);
                 }
 //                $join[$key][2][$joinField] = $mainField;

@@ -4,6 +4,7 @@
 namespace Jet\App\MVC\Client\Widgets;
 
 
+use Jet\App\Engine\ActiveRecord\Tables\Items;
 use Jet\App\Engine\ActiveRecord\Tables\Mods;
 use Jet\App\Engine\Core\Widget;
 use Jet\PHPJet;
@@ -43,8 +44,12 @@ class WidgetHot extends Widget
     /**
      * @return string
      */
-    public function getNewMods(): string
+    public function getNewItems(): string
     {
+        $items = Items::get(['parent' => '!0']);
+
+        return '';
+        // todo
         $mods = Mods::getJoin([
             ['LEFT', 'games', ['id' => 'games_id']],
             ['LEFT', 'users', ['id' => 'users_id']]

@@ -61,15 +61,30 @@ class WidgetMenu extends Widget
     /**
      * @return string
      */
-    public function getItemList(): string
+    public function getItemRootList(): string
     {
+        return $this->getItemList(true);
+    }
+
+    /**
+     * @param bool $onlyRoot
+     * @return string
+     */
+    public function getItemList(bool $onlyRoot = false): string
+    {
+        $condition = [];
+        if ($onlyRoot) {
+            $condition = ['parent' => 0];
+        }
+
         $items = Items::getJoin([
-            ['LEFT', 'taxonomy', ['id' => 'item_id']]
-        ], [], ['since' => 'DESC'], [0, 30]);
+            ['LEFT', 'taxonomy', ['items_id' => 'id']]
+        ], $condition, ['since' => 'DESC'], [0, 30]);
 
         foreach ($items as $key => $item) {
-            $items[$key]->new = $this->modelItems->isThisItemNew($item['since']);
-            $items[$key]->url = $this->modelItems->getItemFullURL($item['url']);
+            $items[$key]->new = $this->modelItems->isThisItemNew($item->since);
+            $items[$key]->url = $this->modelItems->getItemFullURL($item->url);
+            $items[$key]->icon = PHPjet::$app->tool->utils->getThumbnailLink($item->icon);
         }
 
         return $this->render('widget_menu_item_list', [

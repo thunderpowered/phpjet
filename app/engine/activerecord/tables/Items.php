@@ -23,6 +23,10 @@ class Items extends ActiveRecord
     /**
      * @var int
      */
+    public $users_id;
+    /**
+     * @var int
+     */
     public $name;
     /**
      * @var string

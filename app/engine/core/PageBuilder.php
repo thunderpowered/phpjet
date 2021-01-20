@@ -20,10 +20,13 @@ class PageBuilder
      */
     private $chunks = [
         // todo organize it
+        // todo and move somewhere else
+        // since blocks could be implemented in MVC and we're in the Core folder
+        // and maybe add to database or something
         // widgets
         [
             'props' => [
-                'id' => 'Logotype',
+                'id' => 'WidgetLogotype',
                 'name' => 'Logotype',
                 'jet' => [
                     'class' => 'WidgetLogotype',
@@ -37,7 +40,7 @@ class PageBuilder
         ],
         [
             'props' => [
-                'id' => 'Banner',
+                'id' => 'WidgetBanner',
                 'name' => 'Banner',
                 'jet' => [
                     'class' => 'WidgetBanner',
@@ -63,6 +66,34 @@ class PageBuilder
             ],
             'children' => []
         ],
+        [
+            'props' => [
+                'id' => 'ItemRootList',
+                'name' => 'Custom Menu 1',
+                'jet' => [
+                    'class' => 'WidgetMenu',
+                    'function' => 'getItemRootList'
+                ]
+            ],
+            'params' => [
+
+            ],
+            'children' => []
+        ],
+//        [
+//            'props' => [
+//                'id' => 'NewItems',
+//                'name' => 'New Items',
+//                'jet' => [
+//                    'class' => 'WidgetHot',
+//                    'function' => 'getNewItems'
+//                ]
+//            ],
+//            'params' => [
+//
+//            ],
+//            'children' => []
+//        ],
         // controllers
         [
             'props' => [

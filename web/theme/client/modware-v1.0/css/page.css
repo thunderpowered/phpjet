@@ -20,6 +20,17 @@ header {
     box-shadow: 0 0 7px 2px rgba(0,0,0,.555);
 }
 
+/* TEMP!!1 */
+#root > div:nth-of-type(2) {
+    box-shadow: 0 0 7px 2px rgba(0,0,0,.555);
+    position: relative;
+    z-index: 2;
+}
+
+#root > div:first-of-type {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
 
 .header__middle {
     width:100%;
