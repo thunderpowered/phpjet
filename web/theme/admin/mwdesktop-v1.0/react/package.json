@@ -1,10 +1,17 @@
 {
-  "name": "react",
+  "name": "phpjet_admin",
   "version": "1.0.0",
   "description": "theme",
   "main": "index.js",
   "watch": {
     "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "js,jsx",
+      "runOnChangeOnly": false
+    },
+    "dev": {
       "patterns": [
         "src"
       ],
@@ -21,8 +28,7 @@
     "react-dom": "^17.0.1",
     "watch": "^1.0.2",
     "webpack": "^5.11.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-cli": "^4.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.10",
@@ -30,12 +36,14 @@
     "@babel/plugin-syntax-jsx": "^7.12.1",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
-    "babel-loader": "^8.2.2"
+    "babel-loader": "^8.2.2",
+    "webpack-dev-server": "^3.11.2"
   },
   "scripts": {
-    "start": "webpack-dev-server --mode development --open",
+    "dev": "webpack --mode development",
     "build": "webpack --mode production",
-    "watch": "npm-watch"
+    "watch:dev": "npm-watch dev",
+    "start:dev": "webpack serve"
   },
   "babel": {
     "presets": [
@@ -48,6 +56,6 @@
       ]
     ]
   },
-  "author": "ModWare",
+  "author": "PHPJet",
   "license": "ISC"
 }
