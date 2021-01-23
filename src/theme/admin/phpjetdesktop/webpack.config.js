@@ -1,4 +1,4 @@
-const webpack = require('webpack');
+"use strict";
 
 module.exports = {
     entry: [
@@ -15,15 +15,7 @@ module.exports = {
         extensions: ['.js', '.jsx']
     },
     output: {
-        path: __dirname + '/../../../../dist/web/theme/admin/phpjetdesktop-v1.1',
-        // publicPath: '/',
+        path: __dirname + '/../../../../dist/web/theme/admin/phpjetdesktop',
         filename: 'js/desktop.js'
     }
-    // devServer: {
-    //     contentBase: './',
-    //     hot: true
-    // },
-    // plugins: [
-    //     new webpack.HotModuleReplacementPlugin()
-    // ]
 };

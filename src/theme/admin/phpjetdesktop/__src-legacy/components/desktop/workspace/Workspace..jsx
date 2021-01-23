@@ -238,7 +238,7 @@ export class Workspace extends Component {
 
             {/* We don't need background in classic mode, so let's jst not render it */}
             {this.state.panelMode === 'window' &&
-            <Background/>
+                <Background/>
             }
 
             <Windows onMount={this.loadMenu.bind(this)}
