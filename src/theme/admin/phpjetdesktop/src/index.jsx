@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Desktop} from "./components/desktop/Desktop";
+import Desktop from "./Desktop";
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from './reducers';

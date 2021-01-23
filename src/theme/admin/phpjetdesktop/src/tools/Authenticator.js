@@ -1,4 +1,4 @@
-import fetch2 from './fetch2';
+import {fetch2} from './../api/fetch2';
 
 export class Authenticator {
 

@@ -1,1 +1,1 @@
-export default token = document.querySelector("meta[name=csrf_token]").getAttribute("content");
+export const token = document.querySelector("meta[name=csrf_token]").getAttribute("content");

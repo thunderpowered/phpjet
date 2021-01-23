@@ -37,7 +37,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <title><?php echo $this->controller->getTitle(); ?></title>
 
     <!-- WEBSITE STYLESHEETS -->
-    <?php echo $this->includeCSS('css/theme.css'); ?>
     <?php echo $this->includeCSS('css/desktop.css'); ?>
 
     <!-- BOOTSTRAP/CSS -->
@@ -85,7 +84,7 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <?php echo $this->includeCommonJS('libs/jquery.nicescroll-3.7.6/jquery.nicescroll.min.js'); ?>
 
 <!-- REACT APPLICATION -->
-<?php echo $this->includeJS('react/desktop.js'); ?>
+<?php echo $this->includeJS('js/desktop.js'); ?>
 
 
 <!-- JQUERY PLUGIN ACTIVATION -->

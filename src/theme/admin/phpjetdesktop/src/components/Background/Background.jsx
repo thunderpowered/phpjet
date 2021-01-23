@@ -1,10 +1,12 @@
 import React from 'react';
 import './Background.scss';
 
-export default Background = () => {
+const Background = () => {
     return (
         <div>
             Background...
         </div>
     )
 };
+
+export default Background
