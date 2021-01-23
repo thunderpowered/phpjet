@@ -1,7 +1,7 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {PANEL_MODE_WINDOW} from "../constants/mode";
-import {BackgroundContainer} from "../components/Background/BackgroundContainer";
+import BackgroundContainer from "../components/Background/BackgroundContainer";
 
 class Workspace extends React.Component {
     render() {

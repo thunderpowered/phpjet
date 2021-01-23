@@ -3,20 +3,15 @@ import {connect} from 'react-redux';
 import SimpleLoader from './components/loaders/SimpleLoader';
 import Workspace from './layouts/Workspace';
 import Auth from './layouts/Auth';
-import {Authenticator} from "./tools/Authenticator";
-import {checkAuthorization} from "./actions/auth";
+import {checkAuthorization} from "./api/auth";
 
 class Desktop extends React.Component {
     constructor(props) {
         super(props);
-        this.authenticator = new Authenticator();
     }
 
     componentDidMount() {
-        const {dispatch} = this.props;
-        this.authenticator.checkAuthentication((authorized, urls) => (
-            dispatch(checkAuthorization(authorized, urls))
-        ));
+        this.setTimeout(() => this.props.dispatch(checkAuthorization), 60000);
     }
 
     render() {

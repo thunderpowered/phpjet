@@ -1,6 +1,6 @@
 import {token} from "./token";
 
-export function fetch2(url, options = {}, callbacks = {}, json = true) {
+export function fetch2(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
     options = {
         method: 'POST',
         credentials: 'same-origin',
@@ -20,15 +20,14 @@ export function fetch2(url, options = {}, callbacks = {}, json = true) {
     }
 
     options.body = json ? JSON.stringify(options.queryParams) : options.queryParams;
-    // url += (url.indexOf('?') === -1 ? '?' : '&') + queryParams(options.queryParams);
     delete options.queryParams;
 
     return fetch(url, options)
         .then(result => result.json())
         .then(
             result => {
-                if (typeof callbacks.onSuccess !== 'undefined') {
-                    callbacks.onSuccess(result);
+                if (typeof callbackOnSuccess !== 'undefined') {
+                    callbackOnSuccess(result);
                 }
 
                 if (typeof result.messageBox !== 'undefined' && typeof result.messageBox.text !== 'undefined' && result.messageBox.text) {
@@ -40,8 +39,8 @@ export function fetch2(url, options = {}, callbacks = {}, json = true) {
                     Msg[style](result.messageBox.text, 5000);
                 }
             }, error => {
-                if (typeof callbacks.onError !== 'undefined') {
-                    callbacks.onError(error);
+                if (typeof callbackOnSuccess !== 'undefined') {
+                    callbackOnSuccess(error);
                 }
                 Msg.danger(error, 5000);
             });
