@@ -1,4 +1,4 @@
-import {CHANGE_WALLPAPER} from "../actions/background";
+import {SET_WALLPAPER} from "../actions/background";
 
 const initialState = {
     wallpaper: ''
@@ -6,7 +6,7 @@ const initialState = {
 
 const background = (state = initialState, action) => {
       switch (action.type) {
-          case CHANGE_WALLPAPER:
+          case SET_WALLPAPER:
               return {
                   wallpaper: action.wallpaper
               };

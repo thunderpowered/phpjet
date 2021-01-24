@@ -1,9 +1,10 @@
 import React from "react";
 import {connect} from 'react-redux';
-import SimpleLoader from './components/loaders/SimpleLoader';
 import Workspace from './layouts/Workspace';
 import Auth from './layouts/Auth';
 import {checkAuthorization} from "./api/auth";
+import './scss/index.scss';
+import './Desktop.scss';
 
 class Desktop extends React.Component {
     constructor(props) {
@@ -11,15 +12,12 @@ class Desktop extends React.Component {
     }
 
     componentDidMount() {
-        this.setTimeout(() => this.props.dispatch(checkAuthorization), 60000);
+        this.props.dispatch(checkAuthorization());
+        this.interval = setInterval(() => this.props.dispatch(checkAuthorization()), 60000);
     }
 
     render() {
-        const {authorized} = this.props;
-        if (typeof authorized === 'undefined') {
-            return <SimpleLoader/>
-        }
-        if (authorized) {
+        if (this.props.authorized) {
             return <Workspace/>
         } else {
             return <Auth/>

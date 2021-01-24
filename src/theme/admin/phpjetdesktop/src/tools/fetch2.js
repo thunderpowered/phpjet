@@ -1,6 +1,6 @@
-import {token} from "./token";
+export const token = document.querySelector("meta[name=csrf_token]").getAttribute("content");
 
-export function fetch2(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
+export const fetch2 = (url, options = {}, callbackOnSuccess, callbackOnError, json = true) => {
     options = {
         method: 'POST',
         credentials: 'same-origin',
@@ -44,10 +44,10 @@ export function fetch2(url, options = {}, callbackOnSuccess, callbackOnError, js
                 }
                 Msg.danger(error, 5000);
             });
-}
+};
 
-export function queryParams(params) {
+export const queryParams = (params) => {
     return Object.keys(params)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
         .join('&');
-}
+};

@@ -1,12 +1,18 @@
-// color scheme
-$button-link-accent: #fafafa;
-$button-link-accent-hover: #fafafa;
-$button-link-accent-active: #fafafa;
+// default color scheme
+$button-link-accent: #9b0000;
+$button-link-accent-hover: #d20000;
+$button-link-accent-active: #ff0000;
 
-$button-link-default: #fafafa;
-$button-link-default-hover: #fafafa;
-$button-link-default-active: #fafafa;
+$button-link-default: #3d3d3d;
+$button-link-default-hover: #4b4b4b;
+$button-link-default-active: #5f5f5f;
 
-$background-color-default: #fafafa;
-$background-color-lighter: #fafafa;
-$background-color-darker: #fafafa;
+$background-color-default: #000 !important;
+$background-color-lighter: #232323 !important;
+$background-color-darker: #191919 !important;
+
+$border-color-default: #353635;
+
+// default font parameters
+$font-family-default: 'Roboto Condensed', sans-serif;
+$font-size-default: 14px;

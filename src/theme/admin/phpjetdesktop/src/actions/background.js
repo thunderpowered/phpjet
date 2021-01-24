@@ -1,6 +1,6 @@
-export const CHANGE_WALLPAPER = 'CHANGE_WALLPAPER';
+export const SET_WALLPAPER = 'SET_WALLPAPER';
 
-export const changeWallpaper = (wallpaper) => ({
-    type: CHANGE_WALLPAPER,
+export const setWallpaper = (wallpaper) => ({
+    type: SET_WALLPAPER,
     wallpaper
 });

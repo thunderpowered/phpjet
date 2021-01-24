@@ -1,0 +1,11 @@
+@import './variables';
+
+* {
+  font-family: $font-family-default;
+  font-size: $font-size-default;
+}
+
+html, body {
+  // temp
+  min-width: 1024px !important;
+}

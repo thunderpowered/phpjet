@@ -16,5 +16,13 @@ if (desktopElement) {
         desktopElement
     );
 } else {
-    alert('Unable to start the application. Reload page and try again.');
+    alert('Unable to start the application. Reload the page and try again.');
 }
+
+window.onerror = function(message, file, line, col, error) {
+    Msg.error("Desktop crashed. Error information automatically reported to development team, we will handle this as soon as possible. The Desktop will be automatically reloaded in 5 sec.");
+    setTimeout(() => window.location.reload(), 5000);
+
+    // todo report frontend errors too
+    console.log(message);
+};

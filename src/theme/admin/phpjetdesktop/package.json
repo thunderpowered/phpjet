@@ -8,22 +8,24 @@
       "patterns": [
         "src"
       ],
-      "extensions": "js,jsx",
+      "extensions": "js,jsx,scss",
       "runOnChangeOnly": false
     },
     "dev": {
       "patterns": [
         "src"
       ],
-      "extensions": "js,jsx",
+      "extensions": "js,jsx,scss",
       "runOnChangeOnly": false
     }
   },
   "dependencies": {
+    "autoprefixer": "^10.2.3",
     "bootstrap": "^4.5.3",
     "i18next": "^19.8.4",
     "neutrino": "^9.4.0",
     "npm-watch": "^0.7.0",
+    "postcss-loader": "^4.2.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
@@ -68,6 +70,10 @@
       ]
     ]
   },
+  "browserslist": [
+    "defaults",
+    "last 4 versions"
+  ],
   "author": "PHPJet",
   "license": "MIT"
 }
