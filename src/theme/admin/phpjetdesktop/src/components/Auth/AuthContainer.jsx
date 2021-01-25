@@ -1,10 +1,9 @@
 import React from "react";
+import Auth from "./Auth";
 
 class AuthContainer extends React.Component {
     render() {
-        return <div>
-            AuthContainer
-        </div>
+        return <Auth step={1}/>
     }
 }
 

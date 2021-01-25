@@ -1,10 +1,10 @@
 import {fetch2} from "../tools/fetch2";
-import {changeAuthorizedStatus} from "../actions/auth";
+import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 
 export const checkAuthorization = () => (
     dispatch => (
         fetch2(globalSystemRootURL + '/auth/check', {}, result => (
-            dispatch(changeAuthorizedStatus(result.data.auth, result.data.urls))
+            dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         ))
     )
 );
@@ -12,7 +12,23 @@ export const checkAuthorization = () => (
 export const logout = () => (
     dispatch => (
         fetch2(globalSystemRootURL + '/auth/logout', {}, result => (
-            dispatch(changeAuthorizedStatus(result.data.auth, null))
+            dispatch(setAuthorizedStatus(result.data.auth, null))
+        ))
+    )
+);
+
+export const authorizationFirstFactor = () => (
+    dispatch => (
+        fetch2(globalSystemRootURL + '/auth', {}, result => (
+            dispatch(setAuthorizationAction(result.action))
+        ))
+    )
+);
+
+export const authorizationSecondFactor = () => (
+    dispatch => (
+        fetch2(globalSystemRootURL + '/auth/verifyCode', {}, result => (
+            dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         ))
     )
 );

@@ -1,0 +1,9 @@
+@import "./../../scss/variables";
+
+.DefaultForm {
+  background-color: $background-color-lighter;
+
+  &__input {
+    background-color: $background-color-darker;
+  }
+}

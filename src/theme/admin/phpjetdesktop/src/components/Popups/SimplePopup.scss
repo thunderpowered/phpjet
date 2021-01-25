@@ -3,7 +3,7 @@
 
 .SimplePopup {
   z-index: 5;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: $background-transparent-dark;
 
   &__content-wrapper {
     top: 0;
