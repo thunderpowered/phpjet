@@ -1,11 +1,10 @@
 import React from 'react';
 import './Background.scss';
 
-const Background = () => {
+const Background = ({wallpaper}) => {
     return (
-        <div>
-            Background...
-        </div>
+        <div style={{backgroundImage: `url(${wallpaper})`}}
+             className={'Background vh-100 w-100 position-absolute overflow-hidden'}/>
     )
 };
 

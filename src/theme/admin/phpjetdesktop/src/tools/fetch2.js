@@ -1,3 +1,5 @@
+import {Token} from "../../__src-legacy/helpers/token";
+
 export const token = document.querySelector("meta[name=csrf_token]").getAttribute("content");
 
 export const fetch2 = (url, options = {}, callbackOnSuccess, callbackOnError, json = true) => {
@@ -45,6 +47,18 @@ export const fetch2 = (url, options = {}, callbackOnSuccess, callbackOnError, js
                     callbackOnError(error);
                 }
             });
+};
+
+export const fetch2file = (url, options = {}, callbackOnSuccess, callbackOnError) => {
+    const formData = new FormData();
+    for (let key in options.queryParams) {
+        if (options.queryParams.hasOwnProperty(key)) {
+            formData.append(key, options.queryParams[key]);
+        }
+    }
+    formData.append('__csrf', token);
+    options.queryParams = formData;
+    return fetch2(url, options, callbackOnSuccess, callbackOnError, false);
 };
 
 const queryParams = (params) => {

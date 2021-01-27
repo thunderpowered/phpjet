@@ -5,9 +5,10 @@ import BackgroundContainer from "../components/Background/BackgroundContainer";
 
 class Workspace extends React.Component {
     render() {
+        const {mode} = this.props;
         return (
             <div className="Workspace">
-                {this.props.panelMode === PANEL_MODE_WINDOW &&
+                {mode === PANEL_MODE_WINDOW &&
                     <BackgroundContainer/>
                 }
                 Workspace...

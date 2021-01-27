@@ -12,17 +12,13 @@ class Desktop extends React.Component {
     constructor(props) {
         super(props);
     }
-
     componentDidMount() {
         const {dispatch} = this.props;
-
         dispatch(checkAuthorization());
         this.interval = setInterval(() => dispatch(checkAuthorization()), 60000);
-
         // load all stuff
         dispatch(fetchMisc());
     }
-
     render() {
         const {authorized} = this.props;
         if (typeof authorized === 'undefined') {

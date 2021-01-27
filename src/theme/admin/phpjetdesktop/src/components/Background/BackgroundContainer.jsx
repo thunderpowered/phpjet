@@ -5,21 +5,21 @@ import {fetchWallpaper} from "../../api/background";
 
 class BackgroundContainer extends React.Component {
     componentDidMount() {
-        return this.fetchWallpaper();
+        this.props.dispatch(fetchWallpaper())
     }
-    fetchWallpaper() {
-        return this.props.dispatch(fetchWallpaper());
+    onChangeWallpaper() {
+
     }
     render() {
+        const {wallpaper} = this.props;
         return (
-            <Background onChangeWallpaper={this.onChangeWallpaper.bind(this)} wallpaper={this.props.wallpaper}/>
+            <Background onChangeWallpaper={this.onChangeWallpaper.bind(this)} wallpaper={wallpaper}/>
         )
     }
 }
 
 const mapStateToProps = state => ({
-    wallpaper: state.background.wallpaper,
-    urlChangeWallpaper: state.auth.url.changeWallpaper
+    wallpaper: state.background.wallpaper
 });
 
 export default connect(mapStateToProps)(BackgroundContainer)
