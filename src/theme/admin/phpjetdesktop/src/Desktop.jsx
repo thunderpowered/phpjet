@@ -12,6 +12,7 @@ class Desktop extends React.Component {
     constructor(props) {
         super(props);
     }
+
     componentDidMount() {
         const {dispatch} = this.props;
         dispatch(checkAuthorization());
@@ -19,6 +20,7 @@ class Desktop extends React.Component {
         // load all stuff
         dispatch(fetchMisc());
     }
+
     render() {
         const {authorized} = this.props;
         if (typeof authorized === 'undefined') {

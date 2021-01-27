@@ -50,6 +50,11 @@ export const fetch2 = (url, options = {}, callbackOnSuccess, callbackOnError, js
 };
 
 export const fetch2file = (url, options = {}, callbackOnSuccess, callbackOnError) => {
+    options = {
+        ...options,
+        headers: {},
+    };
+
     const formData = new FormData();
     for (let key in options.queryParams) {
         if (options.queryParams.hasOwnProperty(key)) {

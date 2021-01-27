@@ -19,7 +19,7 @@ class ControllerMisc extends ControllerAdmin
      * @var array
      */
     protected $methods = [
-        'POST', 'GET'
+        'POST'
     ];
     /**
      * @var bool

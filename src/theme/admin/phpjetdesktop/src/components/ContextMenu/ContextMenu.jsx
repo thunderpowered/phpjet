@@ -1,4 +1,5 @@
 import React from "react";
+import {connect} from 'react-redux';
 import './ContextMenu.scss';
 
 const ContextMenu = ({children, mousePosition, opened = false}) => (
@@ -12,7 +13,7 @@ const ContextMenu = ({children, mousePosition, opened = false}) => (
             <div className={'ContextMenu__item-wrapper d-flex'}>
                 {React.cloneElement(child, {
                     ...child.props,
-                    className: `${child.className ? child.className : ''} p-4 pt-2 pb-2 w-100 text-left d-block ContextMenu__item`,
+                    className: `${child.props.className ? child.props.className : ''} p-4 pt-2 pb-2 w-100 text-left d-block ContextMenu__item`,
                     onClick: (event) => {event.stopPropagation(); child.props.onClick(event)}
                 })}
             </div>
@@ -20,4 +21,6 @@ const ContextMenu = ({children, mousePosition, opened = false}) => (
     </div>
 );
 
-export default ContextMenu
+const mapStateToProps = state => state.contextMenu;
+
+export default connect(mapStateToProps)(ContextMenu)

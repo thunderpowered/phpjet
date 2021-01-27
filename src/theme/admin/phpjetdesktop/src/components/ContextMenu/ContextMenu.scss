@@ -4,7 +4,14 @@
 .ContextMenu {
   min-width: 300px;
   z-index: 15;
-  cursor: pointer;
+
+  * {
+    cursor: pointer;
+  }
+
+  .no-padding {
+    padding: 0 !important;
+  }
 
   &__item {
     background-color: $button-color-default;

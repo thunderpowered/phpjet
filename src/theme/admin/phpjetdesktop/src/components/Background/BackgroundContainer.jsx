@@ -1,24 +1,35 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import Background from "./Background";
-import {fetchWallpaper} from "../../api/background";
-import {openContextMenu} from "../../actions/contextMenu";
+import {fetchWallpaper, changeWallpaper} from "../../api/background";
+import {closeContextMenu, openContextMenu} from "../../actions/contextMenu";
 import {withTranslation} from "react-i18next";
 
 class BackgroundContainer extends React.Component {
     componentDidMount() {
         this.props.dispatch(fetchWallpaper())
     }
+
     onChangeWallpaper(event) {
-        console.log(event);
+        const {dispatch} = this.props;
+        if (typeof event.target.files === 'undefined' || typeof event.target.files[0] === 'undefined') return false;
+        dispatch(changeWallpaper({file: event.target.files[0]}));
+        dispatch(closeContextMenu());
     }
+
     onContextMenu(event) {
         event.preventDefault();
         const {dispatch, t} = this.props;
         dispatch(openContextMenu([
-            <a key={0} href={'#'} onClick={this.onChangeWallpaper.bind(this)}>{`${t('Theme.ChangeWallpaper')}...`}</a>
+            <a className={'no-padding'} key={0} href={'#'} onClick={this.onChangeWallpaper.bind(this)}>
+                <label htmlFor={'ChangeWallpaper'}
+                       className={'w-100 h-100 d-block p-4 pt-2 pb-2'}>{`${t('Theme.ChangeWallpaper')}...`}</label>
+                <input id={'ChangeWallpaper'} className={'d-none'} type={'file'}
+                       onChange={this.onChangeWallpaper.bind(this)}/>
+            </a>
         ], {x: event.clientX, y: event.clientY}));
     }
+
     render() {
         const {wallpaper} = this.props;
         return (
