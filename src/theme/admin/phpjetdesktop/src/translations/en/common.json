@@ -5,5 +5,8 @@
     "EnterVerificationCode": "Enter verification code here",
     "Login": "Login",
     "Verify": "Verify"
+  },
+  "Theme": {
+    "ChangeWallpaper": "Change wallpaper"
   }
 }

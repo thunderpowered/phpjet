@@ -17,7 +17,7 @@ export class SimpleDropMenu extends Component {
                 <div className={'w-100 Desktop__Elements__DropDowns--SimpleDropMenu-Item-wrapper d-flex'}>
                     {React.cloneElement(child, {
                         ...child.props,
-                        className: (child.props.className ? child.props.className : '') + ` w-100 text-left d-block Desktop__Elements__DropDowns--SimpleDropMenu-Item theme__background-color2 ${this.props.hoverClass} theme__text-color theme__border-bottom theme__border-color`,
+                        className: (child.props.className ? child.props.className : '') + `w-100 text-left d-block Desktop__Elements__DropDowns--SimpleDropMenu-Item theme__background-color2 ${this.props.hoverClass} theme__text-color theme__border-bottom theme__border-color`,
                     })}
                 </div>
             ))}

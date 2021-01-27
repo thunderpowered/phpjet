@@ -6,7 +6,7 @@ import FormContainer from "../Forms/FormContainer";
 import {useTranslation} from "react-i18next";
 
 const Auth = ({action, onSubmit}) => {
-    const { t } = useTranslation('common');
+    const {t} = useTranslation('common');
     return (
         <div className="Auth" id="Auth">
             <div className="Auth__header pt-5 pb-4">

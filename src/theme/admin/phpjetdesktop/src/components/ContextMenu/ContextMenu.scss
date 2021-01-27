@@ -1,0 +1,27 @@
+@import './../../scss/variables';
+@import './../../scss/mixins';
+
+.ContextMenu {
+  min-width: 300px;
+  z-index: 15;
+  cursor: pointer;
+
+  &__item {
+    background-color: $button-color-default;
+    border-bottom: $border-default;
+    border-color: $border-color-default;
+    text-decoration: none !important;
+
+    &:hover {
+      background-color: $button-color-accent;
+    }
+
+    &:active {
+      background-color: $button-color-accent-active;
+    }
+
+    &:last-of-type {
+      border-bottom: none !important;
+    }
+  }
+}
