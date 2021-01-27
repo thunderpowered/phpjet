@@ -1,7 +1,13 @@
 import React from "react";
+import './Version.scss';
+import {connect} from "react-redux";
 
-const Version = () => {
-    return <div>Engine Version</div>
+const Version = ({version}) => {
+    return <div className="Version text-center d-block fs-8 p-3">{version}</div>
 };
 
-export default Version
+const mapStateToProps = state => ({
+    version: state.misc.version
+});
+
+export default connect(mapStateToProps)(Version)

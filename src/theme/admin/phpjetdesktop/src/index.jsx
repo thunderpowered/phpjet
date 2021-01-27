@@ -5,13 +5,28 @@ import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from './reducers';
 import thunk from 'redux-thunk';
+import {I18nextProvider} from "react-i18next";
+import i18next from "i18next";
+import common_en from "./translations/en/common.json";
+
+i18next.init({
+    interpolation: { escapeValue: false },
+    lng: 'en', // default language
+    resources: {
+        en: {
+            common: common_en
+        }
+    }
+});
 
 const store = createStore(reducer, applyMiddleware(thunk));
 const desktopElement = document.getElementById('Desktop');
 if (desktopElement) {
     ReactDOM.render(
         <Provider store={store}>
-            <Desktop/>
+            <I18nextProvider i18n={i18next}>
+                <Desktop/>
+            </I18nextProvider>
         </Provider>,
         desktopElement
     );

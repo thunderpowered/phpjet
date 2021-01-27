@@ -1,0 +1,24 @@
+@import "./../../scss/variables";
+
+.Form {
+  background-color: $background-color-lighter;
+
+  &__input, &__submit {
+    outline: none !important;
+  }
+
+  &__input {
+    border: $border-default;
+    border-color: $border-color-default;
+    background-color: $background-color-darker;
+  }
+
+  &__submit {
+    border: none !important;
+    background-color: $background-color-darker; // yes, background
+
+    &:hover {
+      background-color: $button-color-accent;
+    }
+  }
+}

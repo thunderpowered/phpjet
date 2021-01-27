@@ -1,7 +1,5 @@
 import React from "react";
 
-const PasswordInput = ({}) => {
-
-};
+const PasswordInput = ({name, placeholder}) => {};
 
 export default PasswordInput

@@ -1,19 +1,23 @@
 // default color scheme
-$button-link-accent: #9b0000;
-$button-link-accent-hover: #d20000;
-$button-link-accent-active: #ff0000;
+$button-color-accent: #9b0000;
+$button-color-accent-hover: #d20000;
+$button-color-accent-active: #ff0000;
 
-$button-link-default: #3d3d3d;
-$button-link-default-hover: #4b4b4b;
-$button-link-default-active: #5f5f5f;
+$button-color-default: #3d3d3d;
+$button-color-default-hover: #4b4b4b;
+$button-color-default-active: #5f5f5f;
 
-$background-color-default: #000 !important;
-$background-color-lighter: #232323 !important;
-$background-color-darker: #191919 !important;
+$text-color-default: #ebebeb;
+$text-color-dark: #5a5a5a;
+
+$background-color-default: #000;
+$background-color-lighter: #232323;
+$background-color-darker: #191919;
 
 $background-transparent-dark: rgba(0, 0, 0, 0.5);
 
 $border-color-default: #353635;
+$border-default: 1px solid;
 
 // default font parameters
 $font-family-default: 'Roboto Condensed', sans-serif;

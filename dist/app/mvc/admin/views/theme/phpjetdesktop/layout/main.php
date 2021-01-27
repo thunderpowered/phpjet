@@ -49,10 +49,10 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
 
     <script type="text/javascript" class="globalVariables">
-        let globalSystemActions = {};
+        let globalSystemActions = {}; // todo use store for this
         const globalSystemHost = "<?php echo \Jet\PHPJet::$app->router->getHost(); ?>";
         const globalSystemRootURL = "<?php echo \Jet\PHPJet::$app->router->getURL(); ?>";
-        const globalDesktopMisc = JSON.parse('<?php echo json_encode([
+        const globalDesktopMisc = JSON.parse('<?php echo json_encode([ // todo and for this too
             'logotype' => $this->widget->widgetMisc->getLogotype(),
             'engineVersion' => \Jet\PHPJet::$app->system->getEngineVersion()
         ])?>');
@@ -63,13 +63,10 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 </head>
 <!-- BODY -->
 <body>
-
+<!-- MESSAGE FOR NON-JS USERS -->
+<noscript>JavaScript is disabled. You have to enable it to load this app.</noscript>
 <!-- ROOT ELEMENT -->
-<div class="p-0 w-100 vh-100 overflow-hidden theme__background-color theme__link-color"
-     id="Desktop"><?php echo $this->view; ?></div>
-
-<!-- JQUERY -->
-<?php //echo $this->includeCommonJS('libs/jquery-3.5.1/jquery-3.5.1.min.js') ?>
+<div class="p-0 w-100 vh-100 overflow-hidden theme__background-color theme__link-color" id="Desktop"><?php echo $this->view; ?></div>
 
 <!-- DATATABLES -->
 <?php echo $this->includeCommonJS('libs/datatables/datatables.min.js'); ?>
@@ -85,10 +82,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('js/desktop.js'); ?>
-
-
-<!-- JQUERY PLUGIN ACTIVATION -->
-<?php echo $this->includeJS('js/plugins.js', false, true); ?>
 
 </body>
 <!-- END BODY -->

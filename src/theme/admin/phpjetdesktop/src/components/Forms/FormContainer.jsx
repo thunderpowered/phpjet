@@ -1,5 +1,6 @@
 import React from "react";
 import {connect} from 'react-redux';
+import Form from "./Form";
 
 class FormContainer extends React.Component {
     constructor(props) {
@@ -15,15 +16,17 @@ class FormContainer extends React.Component {
     }
 
     render() {
-        const {type, action, id, children} = this.props;
-        return <type id={id} action={action} disabled={this.state.disabled} onSubmit={this.onSubmit.bind(this)} onInput={this.onInput.bind(this)}>
-            {children}
-        </type>
+        const {disabled, action, id, children} = this.props;
+        return (
+            <Form id={id} action={action} disabled={disabled} onSubmit={this.onSubmit.bind(this)} onInput={this.onInput.bind(this)}>
+                {children}
+            </Form>
+        )
     }
 }
 
 const mapStateToProps = (state, props) => ({
-    disabled: state.forms[props.id].disabled
+    disabled: typeof state.forms[props.id] === 'undefined' ? false : state.forms[props.id].disabled
 });
 
 export default connect(mapStateToProps)(FormContainer)

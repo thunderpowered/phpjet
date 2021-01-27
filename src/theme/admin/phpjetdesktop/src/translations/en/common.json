@@ -1,0 +1,8 @@
+{
+  "Auth": {
+    "EnterYourEmail": "Your Email",
+    "EnterYourPassword": "Your password",
+    "Login": "Login",
+    "Verify": "Verify"
+  }
+}

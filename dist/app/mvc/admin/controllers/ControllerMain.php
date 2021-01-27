@@ -36,7 +36,7 @@ class ControllerMain extends Controller
      */
     public function actionBasic(): string
     {
-        $this->title = 'ModWare Admin Desktop';
+        $this->title = 'PHPJet Admin Desktop'; // include site name
         return $this->view->render('view_desktop', []);
     }
 }

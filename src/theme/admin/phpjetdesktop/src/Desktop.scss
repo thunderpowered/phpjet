@@ -2,4 +2,8 @@
 
 #Desktop {
   background-color: $background-color-default;
+
+  * {
+    color: $text-color-default;
+  }
 }

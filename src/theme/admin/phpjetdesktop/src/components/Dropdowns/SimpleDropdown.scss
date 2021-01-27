@@ -1,4 +1,4 @@
-@import "/../../styles/variables.scss";
+@import "./../../scss/variables";
 
 .SimpleDropdown {
   min-width: 300px;
@@ -6,10 +6,10 @@
   cursor: pointer;
 
   &__item {
-    background-color: $button-link-default;
+    background-color: $button-color-default;
 
     :hover {
-      background-color: $button-link-default-hover;
+      background-color: $button-color-default-hover;
     }
 
     :last-of-type {
