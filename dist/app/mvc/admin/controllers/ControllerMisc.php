@@ -13,22 +13,18 @@ use http\Exception\BadQueryStringException;
  * Class ControllerMedia
  * @package Jet\App\MVC\Admin\Controllers
  */
-class ControllerMisc extends Controller
+class ControllerMisc extends ControllerAdmin
 {
     /**
      * @var array
      */
     protected $methods = [
-        'POST'
+        'POST', 'GET'
     ];
     /**
      * @var bool
      */
     protected $tokenRequired = false;
-    /**
-     * @var ModelAdmin
-     */
-    private $modelAdmin;
     /**
      * @var string
      */
@@ -42,7 +38,6 @@ class ControllerMisc extends Controller
     public function __construct(string $name = "", bool $enableTracker = false)
     {
         parent::__construct($name, $enableTracker);
-        $this->modelAdmin = new ModelAdmin();
     }
 
     /**
@@ -70,11 +65,7 @@ class ControllerMisc extends Controller
     public function actionGetWallpaper(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $wallpaper = $this->modelAdmin->getAdminWallpaper();
@@ -95,6 +86,10 @@ class ControllerMisc extends Controller
      */
     public function actionGetTime(): string
     {
+        if (!$this->modelAdmin->isAdminAuthorized()) {
+            return $this->returnUnauthorized();
+        }
+
         PHPJet::$app->tool->JSONOutput->setStatusTrue();
         PHPJet::$app->tool->JSONOutput->setData([
             'serverTimeUTC' => time(),
@@ -110,11 +105,7 @@ class ControllerMisc extends Controller
     public function actionSetWallpaper(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $file = PHPJet::$app->system->request->getFile('file');
@@ -152,11 +143,7 @@ class ControllerMisc extends Controller
     public function actionSetMode(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $mode = PHPJet::$app->system->request->getPOST('panelMode');
@@ -194,11 +181,7 @@ class ControllerMisc extends Controller
     public function actionGetMode(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $mode = $this->modelAdmin->getPanelState();
@@ -220,11 +203,7 @@ class ControllerMisc extends Controller
     public function actionSetDefaultWindow(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $defaultWindow = PHPJet::$app->system->request->getPOST('defaultWindow');
@@ -262,11 +241,7 @@ class ControllerMisc extends Controller
     public function actionGetDefaultWindow(): string
     {
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Not authorized');
-            $output = PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-            $this->modelAdmin->recordActions('Auth', false, 'Unauthorized query registered');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnUnauthorized();
         }
 
         $defaultWindow = $this->modelAdmin->getDefaultWindow();

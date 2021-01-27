@@ -1,7 +1,7 @@
 import {fetch2} from "../tools/fetch2";
 import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 
-export const checkAuthorization = () => (
+export const checkAuthorization = callback => (
     dispatch => (
         fetch2(globalSystemRootURL + '/auth/check', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
@@ -9,7 +9,7 @@ export const checkAuthorization = () => (
     )
 );
 
-export const logout = () => (
+export const logout = callback => (
     dispatch => (
         fetch2(globalSystemRootURL + '/auth/logout', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, null))
@@ -17,18 +17,20 @@ export const logout = () => (
     )
 );
 
-export const authorizationFirstFactor = () => (
+export const authorizationFirstFactor = (values, callback) => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth', {}, result => (
-            dispatch(setAuthorizationAction(result.action))
-        ))
+        fetch2(globalSystemRootURL + '/auth', {queryParams: values}, result => {
+            callback(result);
+            return dispatch(setAuthorizationAction(result.action))
+        })
     )
 );
 
-export const authorizationSecondFactor = () => (
+export const authorizationSecondFactor = (values, callback) => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth/verifyCode', {}, result => (
-            dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
-        ))
+        fetch2(globalSystemRootURL + '/auth/verifyCode', {queryParams: values}, result => {
+            callback(result);
+            return dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
+        })
     )
 );

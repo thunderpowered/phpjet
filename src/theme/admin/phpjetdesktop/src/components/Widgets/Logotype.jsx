@@ -6,10 +6,8 @@ const Logotype = ({logotype}) => {
     return <div style={{backgroundImage: `url(${logotype})`}} className="Logotype p-3 text-center"/>
 };
 
-const mapStateToProps = state => {
-    console.log(state);
-    return {
+const mapStateToProps = state => ({
     logotype: state.misc.logotype
-}};
+});
 
 export default connect(mapStateToProps)(Logotype)

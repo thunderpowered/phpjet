@@ -39,15 +39,17 @@ export const fetch2 = (url, options = {}, callbackOnSuccess, callbackOnError, js
                     Msg[style](result.messageBox.text, 5000);
                 }
             }, error => {
-                if (typeof callbackOnSuccess !== 'undefined') {
-                    callbackOnSuccess(error);
-                }
                 Msg.danger(error, 5000);
+                console.error(error);
+                if (typeof callbackOnError !== 'undefined') {
+                    callbackOnError(error);
+                }
             });
 };
 
-export const queryParams = (params) => {
+const queryParams = (params) => {
     return Object.keys(params)
         .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
         .join('&');
 };
+

@@ -6,6 +6,7 @@ import Workspace from './layouts/Workspace';
 import Auth from './layouts/Auth';
 import {checkAuthorization} from "./api/auth";
 import {fetchMisc} from "./api/misc";
+import SimpleLoader from "./components/Loaders/SimpleLoader";
 
 class Desktop extends React.Component {
     constructor(props) {
@@ -23,6 +24,10 @@ class Desktop extends React.Component {
     }
 
     render() {
+        const {authorized} = this.props;
+        if (typeof authorized === 'undefined') {
+            return <SimpleLoader/>
+        }
         if (this.props.authorized) {
             return <Workspace/>
         } else {

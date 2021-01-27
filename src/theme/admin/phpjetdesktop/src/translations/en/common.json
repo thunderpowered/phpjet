@@ -2,6 +2,7 @@
   "Auth": {
     "EnterYourEmail": "Your Email",
     "EnterYourPassword": "Your password",
+    "EnterVerificationCode": "Enter verification code here",
     "Login": "Login",
     "Verify": "Verify"
   }

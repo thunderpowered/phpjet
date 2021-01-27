@@ -1,8 +1,9 @@
-import {SET_AUTHORIZED_STATUS} from "../actions/auth";
+import {SET_AUTHORIZATION_ACTION, SET_AUTHORIZED_STATUS} from "../actions/auth";
 
 const initialState = {
-    authorized: false,
-    urls: {}
+    authorized: undefined,
+    urls: {},
+    action: '1F'
 };
 
 const auth = (state = initialState, action) => {
@@ -13,6 +14,13 @@ const auth = (state = initialState, action) => {
                 authorized: action.authorized,
                 urls: action.urls
             };
+
+        case SET_AUTHORIZATION_ACTION:
+            return {
+                ...state,
+                action: action.action // lol
+            };
+
         default:
             return state;
     }

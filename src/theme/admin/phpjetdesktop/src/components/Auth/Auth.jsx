@@ -5,16 +5,16 @@ import './Auth.scss';
 import FormContainer from "../Forms/FormContainer";
 import {useTranslation} from "react-i18next";
 
-const Auth = ({step, action}) => {
+const Auth = ({action, onSubmit}) => {
     const { t } = useTranslation('common');
     return (
         <div className="Auth" id="Auth">
-            <div className="Auth__header p-3">
+            <div className="Auth__header pt-5 pb-4">
                 <Logotype/>
             </div>
-            <div className="Auth__body p-3">
-                {step === 1 &&
-                    <FormContainer id="AuthForm">
+            <div className="Auth__body p-5 pt-0 pb-0">
+                {action === '1F' &&
+                    <FormContainer id="AuthForm" onSubmit={onSubmit}>
                         <input required={true} minLength={8} maxLength={64} autoComplete={'email'}
                                type={'email'} name={'email'}
                                placeholder={`${t('Auth.EnterYourEmail')}...`}/>
@@ -24,16 +24,16 @@ const Auth = ({step, action}) => {
                         <input type={'submit'} name={'submit'} value={`${t('Auth.Login')}`} />
                     </FormContainer>
                 }
-                {step === 2 &&
-                    <FormContainer id="AuthForm">
+                {action === '2F' &&
+                    <FormContainer id="AuthForm" onSubmit={onSubmit}>
                         <input required={true} minLength={'6'} maxLength={'6'} autoComplete={'off'}
                                type={'password'} name={'verification'}
-                               placeholder={`${t('EnterVerificationCode')}...`}/>
+                               placeholder={`${t('Auth.EnterVerificationCode')}...`}/>
                         <input type={'submit'} name={'submit'} value={`${t('Auth.Verify')}`} />
                     </FormContainer>
                 }
             </div>
-            <div className="Auth__footer p-3">
+            <div className="Auth__footer pb-3 pt-2">
                 <Version/>
             </div>
         </div>

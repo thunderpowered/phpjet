@@ -12,12 +12,12 @@ use Jet\PHPJet;
  * Class ControllerAuth
  * @package Jet\App\MVC\Admin\Controllers
  */
-class ControllerAuth extends Controller
+class ControllerAuth extends ControllerAdmin
 {
     /**
      * @var ModelAdmin
      */
-    private $modelAdmin;
+    protected $modelAdmin;
     /**
      * @var array
      */
@@ -78,6 +78,7 @@ class ControllerAuth extends Controller
     public function actionBasic(): string
     {
         $json = PHPJet::$app->system->request->getJSON();
+        PHPJet::$app->tool->JSONOutput->setAction('1F'); // actions: [1F, 2F, S]
         if (!$json || empty($json[$this->jsonEmailField]) || empty($json[$this->jsonPasswordField])) {
             PHPJet::$app->tool->JSONOutput->setStatusFalse();
             PHPJet::$app->tool->JSONOutput->setMessageBoxText('No data');
@@ -98,16 +99,8 @@ class ControllerAuth extends Controller
             return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         }
 
-        // is 2F enabled?
         if (!$result['2F']) {
-            PHPJet::$app->system->token->generateHash();
-            PHPJet::$app->tool->JSONOutput->setStatusTrue();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Successfully authorized.');
-            PHPJet::$app->tool->JSONOutput->setAction('S');
-            PHPJet::$app->tool->JSONOutput->setData([
-                'urls' => $result['urls']
-            ]);
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->returnSuccessfulAuthorizationMessage($result);
         } else {
             PHPJet::$app->tool->JSONOutput->setStatusTrue();
             PHPJet::$app->tool->JSONOutput->setMessageBoxText('We have sent you email with verification code.');
@@ -126,7 +119,6 @@ class ControllerAuth extends Controller
         if (!$result) {
             PHPJet::$app->tool->JSONOutput->setStatusFalse();
             PHPJet::$app->tool->JSONOutput->setMessageBoxText('Failed. Probably admin is already signed off.');
-
             return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         } else {
             PHPJet::$app->tool->JSONOutput->setStatusTrue();
@@ -159,12 +151,6 @@ class ControllerAuth extends Controller
             return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         }
 
-        PHPJet::$app->tool->JSONOutput->setStatusTrue();
-        PHPJet::$app->tool->JSONOutput->setMessageBoxText('Successfully authorized.');
-        PHPJet::$app->tool->JSONOutput->setAction('S');
-        PHPJet::$app->tool->JSONOutput->setData([
-            'urls' => $result['urls']
-        ]);
-        return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+        return $this->returnSuccessfulAuthorizationMessage($result);
     }
 }

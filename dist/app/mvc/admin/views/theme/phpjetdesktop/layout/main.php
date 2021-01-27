@@ -52,10 +52,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
         let globalSystemActions = {}; // todo use store for this
         const globalSystemHost = "<?php echo \Jet\PHPJet::$app->router->getHost(); ?>";
         const globalSystemRootURL = "<?php echo \Jet\PHPJet::$app->router->getURL(); ?>";
-        const globalDesktopMisc = JSON.parse('<?php echo json_encode([ // todo and for this too
-            'logotype' => $this->widget->widgetMisc->getLogotype(),
-            'engineVersion' => \Jet\PHPJet::$app->system->getEngineVersion()
-        ])?>');
     </script>
 
     <!-- FONT AWESOME -->
