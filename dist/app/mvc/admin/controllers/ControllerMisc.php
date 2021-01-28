@@ -53,7 +53,10 @@ class ControllerMisc extends ControllerAdmin
         PHPJet::$app->tool->JSONOutput->setData([
             'misc' => [
                 'version' => $engineVersion,
-                'logotype' => $logotype
+                'logotype' => $logotype,
+                'serverTimeUTC' => time(),
+                'serverTimeOffset' => (int)date('Z'),
+                'serverTimeZone' => date_default_timezone_get()
             ]
         ]);
         return PHPJet::$app->tool->JSONOutput->returnJSONOutput();

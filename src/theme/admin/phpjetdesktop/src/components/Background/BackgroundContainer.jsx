@@ -42,4 +42,4 @@ const mapStateToProps = state => ({
     wallpaper: state.background.wallpaper
 });
 
-export default withTranslation('common')(connect(mapStateToProps)(BackgroundContainer)) // oh dear lord...
+export default withTranslation('common')(connect(mapStateToProps)(BackgroundContainer))

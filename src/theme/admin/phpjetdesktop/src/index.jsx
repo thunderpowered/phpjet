@@ -11,10 +11,10 @@ import common_en from "./translations/en/common.json";
 
 i18next.init({
     interpolation: { escapeValue: false },
-    lng: 'en', // default language
+    lng: 'en',
     resources: {
         en: {
-            common: common_en
+            common: common_en // todo add other languages
         }
     }
 });
@@ -34,10 +34,8 @@ if (desktopElement) {
     alert('Unable to start the application. Reload the page and try again.');
 }
 
-window.onerror = function(message, file, line, col, error) {
-    Msg.error("Desktop crashed. Error information automatically reported to development team, we will handle this as soon as possible. The Desktop will be automatically reloaded in 5 sec.");
-    setTimeout(() => window.location.reload(), 5000);
-
-    // todo report frontend errors too
-    console.log(message);
+window.onerror = (message, file, line, col, error) => {
+    Msg.error("Unexpected runtime error occurred. Please press F5 to restart the application.", 5000);
+    // setTimeout(() => window.location.reload(), 5000);
+    console.error(message);
 };

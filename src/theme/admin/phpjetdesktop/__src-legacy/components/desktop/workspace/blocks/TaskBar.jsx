@@ -4,7 +4,6 @@ import {TaskList} from "./TaskBar/TaskList";
 import {Clocks} from "../../elements/widgets/Clocks";
 
 export class TaskBar extends Component {
-
     render() {
         return <div
             className={'Desktop__Workspace__Blocks--TaskBar p-0 pt-0 pb-0 position-fixed fixed-bottom w-100 theme__background-color2 d-flex flex-row flex-nowrap justify-content-start align-items-stretch'}

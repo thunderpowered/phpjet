@@ -4,6 +4,7 @@ import {PANEL_MODE_WINDOW} from "../constants/mode";
 import BackgroundContainer from "../components/Background/BackgroundContainer";
 import {closeContextMenu} from "../actions/contextMenu";
 import ContextMenu from "../components/ContextMenu/ContextMenu";
+import TaskbarContainer from "../components/Taskbar/TaskbarContainer";
 
 class Workspace extends React.Component {
     onClickMaster = () => {
@@ -17,9 +18,7 @@ class Workspace extends React.Component {
                 {mode === PANEL_MODE_WINDOW &&
                 <BackgroundContainer/>
                 }
-                <BackgroundContainer/> {/* temp */}
-                Workspace...
-
+                <TaskbarContainer/>
                 <ContextMenu/>
             </div>
         )
@@ -27,7 +26,7 @@ class Workspace extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    mode: state.mode
+    mode: state.workspace.mode
 });
 
 export default connect(mapStateToProps)(Workspace)

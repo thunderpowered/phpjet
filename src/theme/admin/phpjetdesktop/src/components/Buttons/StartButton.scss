@@ -1,0 +1,18 @@
+@import "./../../scss/variables";
+
+.StartButton {
+  cursor: pointer;
+
+  &:hover {
+    background-color: $button-color-default-hover;
+  }
+
+  &__icon {
+
+    i {
+      font-size:30px;
+      width:30px;
+      height:30px;
+    }
+  }
+}
