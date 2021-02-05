@@ -22,7 +22,11 @@ class Router
     /**
      * @var string
      */
-    private $actionBasic = "actionBasic";
+    private $actionPrefix = 'action';
+    /**
+     * @var string
+     */
+    private $actionBasic = "basic";
     /**
      * @var array
      */
@@ -69,6 +73,7 @@ class Router
      * @var int
      */
     private $defaultActionRoutePart = 2;
+
     /**
      * Router constructor.
      */
@@ -97,21 +102,38 @@ class Router
         define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->rootURL));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
+        // temporary solution, i actually don't like the idea to include pageBuilder at Core level
+        // it's just a component, after all
         if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
-            // Proceed with page builder
+            $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
+            if ($page) {
+                return $this->proceedRouterScheme('pageBuilder'); // todo add data
+            }
+        }
+        return $this->proceedRouterScheme('default');
+    }
+
+    /**
+     * @param string $scheme
+     * @return string
+     */
+    private function proceedRouterScheme(string $scheme = 'default'): string
+    {
+        if ($scheme === 'pageBuilder') {
             $this->setControllerName('page');
-            $this->controller = $this->getControllerObject();
         } else {
-            // Default way
-            // PHPJet has a list of controller that may be included and executed
-            // List of controllers is in the config
             $controllerName = $this->getControllerName(true);
+            // check if this controller in the list of controllers
+            // i personally think it'd be better to check the property of controller, not the list
             if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
                 return $this->errorPage404();
             }
+        }
+        $this->controller = $this->getControllerObject();
 
-            // Getting and including controller object
-            $this->controller = $this->getControllerObject();
+        // If there is no such controller
+        if (!$this->controller) {
+            return $this->errorPage404();
         }
 
         // check if this query method supported by controller
@@ -125,29 +147,18 @@ class Router
             return $this->errorPage404();
         }
 
-        // If there is no such controller
-        if (!$this->controller) {
-            return $this->errorPage404();
-        }
-
         return $this->startAction($this->controller);
     }
+
     /**
      * @param $controller
      * @return string
      */
-    public function startAction(Controller $controller): string
+    private function startAction(Controller $controller): string
     {
-        // Dynamically get action
-        $action = $this->getAction(true);
-        if ($action && method_exists($controller, $action)) {
-            return $controller->$action();
-        }
-
-        // Or use basic action
-        $action = $this->actionBasic;
-        if (method_exists($controller, $action) && is_callable([$controller, $action])) {
-            return $controller->$action();
+        $action = $this->parseURL($this->getRoute());
+        if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
+            return call_user_func_array([$controller, $action['actionName']], $action['parameters']);
         }
 
         return $this->errorPage404();
@@ -162,8 +173,10 @@ class Router
         echo $content;
         PHPJet::$app->exit();
     }
+
     /**
      * @return string
+     * @deprecated
      */
     public function blocked(): string
     {
@@ -221,6 +234,7 @@ class Router
 
         return $result;
     }
+
     /**
      * @param int $part
      * @param bool $toLowerCase
@@ -247,6 +261,7 @@ class Router
 
         return $part;
     }
+
     /**
      * @param bool $removeSpecialChars
      * @return array
@@ -266,6 +281,7 @@ class Router
 
         return $this->route;
     }
+
     /**
      * @param bool $cut
      * @return string
@@ -285,6 +301,7 @@ class Router
 
         return $part;
     }
+
     /**
      * @param string $string
      * @return string
@@ -294,6 +311,7 @@ class Router
         $delimiterPosition = PHPJet::$app->tool->utils->strpos($string, $this->delimiter);
         return substr($string, 0, $delimiterPosition);
     }
+
     /**
      * @return string
      */
@@ -304,6 +322,7 @@ class Router
         }
         return PHPJet::$app->system->request->getSERVER('HTTP_HOST');
     }
+
     /**
      * @return bool
      */
@@ -312,18 +331,17 @@ class Router
         // Simple and brilliantly
         return $this->getHost() . '/' === $this->getURL();
     }
+
     /**
      * @return string
      */
     public function getHost()
     {
         $https = PHPJet::$app->system->request->getSERVER('HTTPS');
-        $scheme = "http://";
-        if ($https) {
-            $scheme = "https://";
-        }
+        $scheme = "http" . ($https ? 's' : '') . "://";
         return $scheme . $this->getDomain();
     }
+
     /**
      * @param bool $removeSpecialChars
      * @return string
@@ -338,6 +356,7 @@ class Router
             return $request;
         }
     }
+
     /**
      * @return string
      * @deprecated
@@ -346,18 +365,20 @@ class Router
     {
         return PHPJet::$app->system->request->getSERVER('REQUEST_URI');
     }
+
     /**
-     * @param bool $addHost
+     * @param bool $includeHost
      * @return string
      */
-    public function getURL(bool $addHost = true): string
+    public function getURL(bool $includeHost = true): string
     {
         $url = PHPJet::$app->system->request->getSERVER('REQUEST_URI');
-        if ($addHost) {
+        if ($includeHost) {
             $url = $this->getHost() . $url;
         }
         return $url;
     }
+
     /**
      * @return Controller
      * @todo use constant instead of explicitly set of namespaces
@@ -402,6 +423,7 @@ class Router
 
         return $controller;
     }
+
     /**
      * @param bool $lowerCase
      * @return string
@@ -439,6 +461,7 @@ class Router
         $this->controllerName = $controllerName;
         return true;
     }
+
     /**
      * @return Model
      * @deprecated
@@ -470,6 +493,7 @@ class Router
 
         return $this->model;
     }
+
     /**
      * @param Controller $controller
      * @return View
@@ -483,20 +507,21 @@ class Router
 
         return $this->view;
     }
+
     /**
-     * @param bool $full
-     * @param bool $cut
+     * @param bool $includeFullName
+     * @param bool $cutToDelimiter
      * @return bool|mixed|string
      */
-    public function getAction(bool $full = false, bool $cut = true): string
+    public function getAction(bool $includeFullName = false, bool $cutToDelimiter = true): string
     {
-        $action = $this->getRoutePart($this->defaultActionRoutePart, true, $cut);
-        if ($action && $full) {
+        $action = $this->getRoutePart($this->defaultActionRoutePart, true, $cutToDelimiter);
+        if ($action && $includeFullName) {
             $action = 'action' . ucfirst($action);
         }
-
         return $action;
     }
+
     /**
      * @param string $relativeURL
      * @return string
@@ -506,6 +531,7 @@ class Router
     {
         return '';
     }
+
     /**
      * @param string $url
      * @param int $code
@@ -515,6 +541,7 @@ class Router
         header("Location: " . $url, true, $code);
         PHPJet::$app->exit();
     }
+
     /**
      * @param string $url
      * @param int $code
@@ -523,6 +550,7 @@ class Router
     {
 
     }
+
     public function goHome(): void
     {
         header("Location: " . $this->getHost(), true, 301);
@@ -554,6 +582,7 @@ class Router
     /**
      * @param Controller $controller
      * @return bool
+     * @deprecated
      */
     private function checkURLToken(Controller $controller): bool
     {
@@ -571,5 +600,35 @@ class Router
         }
 
         return true;
+    }
+
+    /**
+     * @param array $route
+     * @param bool $removeSpecialChars
+     * @return array
+     */
+    private function parseURL(array $route, bool $removeSpecialChars = true): array
+    {
+        $actionName = $this->actionPrefix;
+        $parameters = [];
+        if (!$route[$this->defaultActionRoutePart]) {
+            $actionName .= ucfirst($this->actionBasic);
+        }
+
+        for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l; $i++) {
+            if ($i % 2 === 0) {
+                // ID
+                $parameterName = strtoupper($route[$i - 1]) . '_ID';
+                $parameters[$parameterName] = $route[$i] ?? null; // the idea is to set parameters even if there is no parameter in the url
+            } else {
+                // ACTION
+                $actionName .= ucfirst($route[$i]);
+            }
+        }
+
+        return [
+            'actionName' => $actionName,
+            'parameters' => $parameters
+        ];
     }
 }
