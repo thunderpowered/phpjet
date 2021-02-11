@@ -610,7 +610,7 @@ class Router
         for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l; $i++) {
             if ($i % 2 === 0) {
                 // ID
-                $parameterName = strtoupper($route[$i - 1]) . '_ID';
+                $parameterName = $route[$i - 1] ? strtoupper($route[$i - 1]) . '_' : '' . 'ID';
                 $parameters[$parameterName] = $route[$i] ?? null; // the idea is to set parameters even if there is no parameter in the url
             } else {
                 // ACTION

@@ -1,10 +1,10 @@
 <?php
 /**
- * @var array $INIT_STATE
+ * @var array $__INITIAL_STATE__
  */
 ?>
 <script>
-    window.__INITIAL_STATE__ = JSON.parse("<?php echo json_encode($INIT_STATE) ?>");
+    window.__INITIAL_STATE__ = JSON.parse("<?php echo json_encode($__INITIAL_STATE__) ?>");
 </script>
 <!-- MESSAGE FOR NON-JS USERS -->
 <noscript>JavaScript is disabled. You have to enable it to load this app.</noscript>

@@ -2,7 +2,6 @@
 /**
  * @var View $this
  * @var WidgetMisc $this->widget->widgetMisc
- * @var array $INIT_STATE
  */
 use Jet\App\Engine\Core\View;
 use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
@@ -47,13 +46,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 
     <!-- DATATABLES -->
     <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
-
-    <script type="text/javascript" class="globalVariables">
-        let globalSystemActions = {};
-        const globalSystemHost = "<?php echo \Jet\PHPJet::$app->router->getHost(); ?>";
-        const globalSystemRootURL = "<?php echo \Jet\PHPJet::$app->router->getURL(); ?>";
-        window.__INITIAL_STATE__ = JSON.parse("<?php echo json_encode($INIT_STATE) ?>");
-    </script>
 
     <!-- FONT AWESOME -->
     <script src="https://kit.fontawesome.com/ad0c58f10d.js" crossorigin="anonymous"></script>

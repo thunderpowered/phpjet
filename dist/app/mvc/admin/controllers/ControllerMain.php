@@ -4,6 +4,7 @@ namespace Jet\App\MVC\Admin\Controllers;
 
 use Jet\App\Engine\Core\Controller;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
+use Jet\PHPJet;
 
 /**
  * Class ControllerMain
@@ -37,9 +38,11 @@ class ControllerMain extends Controller
     public function actionBasicGET(): string
     {
         $this->title = 'PHPJet Admin Desktop'; // include site name
-        $initState = [];
+        $initState = [
+            '__api_base' => PHPJet::$app->router->getHost() . '/'
+        ];
         return $this->view->render('view_desktop', [
-            'INIT_STATE' => $initState
+            '__INITIAL_STATE__' => $initState
         ]);
     }
 }
