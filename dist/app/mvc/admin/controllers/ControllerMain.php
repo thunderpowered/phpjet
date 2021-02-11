@@ -34,9 +34,12 @@ class ControllerMain extends Controller
     /**
      * @return string
      */
-    public function actionBasic(): string
+    public function actionBasicGET(): string
     {
         $this->title = 'PHPJet Admin Desktop'; // include site name
-        return $this->view->render('view_desktop', []);
+        $initState = [];
+        return $this->view->render('view_desktop', [
+            'INIT_STATE' => $initState
+        ]);
     }
 }

@@ -45,7 +45,7 @@ class ControllerAdmin extends Controller
      * @param array $result
      * @return string
      */
-    public function returnSuccessfulAuthorizationMessage(array $result): string
+    protected function returnSuccessfulAuthorizationMessage(array $result): string
     {
         PHPJet::$app->tool->JSONOutput->setStatusTrue();
         PHPJet::$app->tool->JSONOutput->setMessageBoxText('Successfully authorized.');

@@ -41,7 +41,6 @@ class Store
      */
     private $types = [
         /* INTEGER */
-
         "tinyint" => 0,
         "smallint" => 0,
         "mediumint" => 0,
@@ -138,6 +137,7 @@ class Store
     {
         return $this->db->lastInsertId();
     }
+
     /**
      * @return string
      */
@@ -772,13 +772,11 @@ class Store
         if (!$join) {
             return [];
         }
-
         /**
          * join => [
          *      ['TYPE', 'table', ['JoinField' => 'MainField']]
          * ]
          */
-
         foreach ($join as $key => $joinItem) {
             $joinType = $joinItem[0];
             if (!in_array($joinType, $this->joinTypes)) {
@@ -805,9 +803,6 @@ class Store
                 }
 
                 if (!array_key_exists($mainField, $this->fields[$table]) || !array_key_exists($joinField, $this->fields[$joinTable])) {
-
-                    var_dump($this->fields[$table]);
-                    exit();
                     $this->throwException("JOIN: Given field does not exist in the table", $dieIfIncorrect);
                 }
 //                $join[$key][2][$joinField] = $mainField;

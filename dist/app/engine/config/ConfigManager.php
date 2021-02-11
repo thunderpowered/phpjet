@@ -27,15 +27,16 @@ class ConfigManager
     private function loadSettings(): void
     {
         $domain = PHPJet::$app->router->getDomain();
-        // search by domain
-        $config = PHPJet::$app->store->execGet("SELECT * FROM _config WHERE domain = :domain", [':domain' => $domain]);
-        if (!isset($config[0])) {
+        // just a temp code, i need to make it work asap, so i'll do it better later
+        $config = PHPJet::$app->store->execGet("select *, if (admin_domain = :domain1, true, false) as admin from _config where (domain = :domain2 or admin_domain = :domain3) AND domain != admin_domain", [':domain1' => $domain, ':domain2' => $domain, ':domain3' => $domain]);
+        if (empty($config[0])) {
             PHPJet::$app->exit('Website ' . $domain . ' does not exist on the server. Please, contact administrator.');
         }
 
         // it's very important to load site_id before any other query through Store or ActiveRecord
         $config = $config[0];
         Config::$config['site_id'] = $config['id'];
+        Config::$config['admin'] = $config['admin'];
 
         // set session variable for views
         $sessionVariableName = PHPJet::$app->store->getPartitionColumnName();

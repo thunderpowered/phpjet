@@ -8,7 +8,7 @@ export class Auth extends Component {
     constructor(props) {
         super(props);
         this.authActionStep1 = globalSystemRootURL + '/auth';
-        this.authActionStep2 = globalSystemRootURL + '/auth/verifyCode';
+        this.authActionStep2 = globalSystemRootURL + '/auth/verify';
         this.state = {
             step: 1
         };

@@ -28,7 +28,7 @@ export const authorizationFirstFactor = (values, callback) => (
 
 export const authorizationSecondFactor = (values, callback) => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth/verifyCode', {queryParams: values}, result => {
+        fetch2(globalSystemRootURL + '/auth/verify', {queryParams: values}, result => {
             callback(result);
             return dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         })

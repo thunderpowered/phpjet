@@ -134,6 +134,8 @@ class View
         $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
         if (file_exists($filePath)) {
             require_once $filePath;
+        } else {
+            PHPJet::$app->exit('template not found');
         }
 
         return $this->buffer->returnBuffer();

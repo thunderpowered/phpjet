@@ -88,7 +88,7 @@ class Widget
         }
 
         // step 1: get list of registered widgets
-        $widgets = Config::$config['widgets'];
+        $widgets = Config::$config['widgets'][MVC_SECTOR];
 
         // step 2: list it and check whether file exists or not
         foreach ($widgets as $key => $widget) {

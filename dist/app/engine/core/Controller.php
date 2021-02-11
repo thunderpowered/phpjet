@@ -145,7 +145,6 @@ class Controller
     public function getRobots(): string
     {
         if ($this->noIndex) {
-
             return '<meta name="robots" content="noindex, nofollow"/> ';
         }
         return "";

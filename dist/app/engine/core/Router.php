@@ -73,6 +73,10 @@ class Router
      * @var int
      */
     private $defaultActionRoutePart = 2;
+    /**
+     * @var string
+     */
+    private $subdomain;
 
     /**
      * Router constructor.
@@ -87,23 +91,12 @@ class Router
      */
     public function start(): string
     {
-        // prepare root URL (should not be in constructor for some reason)
-        $route = $this->getRoutePart(1);
-        if ($route && !empty(Config\Config::$urlRules[$route])) {
-            $this->rootURL = Config\Config::$urlRules[$route];
-
-            // if route is set, controller and action shift to the right by one part
-            $this->defaultActionRoutePart++;
-            $this->defaultControllerRoutePart++;
-        }
-        $this->MVCSector = $this->rootURL ? $this->rootURL : Config\Config::$urlRules[''];
-
+        $this->MVCSector = Config\Config::$config['admin'] ? Config\Config::$urlRules['admin'] : Config\Config::$urlRules['']; // mostly temp
         define('MVC_SECTOR', $this->MVCSector);
-        define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->rootURL));
+        define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
-        // temporary solution, i actually don't like the idea to include pageBuilder at Core level
-        // it's just a component, after all
+        // page builder is disabled at the moment
         if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
             $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
             if ($page) {
@@ -129,6 +122,7 @@ class Router
                 return $this->errorPage404();
             }
         }
+
         $this->controller = $this->getControllerObject();
 
         // If there is no such controller
@@ -136,7 +130,7 @@ class Router
             return $this->errorPage404();
         }
 
-        // check if this query method supported by controller
+        // check if this query method supported by controller, and also check csrf-token
         if (!$this->doesControllerSupportRequestMethod($this->controller)) {
             return $this->errorPage404();
         }
@@ -231,7 +225,6 @@ class Router
             echo $result;
             PHPJet::$app->exit();
         }
-
         return $result;
     }
 
@@ -401,7 +394,7 @@ class Router
         }
 
         // Namespace sector
-        $MVCRoot = $this->rootURL ? ucfirst($this->rootURL) : ucfirst(Config\Config::$urlRules['']);
+        $MVCRoot = $this->MVCSector ? ucfirst($this->MVCSector) : ucfirst(Config\Config::$urlRules['']);
         // Create full controller name with namespace
         $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $name;
         // Create object
@@ -572,7 +565,7 @@ class Router
 
         // and also check the special case
         // by PHPJet agreement all POST-queries must contain valid csrf-token
-        if ($actualMethod === 'POST' && !PHPJet::$app->system->request->checkCSRFToken()) {
+        if (($actualMethod === 'POST' || $actualMethod === 'PUT') && !PHPJet::$app->system->request->checkCSRFToken()) {
             return false;
         }
 
@@ -611,10 +604,9 @@ class Router
     {
         $actionName = $this->actionPrefix;
         $parameters = [];
-        if (!$route[$this->defaultActionRoutePart]) {
+        if (!isset($route[$this->defaultActionRoutePart])) {
             $actionName .= ucfirst($this->actionBasic);
         }
-
         for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l; $i++) {
             if ($i % 2 === 0) {
                 // ID
@@ -625,10 +617,22 @@ class Router
                 $actionName .= ucfirst($route[$i]);
             }
         }
-
+        // include method
+        $actionName .= PHPJet::$app->system->request->getRequestMethod();
         return [
             'actionName' => $actionName,
             'parameters' => $parameters
         ];
+    }
+
+    /**
+     * @return string
+     * @deprecated
+     */
+    private function getSubdomain(): string
+    {
+        $domain = $this->getHost();
+        $domain = explode('.', $domain);
+        return isset($domain[0]) ? $domain[0] : '';
     }
 }

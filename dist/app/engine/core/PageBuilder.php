@@ -147,10 +147,12 @@ class PageBuilder
 
     /**
      * @param string $url
-     * @return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder|void
+     * @return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder|bool
      */
     public function getPageData(string $url)
     {
+        return false;
+
         // todo prepare url
         return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder::getOne(['url' => $url, 'type' => 'page'], [], [], false);
     }

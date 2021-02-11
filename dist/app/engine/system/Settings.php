@@ -24,6 +24,7 @@ class Settings
     /**
      * Settings constructor.
      * @param bool $loadFull
+     * @throws \Exception
      */
     public function __construct(bool $loadFull = false)
     {

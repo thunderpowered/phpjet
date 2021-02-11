@@ -47,7 +47,7 @@ class Tracker
      * @param int $adminID
      * @param string $action
      * @param bool $status
-     * @param string $explanation
+     * @param string $details
      * @return bool
      */
     public function trackAdminActions(int $adminID, string $action, bool $status, string $details = ''): bool

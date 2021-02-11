@@ -3,8 +3,6 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
-
-use Jet\App\Engine\Core\Controller;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
 
@@ -130,7 +128,7 @@ class ControllerAuth extends ControllerAdmin
     /**
      * @return string
      */
-    public function actionVerifyCode(): string
+    public function actionVerify(): string
     {
         $json = PHPJet::$app->system->request->getJSON();
         if (!$json || empty($json[$this->json2FVerificationField])) {

@@ -2,8 +2,8 @@
 /**
  * @var View $this
  * @var WidgetMisc $this->widget->widgetMisc
+ * @var array $INIT_STATE
  */
-
 use Jet\App\Engine\Core\View;
 use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <!DOCTYPE html>
@@ -20,7 +20,7 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <!-- META -->
     <meta charset="UTF-8">
 
-    <!-- CSRF TOKEN (CO) -->
+    <!-- TOKEN -->
     <meta name="csrf_token" content="<?= \Jet\PHPJet::$app->system->token->generateToken() ?>">
 
     <meta name="theme-color" content="#000">
@@ -49,9 +49,10 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <?php echo $this->includeCommonCSS('libs/datatables/datatables.min.css'); ?>
 
     <script type="text/javascript" class="globalVariables">
-        let globalSystemActions = {}; // todo use store for this
+        let globalSystemActions = {};
         const globalSystemHost = "<?php echo \Jet\PHPJet::$app->router->getHost(); ?>";
         const globalSystemRootURL = "<?php echo \Jet\PHPJet::$app->router->getURL(); ?>";
+        window.__INITIAL_STATE__ = JSON.parse("<?php echo json_encode($INIT_STATE) ?>");
     </script>
 
     <!-- FONT AWESOME -->
@@ -59,11 +60,8 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 </head>
 <!-- BODY -->
 <body>
-<!-- MESSAGE FOR NON-JS USERS -->
-<noscript>JavaScript is disabled. You have to enable it to load this app.</noscript>
-<!-- ROOT ELEMENT -->
-<div class="p-0 w-100 vh-100 overflow-hidden theme__background-color theme__link-color" id="Desktop"><?php echo $this->view; ?></div>
-
+<!-- VIEW -->
+<?php echo $this->view; ?>
 <!-- DATATABLES -->
 <?php echo $this->includeCommonJS('libs/datatables/datatables.min.js'); ?>
 
