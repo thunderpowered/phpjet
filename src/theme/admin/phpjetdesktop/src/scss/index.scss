@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+@import './variables';
+
+* {
+  font-family: $font-family-default;
+  font-size: $font-size-default;
+  transition: background-color .2s, opacity .2s;
+}
+
+html, body {
+  // temp
+  min-width: 1024px !important;
+}
+
+// PLUGIN: bootstrap-msg
+#msg:before {
+  display: block;
+  content: '';
+  height: 100%;
+  width: 5px;
+  background-color: #9b0000;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+#msg {
+  border-radius: 0;
+  border: none;
+  background-color: #232323;
+  color: #ebebeb !important;
+  padding: 14px 20px;
+}
+
+
+#msg i {
+  display: none !important;
+}
+
+#msg .msg-progress {
+  display: none !important;
+}
+
+#msg .close {
+  display: none !important;
+}
+
+#msg.alert-danger:before {
+  background-color: #9b0000;
+}
+
+#msg.alert-success:before {
+  background-color: darkgreen;
+}
+
+#msg.alert-info:before {
+  background-color: orangered;
+}

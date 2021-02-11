@@ -1,0 +1,5 @@
+@import "./../../scss/mixins";
+
+.Logotype {
+  @include background-image(contain);
+}

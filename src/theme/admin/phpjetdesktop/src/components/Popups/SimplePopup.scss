@@ -1,0 +1,14 @@
+@import "./../../scss/variables";
+@import "./../../scss/mixins";
+
+.SimplePopup {
+  z-index: 5;
+  background-color: $background-transparent-dark;
+
+  &__content-wrapper {
+    top: 0;
+    margin: 0 auto;
+    white-space: nowrap;
+    @include position-(fixed, center);
+  }
+}

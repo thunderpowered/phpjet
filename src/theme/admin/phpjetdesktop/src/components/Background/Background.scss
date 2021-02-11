@@ -1,0 +1,7 @@
+@import './../../scss/variables';
+@import "./../../scss/mixins";
+
+.Background {
+  background-color: $background-color-default;
+  @include background-image(cover);
+}

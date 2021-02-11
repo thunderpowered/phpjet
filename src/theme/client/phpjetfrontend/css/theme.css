@@ -1,0 +1,93 @@
+/**
+    THEME
+ */
+
+.theme__background-color {
+    background-color:#000;
+}
+
+.theme__background-color2 {
+    background-color: #232323;
+}
+
+.theme__background-color3 {
+    background-color: #191919;
+}
+
+.theme__text-color {
+    color: #ebebeb;
+}
+
+.theme__link-color {
+    color:#ebebeb;
+    /*color:#e1e1e1;*/
+}
+
+.theme__link-color--accent {
+    color: #9b0000;
+}
+
+.theme__link-color--hover:hover {
+    color:#d20000;
+}
+
+.theme__input-bar__format {
+    width:100%;
+    border-radius: 0 !important;
+    border: 1px solid;
+    outline:none !important;
+    font-size:0.8rem;
+}
+
+.theme__input-bar__border-color {
+    border-color:#4a4a4a;
+}
+
+.theme__form-format {
+    position:relative;
+}
+
+.theme__fa-wrapper {
+    position:absolute;
+    opacity: 0.7;
+    width:21px;
+    height:21px;
+}
+
+.theme__skew-45 {
+    transform: skew(45deg);
+}
+
+.theme__border-right {
+    border-right: 1px solid;
+}
+
+.theme__border-left {
+    border-left: 1px solid;
+}
+
+.theme__border-top {
+    border-top:1px solid;
+}
+
+.theme__border-bottom {
+    border-bottom:1px solid;
+}
+
+.theme__border-color--accent {
+    border-color: #9b0000;
+}
+
+.theme__border--thicker {
+    border-width: 2px;
+}
+
+.theme__border-color {
+    border-color: #2b3136;
+}
+
+.theme__box-shadow {
+    box-shadow: 0 4px 7px -2px rgba(0,0,0,.555);
+    position: relative;
+    z-index:10;
+}
