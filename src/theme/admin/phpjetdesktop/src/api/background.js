@@ -1,14 +1,14 @@
 import {setWallpaper} from "../actions/background";
-import {fetch2, fetch2file} from "../tools/fetch2";
+import api from "../tools/api";
 
-export const fetchWallpaper = () => (
+export const fetchWallpaper = adminID => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/misc/getWallpaper', {}, result => dispatch(setWallpaper(result.data.wallpaper)))
+        api.get(`admin/${adminID}/settings/wallpaper`, {}, result => dispatch(setWallpaper(result.data.wallpaper)))
     )
 );
 
-export const changeWallpaper = queryParams => (
+export const changeWallpaper = (adminID, queryParams) => (
     dispatch => (
-        fetch2file(globalSystemRootURL + '/misc/setWallpaper', {queryParams: queryParams}, result => dispatch(setWallpaper(result.data.wallpaper)))
+        api.file(`admin/${adminID}/settings/wallpaper`, {queryParams: queryParams}, result => dispatch(setWallpaper(result.data.wallpaper)))
     )
 );

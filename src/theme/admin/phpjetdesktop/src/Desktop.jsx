@@ -7,6 +7,7 @@ import Auth from './layouts/Auth';
 import {checkAuthorization} from "./api/auth";
 import {fetchMisc} from "./api/misc";
 import SimpleLoader from "./components/Loaders/SimpleLoader";
+import {setApiUrl} from "./actions/auth";
 
 class Desktop extends React.Component {
     constructor(props) {
