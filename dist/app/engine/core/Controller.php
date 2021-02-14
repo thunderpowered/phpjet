@@ -55,6 +55,7 @@ class Controller
     protected $SEO;
     /**
      * @var array
+     * @deprecated
      */
     protected $methods = [
         'POST', 'GET'
@@ -141,6 +142,7 @@ class Controller
 
     /**
      * @return string
+     * @deprecated
      */
     public function getRobots(): string
     {
@@ -161,6 +163,7 @@ class Controller
 
     /**
      * @return string
+     * @deprecated
      */
     public function getURLCanonical(): string
     {

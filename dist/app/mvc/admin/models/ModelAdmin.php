@@ -400,6 +400,7 @@ class ModelAdmin extends Model
      * @param string $token
      * @param string $tokenURLKey
      * @return array
+     * @deprecated
      */
     public function getAdminAPIUrls(bool $includeToken = true, string $token = '', string $tokenURLKey = 'token'): array
     {

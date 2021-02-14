@@ -1,7 +1,7 @@
 import api from "../tools/api";
 import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 
-export const checkAuthorization = callback => (
+export const checkAuthorization = () => (
     dispatch => (
         api.get('auth/check', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
@@ -9,7 +9,7 @@ export const checkAuthorization = callback => (
     )
 );
 
-export const logout = callback => (
+export const logout = () => (
     dispatch => (
         api.post('auth/logout', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, null))

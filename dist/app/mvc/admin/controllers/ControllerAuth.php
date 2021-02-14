@@ -73,7 +73,7 @@ class ControllerAuth extends ControllerAdmin
     /**
      * @return string
      */
-    public function actionBasic(): string
+    public function actionBasicPOST(): string
     {
         $json = PHPJet::$app->system->request->getJSON();
         PHPJet::$app->tool->JSONOutput->setAction('1F'); // actions: [1F, 2F, S]
@@ -85,8 +85,7 @@ class ControllerAuth extends ControllerAdmin
             return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
         }
 
-        // Following actions record in Model
-
+        // Following actions recorded in Model
         $email = $json[$this->jsonEmailField];
         $password = $json[$this->jsonPasswordField];
         $result = $this->modelAdmin->authorizeAdmin($email, $password);
@@ -110,7 +109,7 @@ class ControllerAuth extends ControllerAdmin
     /**
      * @return string
      */
-    public function actionLogout(): string
+    public function actionLogoutPOST(): string
     {
         // Following actions record in Model
         $result = $this->modelAdmin->logout();
@@ -128,7 +127,7 @@ class ControllerAuth extends ControllerAdmin
     /**
      * @return string
      */
-    public function actionVerify(): string
+    public function actionVerifyPOST(): string
     {
         $json = PHPJet::$app->system->request->getJSON();
         if (!$json || empty($json[$this->json2FVerificationField])) {

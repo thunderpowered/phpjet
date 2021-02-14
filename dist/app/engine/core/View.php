@@ -83,6 +83,28 @@ class View
      * @var string
      */
     private $forcedTemplateName;
+    /**
+     * @var array
+     */
+    private $messageBoxStyles = [
+        'error',
+        'success',
+        'warning',
+        'danger',
+        'info'
+    ];
+    /**
+     * @var array
+     */
+    private $JSONOutput = [
+        'status' => false,
+        'message_box' => [
+            'style' => 'info',
+            'text' => ''
+        ],
+        'action' => '',
+        'data' => []
+    ];
 
     /**
      * View constructor.
@@ -111,34 +133,39 @@ class View
     /**
      * @param string $templateName
      * @param array $data
+     * @param bool $status
+     * @param string $action
+     * @param array $messageBox
      * @return string
      */
-    public function render(string $templateName = "default", array $data = array()): string
+    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', array $messageBox = []): string
     {
-        // sometimes we need ignore controller's template name and force own (i.e. in PageBuilder)
-        // i still think i can find better solution
-        // todo think about it
-        if ($this->forcedTemplateName) {
-            $templateName = $this->forcedTemplateName;
+        if ($this->isSPA()) { // proceed as SPA
+
+            return $this->returnJsonOutput($status, $data, $action, $messageBox);
+        } else { // proceed as MPA
+
+            if ($this->forcedTemplateName) {
+                $templateName = $this->forcedTemplateName;
+            }
+
+            // This variable will be echoed in layout
+            $this->view = $this->returnHTMLOutput($templateName, $data);
+            if (!$this->includeLayout) {
+                return $this->view;
+            }
+
+            // Create compressed buffer
+            $this->buffer->createBuffer();
+            $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
+            if (file_exists($filePath)) {
+                require_once $filePath;
+            } else {
+                PHPJet::$app->exit('template not found');
+            }
+
+            return $this->buffer->returnBuffer();
         }
-
-        // This variable will be echoed in layout
-        $this->view = $this->returnHTMLOutput($templateName, $data);
-        if (!$this->includeLayout) {
-            return $this->view;
-        }
-
-        // Create compressed buffer
-        $this->buffer->createBuffer();
-
-        $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
-        if (file_exists($filePath)) {
-            require_once $filePath;
-        } else {
-            PHPJet::$app->exit('template not found');
-        }
-
-        return $this->buffer->returnBuffer();
     }
 
     /**
@@ -310,14 +337,20 @@ class View
     }
 
     /**
-     * @param bool $success
+     * @param bool $status
      * @param array $data
+     * @param string $action
+     * @param array $messageBox
      * @return string
      */
-    public function returnJsonOutput(bool $success = false, array $data = []): string
+    public function returnJsonOutput(bool $status = false, array $data = [], string $action = '', array $messageBox = []): string
     {
-        $data['success'] = $success;
-        return json_encode($data);
+        $this->JSONOutput['status'] = $status;
+        $this->JSONOutput['data'] = $data;
+        $this->JSONOutput['action'] = $action;
+        $this->JSONOutput['message_box']['style'] = isset($messageBox['style']) ? $messageBox['style'] : $this->messageBoxStyles[(int)$status];
+        $this->JSONOutput['message_box']['text'] = isset($messageBox['text']) ? $messageBox['text'] : '';
+        return json_encode($this->JSONOutput);
     }
 
     private function loadTheme()
@@ -334,17 +367,14 @@ class View
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function createConstants(): bool
+    private function createConstants(): void
     {
         // Create template constants
         // In some cases, for instance when using modules, View can be created several times
         // But we need to define all constants once
         // It's temporary, so now i don't care about better realization
         if (defined("THEME_LAYOUT")) {
-            return false;
+            return;
         }
 
         $host = PHPJet::$app->router->getHost();
@@ -363,8 +393,14 @@ class View
         define("COMMON", WEB . 'common/');
         define("COMMON_URL", $host . '/common/');
         define("VIEW_PATH", MVC_PATH . "views/theme/" . THEME);
+    }
 
-        return true;
+    /**
+     * @return bool
+     */
+    private function isSPA(): bool
+    {
+        return Config::$availableThemes[MVC_SECTOR][$this->theme]['SPA'];
     }
 
     /**
