@@ -6,7 +6,7 @@ namespace Jet\App\Engine\Tools;
 /**
  * Class JSONOutput
  * @package Jet\App\Engine\Tools
- * Best usage: create new class
+ * @deprecated
  */
 class JSONOutput
 {

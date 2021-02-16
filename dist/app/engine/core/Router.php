@@ -152,7 +152,12 @@ class Router
     {
         $action = $this->parseURL($this->getRoute());
         if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
-            return call_user_func_array([$controller, $action['actionName']], $action['parameters']);
+            $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
+            if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
+                $this->refresh();
+            }
+
+            return $result->response;
         }
 
         return $this->errorPage404();
@@ -166,6 +171,18 @@ class Router
         PHPJet::$app->system->buffer->destroyBuffer();
         echo $content;
         PHPJet::$app->exit();
+    }
+
+    /**
+     * @param string $header
+     * @param bool $replace
+     * @param int $code
+     * @deprecated
+     * Why do i even need this?
+     */
+    public function setHeader(string $header, bool $replace = true, int $code = 200)
+    {
+        header("{header}", $replace, $code);
     }
 
     /**
@@ -523,6 +540,12 @@ class Router
     public function printProperURL(string $relativeURL): string
     {
         return '';
+    }
+
+    public function refresh(): void
+    {
+        header("Location: " . $this->getURL(), true, 301);
+        PHPJet::$app->exit();
     }
 
     /**

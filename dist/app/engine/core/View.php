@@ -3,6 +3,9 @@
 namespace Jet\App\Engine\Core;
 
 use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Interfaces\JSONOutput;
+use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\Engine\System\Buffer;
 use Jet\PHPJet;
 
@@ -138,11 +141,13 @@ class View
      * @param array $messageBox
      * @return string
      */
-    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', array $messageBox = []): string
+    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', array $messageBox = []): ViewResponse
     {
-        if ($this->isSPA()) { // proceed as SPA
+        $SPA = $this->isSPA();
+        $response = new ViewResponse($SPA);
+        if ($SPA) { // proceed as SPA
 
-            return $this->returnJsonOutput($status, $data, $action, $messageBox);
+            $response->response = $this->returnJsonOutput($status, $data, $action, $messageBox);
         } else { // proceed as MPA
 
             if ($this->forcedTemplateName) {
@@ -164,8 +169,10 @@ class View
                 PHPJet::$app->exit('template not found');
             }
 
-            return $this->buffer->returnBuffer();
+            $response->response = $this->buffer->returnBuffer();
         }
+
+        return $response;
     }
 
     /**
@@ -340,20 +347,24 @@ class View
      * @param bool $status
      * @param array $data
      * @param string $action
-     * @param array $messageBox
+     * @param MessageBox|null $messageBox
      * @return string
      */
-    public function returnJsonOutput(bool $status = false, array $data = [], string $action = '', array $messageBox = []): string
+    public function returnJsonOutput(bool $status = false, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
     {
-        $this->JSONOutput['status'] = $status;
-        $this->JSONOutput['data'] = $data;
-        $this->JSONOutput['action'] = $action;
-        $this->JSONOutput['message_box']['style'] = isset($messageBox['style']) ? $messageBox['style'] : $this->messageBoxStyles[(int)$status];
-        $this->JSONOutput['message_box']['text'] = isset($messageBox['text']) ? $messageBox['text'] : '';
-        return json_encode($this->JSONOutput);
+        // do i really need it? it'd be easier to just return an array
+        // todo think about it
+        $jsonOutput = new JSONOutput();
+        $jsonOutput->status = $status;
+        $jsonOutput->data = $data;
+        $jsonOutput->action = $action;
+        if ($messageBox) {
+            $jsonOutput->messageBox = $messageBox;
+        }
+        return $jsonOutput->returnJsonOutput();
     }
 
-    private function loadTheme()
+    private function loadTheme(): void
     {
         $theme = PHPJet::$app->system->settings->getContext('theme');
         if (!$theme) {

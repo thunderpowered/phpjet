@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Jet\App\Engine\Tools;
+namespace Jet\App\Engine\Interfaces;
 
 /**
  * Class ModelResponse
