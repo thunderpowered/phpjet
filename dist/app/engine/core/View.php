@@ -64,6 +64,7 @@ class View
 
     /**
      * @var string
+     * @description string containing generated html
      */
     private $view;
     /**
@@ -138,28 +139,35 @@ class View
      * @param array $data
      * @param bool $status
      * @param string $action
-     * @param array $messageBox
-     * @return string
+     * @param MessageBox|null $messageBox
+     * @return ViewResponse
      */
-    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', array $messageBox = []): ViewResponse
+    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', MessageBox $messageBox = null): ViewResponse
     {
-        $SPA = $this->isSPA();
-        $response = new ViewResponse($SPA);
-        if ($SPA) { // proceed as SPA
+        if ($this->isSPA()) { // proceed as SPA
 
-            $response->response = $this->returnJsonOutput($status, $data, $action, $messageBox);
+            return $this->json($status, $data, $action, $messageBox);
         } else { // proceed as MPA
 
-            if ($this->forcedTemplateName) {
-                $templateName = $this->forcedTemplateName;
-            }
+            return $this->html($templateName, $data);
+        }
+    }
 
-            // This variable will be echoed in layout
-            $this->view = $this->returnHTMLOutput($templateName, $data);
-            if (!$this->includeLayout) {
-                return $this->view;
-            }
+    /**
+     * @param string $templateName
+     * @param array $data
+     * @return ViewResponse
+     */
+    public function html(string $templateName = "default", array $data = []): ViewResponse
+    {
+        $response = new ViewResponse($this->isSPA());
+        if ($this->forcedTemplateName) {
+            $templateName = $this->forcedTemplateName;
+        }
 
+        // This variable will be echoed in layout
+        $this->view = $this->returnHTMLOutput($templateName, $data);
+        if ($this->includeLayout) {
             // Create compressed buffer
             $this->buffer->createBuffer();
             $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
@@ -169,39 +177,25 @@ class View
                 PHPJet::$app->exit('template not found');
             }
 
-            $response->response = $this->buffer->returnBuffer();
+            $this->view = $this->buffer->returnBuffer();
         }
 
+        $response->response = $this->view;
         return $response;
     }
 
     /**
-     * @param string $templateName
      * @param array $data
-     * @return string
+     * @param bool $status
+     * @param string $action
+     * @param MessageBox|null $messageBox
+     * @return ViewResponse
      */
-    public function returnHTMLOutput(string $templateName = "default", array $data = array()): string
+    public function json(bool $status = true, array $data = [], string $action = '', MessageBox $messageBox = null): ViewResponse
     {
-        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
-        if (!file_exists($templatePath)) {
-            return "";
-        }
-
-        // Create buffer
-        $this->buffer->createBuffer();
-
-        // Create variables
-        if ($data) {
-            foreach ($data as $key => $value) {
-                $$key = $value;
-            }
-        }
-
-        // Include view
-        include $templatePath;
-
-        // Return html
-        return $this->buffer->returnBuffer();
+        $response = new ViewResponse($this->isSPA());
+        $response->response = $this->returnJsonOutput($status, $data, $action, $messageBox);
+        return $response;
     }
 
     /**
@@ -344,13 +338,42 @@ class View
     }
 
     /**
+     * @param string $templateName
+     * @param array $data
+     * @return string
+     */
+    private function returnHTMLOutput(string $templateName = "default", array $data = array()): string
+    {
+        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
+        if (!file_exists($templatePath)) {
+            return "";
+        }
+
+        // Create buffer
+        $this->buffer->createBuffer();
+
+        // Create variables
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $$key = $value;
+            }
+        }
+
+        // Include view
+        include $templatePath;
+
+        // Return html
+        return $this->buffer->returnBuffer();
+    }
+
+    /**
      * @param bool $status
      * @param array $data
      * @param string $action
      * @param MessageBox|null $messageBox
      * @return string
      */
-    public function returnJsonOutput(bool $status = false, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
+    private function returnJsonOutput(bool $status = false, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
     {
         // do i really need it? it'd be easier to just return an array
         // todo think about it
@@ -409,7 +432,7 @@ class View
     /**
      * @return bool
      */
-    private function isSPA(): bool
+    public function isSPA(): bool
     {
         return Config::$availableThemes[MVC_SECTOR][$this->theme]['SPA'];
     }

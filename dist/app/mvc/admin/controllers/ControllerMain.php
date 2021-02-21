@@ -3,6 +3,7 @@
 namespace Jet\App\MVC\Admin\Controllers;
 
 use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
 
@@ -33,15 +34,15 @@ class ControllerMain extends Controller
     }
 
     /**
-     * @return string
+     * @return ViewResponse
      */
-    public function actionBasicGET(): string
+    public function actionBasicGET(): ViewResponse
     {
-        $this->title = 'PHPJet Admin Desktop'; // include site name
+        $this->title = 'PHPJet Admin Desktop'; // todo include site name
         $initState = [
             '__api_base' => PHPJet::$app->router->getHost() . '/'
         ];
-        return $this->view->render('view_desktop', [
+        return $this->view->html('view_desktop', [
             '__INITIAL_STATE__' => $initState
         ]);
     }

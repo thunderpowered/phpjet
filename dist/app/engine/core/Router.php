@@ -61,7 +61,8 @@ class Router
     /**
      * @var array
      */
-    private $httpErrorCodes = [
+    private $httpCodes = [
+        '200' => 'OK',
         '500' => 'Internal Server Error',
         '404' => 'Not Found'
     ];
@@ -174,18 +175,6 @@ class Router
     }
 
     /**
-     * @param string $header
-     * @param bool $replace
-     * @param int $code
-     * @deprecated
-     * Why do i even need this?
-     */
-    public function setHeader(string $header, bool $replace = true, int $code = 200)
-    {
-        header("{header}", $replace, $code);
-    }
-
-    /**
      * @return string
      * @deprecated
      */
@@ -239,10 +228,11 @@ class Router
         $result = $view->render();
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
-            echo $result;
+            echo $result->response;
             PHPJet::$app->exit();
         }
-        return $result;
+        // todo if SPA return JSON
+        return $result->response;
     }
 
     /**
@@ -583,7 +573,7 @@ class Router
         $supportedMethods = $controller->getSupportedQueryMethods();
         $actualMethod = PHPJet::$app->system->request->getRequestMethod();
         if (!in_array($actualMethod, $supportedMethods)) {
-            return false;
+//            return false;
         }
 
         // and also check the special case

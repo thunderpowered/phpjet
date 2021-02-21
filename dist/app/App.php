@@ -81,7 +81,7 @@ class App
     /**
      * @return string
      */
-    public function start()
+    public function start(): string
     {
         // Select the config
         $configSelector = new Selector();
@@ -97,12 +97,13 @@ class App
         $this->configManager->prepareConfig();
 
         // Start the engine
-        return $this->execute($this->router);
+        return $this->router->start();
     }
 
     /**
      * @param Router $router
      * @return string
+     * @deprecated
      */
     public function execute(Router $router): string
     {
