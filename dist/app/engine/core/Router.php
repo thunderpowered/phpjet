@@ -101,7 +101,7 @@ class Router
         if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
             $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
             if ($page) {
-                return $this->proceedRouterScheme('pageBuilder'); // todo add data
+                return $this->proceedRouterScheme('pageBuilder'); // todo pass the data to it
             }
         }
         return $this->proceedRouterScheme('default');
@@ -126,19 +126,11 @@ class Router
 
         $this->controller = $this->getControllerObject();
 
-        // If there is no such controller
-        if (!$this->controller) {
-            return $this->errorPage404();
-        }
-
-        // check if this query method supported by controller, and also check csrf-token
-        if (!$this->doesControllerSupportRequestMethod($this->controller)) {
-            return $this->errorPage404();
-        }
-
-        // check special url token
-        // mostly in use to 'hide' particular urls
-        if (!$this->checkURLToken($this->controller)) {
+        if (
+               !$this->controller
+            || !$this->doesControllerSupportRequestMethod($this->controller)
+            || !$this->checkURLToken($this->controller)
+        ) {
             return $this->errorPage404();
         }
 
@@ -152,6 +144,8 @@ class Router
     private function startAction(Controller $controller): string
     {
         $action = $this->parseURL($this->getRoute());
+        var_dump($action);
+        exit();
         if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
             $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
@@ -617,14 +611,14 @@ class Router
     {
         $actionName = $this->actionPrefix;
         $parameters = [];
-        if (!isset($route[$this->defaultActionRoutePart])) {
+        if (empty($route[$this->defaultActionRoutePart + 1])) {
             $actionName .= ucfirst($this->actionBasic);
         }
-        for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l; $i++) {
+        for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l && isset($route[$i]); $i++) {
             if ($i % 2 === 0) {
                 // ID
-                $parameterName = $route[$i - 1] ? strtoupper($route[$i - 1]) . '_' : '' . 'ID';
-                $parameters[$parameterName] = $route[$i] ?? null; // the idea is to set parameters even if there is no parameter in the url
+                $parameterName = ($route[$i - 1] ? strtoupper($route[$i - 1]) . '_' : '') . 'ID';
+                $parameters[$parameterName] = $route[$i] ?? null;
             } else {
                 // ACTION
                 $actionName .= ucfirst($route[$i]);

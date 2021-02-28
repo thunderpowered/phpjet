@@ -3,7 +3,7 @@
 
 namespace Jet\App\MVC\Client\Widgets;
 
-use Jet\App\Engine\ActiveRecord\Tables\Items;
+use Jet\App\Engine\Core\Tables\Items;
 use Jet\App\Engine\Core\Widget;
 use Jet\App\MVC\Client\Models\ModelItems;
 use Jet\PHPJet;

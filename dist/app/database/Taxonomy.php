@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\Core\ActiveRecord;
 
 /**
  * Class Taxonomy
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * @package Jet\App\Database
  */
 class Taxonomy extends ActiveRecord
 {

@@ -3,7 +3,7 @@
 
 namespace Jet\App\Engine\System;
 
-use Jet\App\Engine\ActiveRecord\Tables\Tracker_Authority;
+use Jet\App\Engine\Core\Tables\Tracker_Authority;
 use Jet\PHPJet;
 
 /**
@@ -26,7 +26,7 @@ class Tracker
      */
     public function trackEverythingYouFind(string $type = '', string $explanation = ''): bool
     {
-        $tracker = new \Jet\App\Engine\ActiveRecord\Tables\Tracker();
+        $tracker = new \Jet\App\Engine\Core\Tables\Tracker();
         $tracker->url = PHPJet::$app->router->getURL();
         $tracker->method = PHPJet::$app->system->request->getSERVER('REQUEST_METHOD');
         $tracker->referer = PHPJet::$app->system->request->getSERVER('HTTP_REFERER');

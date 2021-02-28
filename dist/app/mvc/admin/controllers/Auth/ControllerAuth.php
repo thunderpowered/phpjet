@@ -48,7 +48,7 @@ class ControllerAuth extends ControllerAdmin
     /**
      * @return string
      */
-    public function actionCheck(): string
+    public function actionCheckGET(): string
     {
         $isAdminAuthorized = $this->modelAdmin->isAdminAuthorized();
         // Note: status field is for fetch2 function which will shout out the message

@@ -4,7 +4,7 @@
 namespace Jet\App\MVC\Admin\Controllers;
 
 
-use Jet\App\Engine\ActiveRecord\Tables\PageBuilder;
+use Jet\App\Engine\Core\Tables\PageBuilder;
 use Jet\App\Engine\Core\Controller;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\App\MVC\Admin\Models\ModelPages;

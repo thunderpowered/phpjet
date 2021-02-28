@@ -1,16 +1,15 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
-
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\Core\ActiveRecord;
 
 /**
- * Class Users
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * Class Authority
+ * @package Jet\App\Database
  */
-class Users extends ActiveRecord
+class Authority extends ActiveRecord
 {
     /**
      * @var int
@@ -29,21 +28,17 @@ class Users extends ActiveRecord
      */
     public $password;
     /**
-     * @var string
-     */
-    public $bio;
-    /**
-     * @var int
-     */
-    public $age;
-    /**
      * @var bool
      */
-    public $active;
+    public $two_factor_auth;
     /**
      * @var string
      */
-    public $since;
+    public $session_token;
+    /**
+     * @var string
+     */
+    public $last_login;
     /**
      * @var string
      */

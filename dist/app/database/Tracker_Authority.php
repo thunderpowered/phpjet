@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\Core\ActiveRecord;
 
 /**
  * Class Tracker_Authority
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * @package Jet\App\Database
  */
 class Tracker_Authority extends ActiveRecord
 {

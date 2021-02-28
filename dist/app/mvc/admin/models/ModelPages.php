@@ -4,7 +4,7 @@
 namespace Jet\App\MVC\Admin\Models;
 
 
-use Jet\App\Engine\ActiveRecord\Tables\PageBuilder;
+use Jet\App\Engine\Core\Tables\PageBuilder;
 use Jet\App\Engine\Core\Model;
 use Jet\App\Engine\Tools\ModelResponse;
 use Jet\PHPJet;

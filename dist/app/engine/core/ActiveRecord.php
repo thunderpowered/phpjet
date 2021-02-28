@@ -6,7 +6,7 @@
  * Thanks @mixtech911 for the idea.
  */
 
-namespace Jet\App\Engine\ActiveRecord;
+namespace Jet\App\Engine\Core;
 
 use Jet\PHPJet;
 

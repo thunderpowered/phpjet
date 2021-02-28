@@ -1,34 +1,22 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\Core\ActiveRecord;
 
 /**
- * Class Mods
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * Class Soft
+ * @package Jet\App\Database
  * @deprecated
  */
-class Mods extends ActiveRecord
+class Soft extends ActiveRecord
 {
     /**
      * @var int
      */
     public $id;
-    /**
-     * @var int
-     */
-    public $games_id;
-    /**
-     * @var int
-     */
-    public $users_id;
-    /**
-     * @var string
-     */
-    public $url;
     /**
      * @var string
      */
@@ -36,11 +24,19 @@ class Mods extends ActiveRecord
     /**
      * @var string
      */
-    public $description;
+    public $url;
     /**
      * @var string
      */
-    public $file;
+    public $icon;
+    /**
+     * @var string
+     */
+    public $cover;
+    /**
+     * @var string
+     */
+    public $description;
     /**
      * @var string
      */

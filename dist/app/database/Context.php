@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\Core\ActiveRecord;
 
 /**
- * Class Settings
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * Class Context
+ * @package Jet\App\Database
  */
 class Context extends ActiveRecord
 {

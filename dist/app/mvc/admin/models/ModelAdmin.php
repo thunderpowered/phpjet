@@ -2,9 +2,9 @@
 
 namespace Jet\App\MVC\Admin\Models;
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
-use Jet\App\Engine\ActiveRecord\Tables\Authority;
-use Jet\App\Engine\ActiveRecord\Tables\Tracker_Authority;
+use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\Core\Tables\Authority;
+use Jet\App\Engine\Core\Tables\Tracker_Authority;
 use Jet\App\Engine\Core\Model;
 use Jet\PHPJet;
 
