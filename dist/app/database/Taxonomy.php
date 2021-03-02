@@ -4,13 +4,13 @@
 namespace Jet\App\Database;
 
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Taxonomy
  * @package Jet\App\Database
  */
-class Taxonomy extends ActiveRecord
+class Taxonomy extends Table
 {
     /**
      * @var int
@@ -19,13 +19,9 @@ class Taxonomy extends ActiveRecord
     /**
      * @var int
      */
-    public $categories_id;
+    public $category_id;
     /**
      * @var int
      */
-    public $items_id;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
+    public $post_id;
 }

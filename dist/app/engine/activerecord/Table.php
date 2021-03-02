@@ -1,20 +1,20 @@
 <?php
 /**
- * ActiveRecord is a pattern that connect database and classes in programming code.
+ * Table is a pattern that connect database and classes in programming code.
  * Every child class points to particular table in database.
  * Every object of class is a row in the table.
  * Thanks @mixtech911 for the idea.
  */
 
-namespace Jet\App\Engine\Core;
+namespace Jet\App\Engine\ActiveRecord;
 
 use Jet\PHPJet;
 
 /**
- * Class ActiveRecord
+ * Class Table
  * @package Jet\App\Engine\Core
  */
-abstract class ActiveRecord
+abstract class Table
 {
     /**
      * @var string
@@ -27,14 +27,22 @@ abstract class ActiveRecord
     /**
      * @var string
      */
-    protected $_primaryKey;
+    protected $_primaryKey = 'id';
     /**
      * @var int
      */
     protected $_config_id;
+    /**
+     * @var string
+     */
+    protected $_created;
+    /**
+     * @var string
+     */
+    protected $_deleted;
 
     /**
-     * ActiveRecord constructor.
+     * Table constructor.
      * @param bool $loaded
      */
     public function __construct(bool $loaded = false)
@@ -84,7 +92,6 @@ abstract class ActiveRecord
             return self::convertRowIntoObject($rows[0], $class, true);
         }
 
-        // just return, if nothing found - nothing to return. perfection
         return;
     }
 
@@ -272,7 +279,7 @@ abstract class ActiveRecord
      * @param bool $loaded
      * @return static
      */
-    private static function convertRowIntoObject(array $row, string $class, bool $loaded = true): ActiveRecord
+    private static function convertRowIntoObject(array $row, string $class, bool $loaded = true): Table
     {
         /**
          * Create object from a row and return it

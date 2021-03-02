@@ -25,9 +25,10 @@ class Urls
      * @param string $url
      * @param string $type
      * @param string $classOrFunction
+     * @param array $params
      * @return bool
      */
-    public function setUrl(string $url, string $type, string $classOrFunction): bool
+    public function setUrl(string $url, string $type, string $classOrFunction, array $params = []): bool
     {
         if (empty ($url) || empty ($type) || empty ($classOrFunction) || !in_array($type, $this->types)) {
             return false;

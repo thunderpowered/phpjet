@@ -3,13 +3,14 @@
 
 namespace Jet\App\Database;
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Authority
  * @package Jet\App\Database
+ * @deprecated
  */
-class Authority extends ActiveRecord
+class Authority extends Table
 {
     /**
      * @var int
@@ -39,8 +40,4 @@ class Authority extends ActiveRecord
      * @var string
      */
     public $last_login;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

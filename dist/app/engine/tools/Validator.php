@@ -39,4 +39,13 @@ class Validator
         }
         return (bool)filter_var($url, FILTER_VALIDATE_URL, $flags);
     }
+
+    /**
+     * @param string $password
+     * @return bool
+     */
+    public function validatePassword(string $password): bool
+    {
+        return false;
+    }
 }

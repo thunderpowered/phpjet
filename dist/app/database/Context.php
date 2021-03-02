@@ -3,13 +3,13 @@
 
 namespace Jet\App\Database;
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Context
  * @package Jet\App\Database
  */
-class Context extends ActiveRecord
+class Context extends Table
 {
     /**
      * @var int
@@ -23,8 +23,4 @@ class Context extends ActiveRecord
      * @var string
      */
     public $value;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

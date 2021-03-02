@@ -4,13 +4,13 @@
 namespace Jet\App\Database;
 
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Categories
  * @package Jet\App\Database
  */
-class Categories extends ActiveRecord
+class Category extends Table
 {
     /**
      * @var int
@@ -32,8 +32,4 @@ class Categories extends ActiveRecord
      * @var string
      */
     public $cover;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

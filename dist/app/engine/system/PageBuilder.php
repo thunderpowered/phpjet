@@ -1,13 +1,14 @@
 <?php
 
 
-namespace Jet\App\Engine\Core;
+namespace Jet\App\Engine\System;
 
 use Jet\PHPJet;
 
 /**
  * Class PageBuilder
  * @package Jet\App\Engine\Core
+ * @deprecated since 02.02.2021, will be in use after aligning it with current architecture
  */
 class PageBuilder
 {

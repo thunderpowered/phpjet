@@ -4,13 +4,13 @@
 namespace Jet\App\Database;
 
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Reviews
  * @package Jet\App\Database
  */
-class Reviews extends ActiveRecord
+class Review extends Table
 {
     /**
      * @var int
@@ -19,15 +19,11 @@ class Reviews extends ActiveRecord
     /**
      * @var int
      */
-    public $users_id;
+    public $user_id;
     /**
      * @var int
      */
-    public $item_id;
-    /**
-     * @var string
-     */
-    public $item_table;
+    public $post_id;
     /**
      * @var int
      */
@@ -40,8 +36,4 @@ class Reviews extends ActiveRecord
      * @var string
      */
     public $datetime;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

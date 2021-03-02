@@ -4,13 +4,13 @@
 namespace Jet\App\Database;
 
 
-use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
- * Class Users
+ * Class Tracker
  * @package Jet\App\Database
  */
-class Users extends ActiveRecord
+class Action extends Table
 {
     /**
      * @var int
@@ -19,33 +19,37 @@ class Users extends ActiveRecord
     /**
      * @var string
      */
-    public $username;
+    public $method;
     /**
      * @var string
      */
-    public $email;
+    public $url;
+    /**
+     * @var
+     */
+    public $type;
+    /**
+     * @var
+     */
+    public $details;
     /**
      * @var string
      */
-    public $password;
+    public $referer;
     /**
      * @var string
      */
-    public $bio;
-    /**
-     * @var int
-     */
-    public $age;
-    /**
-     * @var bool
-     */
-    public $active;
+    public $ip;
     /**
      * @var string
      */
-    public $since;
+    public $user_agent;
     /**
      * @var string
      */
-    protected $_primaryKey = 'id';
+    public $datetime;
+    /**
+     * @var string
+     */
+    public $post;
 }
