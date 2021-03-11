@@ -127,6 +127,7 @@ class System
      * @param string $MVCSector
      * @param bool $forceCheck
      * @return bool
+     * @deprecated
      */
     public function isControllerActive(string $controllerName, string $MVCSector, bool $forceCheck = false): bool
     {

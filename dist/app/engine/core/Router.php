@@ -2,6 +2,7 @@
 
 namespace Jet\App\Engine\Core;
 
+use Exception;
 use Jet\App\Engine\Config;
 use Jet\PHPJet;
 
@@ -48,7 +49,7 @@ class Router
      */
     private $view;
     /**
-     * @varstring
+     * @var string
      */
     private $controllerName;
     /**
@@ -78,13 +79,21 @@ class Router
      * @var string
      */
     private $subdomain;
+    /**
+     * @var string
+     */
+    private $urlConfigFilename = 'urls.php';
 
     /**
      * Router constructor.
      */
     public function __construct()
     {
-        // There is nothing to see here, citizen...
+        $this->subdomain = $this->getSubdomain();
+        $this->MVCSector =  Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
+        define('MVC_SECTOR', $this->MVCSector);
+        define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
+        define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
     }
 
     /**
@@ -92,13 +101,8 @@ class Router
      */
     public function start(): string
     {
-        $this->MVCSector = Config\Config::$config['admin'] ? Config\Config::$urlRules['admin'] : Config\Config::$urlRules['']; // mostly temp
-        define('MVC_SECTOR', $this->MVCSector);
-        define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
-        define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
-
         // page builder is disabled at the moment
-        if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
+        if (false && Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
             $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
             if ($page) {
                 return $this->proceedRouterScheme('pageBuilder'); // todo pass the data to it
@@ -111,23 +115,26 @@ class Router
      * @param string $scheme
      * @return string
      */
-    private function proceedRouterScheme(string $scheme = 'default'): string
+    private function proceedRouterScheme(string $scheme): string
     {
-        if ($scheme === 'pageBuilder') {
-            $this->setControllerName('page');
-        } else {
-            $controllerName = $this->getControllerName(true);
-            // check if this controller in the list of controllers
-            // i personally think it'd be better to check the property of controller, not the list
-            if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
+        switch ($scheme) {
+            case 'pageBuilder':
+                $this->controllerName = 'page';
+                break;
+            case 'default':
+                $this->controllerName = $this->getControllerName(true);
+                if (!$this->controllerName || !PHPJet::$app->system->isControllerActive($this->controllerName, $this->MVCSector)) {
+                    return $this->errorPage404();
+                }
+                break;
+            default:
                 return $this->errorPage404();
-            }
         }
 
-        $this->controller = $this->getControllerObject();
+        $this->controller = $this->getControllerObject($this->controllerName);
 
         if (
-               !$this->controller
+            !$this->controller
             || !$this->doesControllerSupportRequestMethod($this->controller)
             || !$this->checkURLToken($this->controller)
         ) {
@@ -143,9 +150,8 @@ class Router
      */
     private function startAction(Controller $controller): string
     {
+        $action = $this->getActionName(false);
         $action = $this->parseURL($this->getRoute());
-        var_dump($action);
-        exit();
         if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
             $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
@@ -166,18 +172,6 @@ class Router
         PHPJet::$app->system->buffer->destroyBuffer();
         echo $content;
         PHPJet::$app->exit();
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function blocked(): string
-    {
-        $view = $this->getViewObject(new Controller());
-        $view->setLayout("block");
-        $view->buffer->destroyBuffer();
-        return $view->render();
     }
 
     /**
@@ -374,35 +368,26 @@ class Router
     }
 
     /**
+     * @param string $controllerName
      * @return Controller
-     * @todo use constant instead of explicitly set of namespaces
      */
-    public function getControllerObject(): Controller
+    private function getControllerObject(string $controllerName): Controller
     {
-        if ($this->controller) {
-            return $this->controller;
-        }
         /**
          * @var Controller $controller
          */
         $controller = null;
 
-        // Create controller name
-        $name = '';
-        $partName = $this->getControllerName(false);
-        if ($partName) {
-            $name = 'Controller' . $partName;
+        if ($controllerName) {
+            $controllerName = 'Controller' . $controllerName;
         }
-
         // Namespace sector
         $MVCRoot = $this->MVCSector ? ucfirst($this->MVCSector) : ucfirst(Config\Config::$urlRules['']);
         // Create full controller name with namespace
-        $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $name;
-        // Create object
+        $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $controllerName;
         if (class_exists($Class)) {
-            $controller = new $Class($name, true);
+            $controller = new $Class($controllerName, true);
         } else {
-            // If there is no such class
             PHPJet::$app->exit("Class '{$Class}' Not Found");
         }
 
@@ -411,10 +396,6 @@ class Router
         $view->loadWidgets();
         $controller->setView($view);
 
-        // Create and set model
-        $model = $this->getModelObject();
-        $controller->setModel($model);
-
         return $controller;
     }
 
@@ -422,24 +403,39 @@ class Router
      * @param bool $lowerCase
      * @return string
      */
-    public function getControllerName(bool $lowerCase = true): string
+    public function getControllerName(bool $lowerCase): string
     {
-        if (!$this->controllerName) {
-            $routePart = $this->getRoutePart($this->defaultControllerRoutePart, true);
-
-            $this->controllerName = $this->default['controller'];
-            if ($routePart) {
-                $this->controllerName = $routePart;
-            }
+        try {
+            $urls = $this->parseURLConfig(MVC_PATH);
+        } catch (Exception $e) {
+            return '';
         }
 
+        $url = $this->findMatchesInURL($this->getURL(false), $urls);
+        if (!$url) {
+            return '';
+        }
+
+        $controllerName = $url['key'];
         if ($lowerCase) {
-            $this->controllerName = strtolower($this->controllerName);
-        } else {
-            $this->controllerName = ucfirst($this->controllerName);
+            $controllerName = strtolower($controllerName);
+        }
+        return $controllerName;
+    }
+
+    /**
+     * @param bool $lowerCase
+     * @return string
+     */
+    public function getActionName(bool $lowerCase): string
+    {
+        try {
+            $urls = $this->parseURLConfig(MVC_PATH . 'controllers'); // todo maybe define another constant?
+        } catch (Exception $e) {
+            return '';
         }
 
-        return $this->controllerName;
+
     }
 
     /**
@@ -454,38 +450,6 @@ class Router
 
         $this->controllerName = $controllerName;
         return true;
-    }
-
-    /**
-     * @return Model
-     * @deprecated
-     * It'd be better to set model explicitly, not like that. Because one controller can use multiple models.
-     */
-    public function getModelObject(): Model
-    {
-        if ($this->model) {
-            return $this->model;
-        }
-
-        $name = $this->getRoutePart(1, true);
-        if (!$name) {
-            $name = $this->default['model'];
-        }
-        $name = ucfirst($name);
-        $name = 'Model' . $name;
-
-        $Class = '\Jet\App\Engine\Models\\' . $name;
-        if (MVC_PATH !== ENGINE) {
-            $Class = '\Site\Content\Models\\' . $name;
-        }
-
-        if (class_exists($Class)) {
-            $this->model = new $Class($name);
-        } else {
-            $this->model = new Model();
-        }
-
-        return $this->model;
     }
 
     /**
@@ -580,6 +544,28 @@ class Router
     }
 
     /**
+     * @param string $path
+     * @return array
+     * @throws Exception
+     */
+    private function parseURLConfig(string $path): array
+    {
+        $fileName = $path . $this->urlConfigFilename;
+        if (!file_exists($fileName)) {
+            throw new Exception($this->urlConfigFilename . ' does not exist in ' . $path);
+        }
+
+        // temporary solution, need better way to do it
+        require_once $fileName;
+        if (!isset($urls) || !method_exists($urls, 'getUrls')) {
+            throw new Exception($this->urlConfigFilename . ' is set incorrectly');
+        }
+
+        var_dump($urls->getUrls());
+        return $urls->getUrls();
+    }
+
+    /**
      * @param Controller $controller
      * @return bool
      * @deprecated
@@ -634,12 +620,29 @@ class Router
 
     /**
      * @return string
-     * @deprecated
      */
     private function getSubdomain(): string
     {
         $domain = $this->getHost();
         $domain = explode('.', $domain);
-        return isset($domain[0]) ? $domain[0] : '';
+        return $domain[0] ?? '';
+    }
+
+    /**
+     * @param string $string
+     * @param array $urls
+     * @return array
+     */
+    private function findMatchesInURL(string $string, array $urls): array
+    {
+        foreach ($urls as $key => $url) {
+            if (preg_match("/^$string/", $url)) {
+                return [
+                    'key' => $key,
+                    'url' => $url
+                ];
+            }
+        }
+        return [];
     }
 }

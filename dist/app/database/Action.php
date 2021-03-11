@@ -4,6 +4,7 @@
 namespace Jet\App\Database;
 
 
+use Jet\App\Engine\ActiveRecord\Field;
 use Jet\App\Engine\ActiveRecord\Table;
 
 /**
@@ -47,9 +48,23 @@ class Action extends Table
     /**
      * @var string
      */
-    public $datetime;
-    /**
-     * @var string
-     */
     public $post;
+
+    /**
+     * Action constructor.
+     * @param bool $loaded
+     */
+    public function __construct(bool $loaded = false)
+    {
+        parent::__construct($loaded);
+        $this->id = Field::int();
+        $this->method = Field::varchar();
+        $this->url = Field::varchar();
+        $this->type = Field::varchar();
+        $this->details = Field::text();
+        $this->referer = Field::varchar();
+        $this->ip = Field::varchar();
+        $this->user_agent = Field::varchar();
+        $this->post = Field::text();
+    }
 }
