@@ -53,6 +53,14 @@ class Router
      */
     private $controllerName;
     /**
+     * @var string
+     */
+    private $controllerUrl;
+    /**
+     * @var array
+     */
+    private $actionList;
+    /**
      * @var array
      */
     private $default = [
@@ -97,32 +105,41 @@ class Router
     }
 
     /**
+     * 1.
      * @return string
      */
     public function start(): string
     {
         // page builder is disabled at the moment
         if (false && Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
-            $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
+            $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false));
             if ($page) {
-                return $this->proceedRouterScheme('pageBuilder'); // todo pass the data to it
+                return $this->proceedRouterScheme('pageBuilder');
             }
         }
         return $this->proceedRouterScheme('default');
     }
 
     /**
+     * 2.
      * @param string $scheme
      * @return string
+     * @deprecated
      */
     private function proceedRouterScheme(string $scheme): string
     {
+        $url = $this->getURL();
         switch ($scheme) {
             case 'pageBuilder':
                 $this->controllerName = 'page';
                 break;
             case 'default':
-                $this->controllerName = $this->getControllerName(true);
+                $controllerData = $this->getControllerName($url, true);
+                $this->controllerName = $controllerData['controllerName'];
+                if ($controllerData['data']) {
+                    $this->controllerUrl = $controllerData['data']['url'];
+                    $this->actionList = $controllerData['data']['actions'];
+                }
                 if (!$this->controllerName || !PHPJet::$app->system->isControllerActive($this->controllerName, $this->MVCSector)) {
                     return $this->errorPage404();
                 }
@@ -130,9 +147,7 @@ class Router
             default:
                 return $this->errorPage404();
         }
-
         $this->controller = $this->getControllerObject($this->controllerName);
-
         if (
             !$this->controller
             || !$this->doesControllerSupportRequestMethod($this->controller)
@@ -140,27 +155,30 @@ class Router
         ) {
             return $this->errorPage404();
         }
-
-        return $this->startAction($this->controller);
+        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->actionList);
     }
 
     /**
-     * @param $controller
+     * 3.
+     * @param Controller $controller
+     * @param string $url
+     * @param string $controllerUrl
+     * @param array $actions
      * @return string
      */
-    private function startAction(Controller $controller): string
+    private function startAction(Controller $controller, string $url, string $controllerUrl = '', array $actions = []): string
     {
-        $action = $this->getActionName(false);
-        $action = $this->parseURL($this->getRoute());
+        if ($controllerUrl) {
+            $controllerUrl = str_replace($controllerUrl, '', $url);
+        }
+        $action = $this->getActionName(false, $controllerUrl, $actions);
         if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
             $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
             }
-
             return $result->response;
         }
-
         return $this->errorPage404();
     }
 
@@ -400,49 +418,64 @@ class Router
     }
 
     /**
+     * @param string $controllerUrl
      * @param bool $lowerCase
-     * @return string
+     * @return string[]
      */
-    public function getControllerName(bool $lowerCase): string
+    public function getControllerName(string $controllerUrl, bool $lowerCase = false): array
     {
+        $controllerName = [
+            'controllerName' => '',
+            'data' => []
+        ];
+
         try {
             $urls = $this->parseURLConfig(MVC_PATH);
         } catch (Exception $e) {
-            return '';
+            return $controllerName;
         }
 
-        $url = $this->findMatchesInURL($this->getURL(false), $urls);
-        if (!$url) {
-            return '';
+        $url = $this->findMatchesInURL($controllerUrl, $urls);
+        if ($url) {
+            $controllerName['controllerName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
+            $controllerName['data'] = $url['data'];
         }
 
-        $controllerName = $url['key'];
-        if ($lowerCase) {
-            $controllerName = strtolower($controllerName);
-        }
         return $controllerName;
     }
 
     /**
      * @param bool $lowerCase
-     * @return string
+     * @param string $actionUrl
+     * @param array $actions
+     * @return array
      */
-    public function getActionName(bool $lowerCase): string
+    public function getActionName(bool $lowerCase, string $actionUrl, array $actions): array
     {
+        $actionName = [
+            'actionName' => '',
+            'data' => []
+        ];
         try {
             $urls = $this->parseURLConfig(MVC_PATH . 'controllers'); // todo maybe define another constant?
         } catch (Exception $e) {
-            return '';
+            return $actionName;
         }
 
+        $url = $this->findMatchesInURL($actionUrl, $actions);
+        if ($url) {
+            $actionName['actionName'] = $lowerCase ? strtolower($lowerCase) : $url['key'];
+            $actionName['data'] = $urls['data'];
+        }
 
+        return $actionName;
     }
 
     /**
      * @param string $controllerName
      * @return bool
      */
-    public function setControllerName(string $controllerName): bool
+    public function setControllerName(string $controllerName, bool $loserCase = false): bool
     {
         if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector, true)) {
             return false;
@@ -554,14 +587,11 @@ class Router
         if (!file_exists($fileName)) {
             throw new Exception($this->urlConfigFilename . ' does not exist in ' . $path);
         }
-
         // temporary solution, need better way to do it
         require_once $fileName;
         if (!isset($urls) || !method_exists($urls, 'getUrls')) {
             throw new Exception($this->urlConfigFilename . ' is set incorrectly');
         }
-
-        var_dump($urls->getUrls());
         return $urls->getUrls();
     }
 
@@ -576,7 +606,6 @@ class Router
         if (!$isURLTokenRequired) {
             return true;
         }
-
         $URLTokenURLKey = $controller->getURLTokenURLKey();
         $URlTokenSessionKey = $controller->getURLTokenSessionKey();
         $tokenInURL = PHPJet::$app->system->request->getGET($URLTokenURLKey);
@@ -584,7 +613,6 @@ class Router
         if (!$tokenInURL || !$tokenInURL || $tokenInURL !== $tokenInSession) {
             return false;
         }
-
         return true;
     }
 
@@ -635,11 +663,11 @@ class Router
      */
     private function findMatchesInURL(string $string, array $urls): array
     {
-        foreach ($urls as $key => $url) {
-            if (preg_match("/^$string/", $url)) {
+        foreach ($urls as $key => $data) {
+            if (preg_match("/^$string/", $data['url'])) {
                 return [
                     'key' => $key,
-                    'url' => $url
+                    'data' => $data,
                 ];
             }
         }
