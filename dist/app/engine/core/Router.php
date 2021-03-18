@@ -93,23 +93,17 @@ class Router
     private $urlConfigFilename = 'urls.php';
 
     /**
-     * Router constructor.
+     * 1.
+     * @return string
      */
-    public function __construct()
+    public function start(): string
     {
         $this->subdomain = $this->getSubdomain();
         $this->MVCSector =  Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
         define('MVC_SECTOR', $this->MVCSector);
         define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
-    }
 
-    /**
-     * 1.
-     * @return string
-     */
-    public function start(): string
-    {
         // page builder is disabled at the moment
         if (false && Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
             $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false));
@@ -128,13 +122,13 @@ class Router
      */
     private function proceedRouterScheme(string $scheme): string
     {
-        $url = $this->getURL();
+        $url = $this->getURL(false);
         switch ($scheme) {
             case 'pageBuilder':
                 $this->controllerName = 'page';
                 break;
             case 'default':
-                $controllerData = $this->getControllerName($url, true);
+                $controllerData = $this->getControllerName($url);
                 $this->controllerName = $controllerData['controllerName'];
                 if ($controllerData['data']) {
                     $this->controllerUrl = $controllerData['data']['url'];
@@ -155,6 +149,10 @@ class Router
         ) {
             return $this->errorPage404();
         }
+        var_dump($url);
+        var_dump($this->controllerUrl);
+        var_dump($this->actionList);
+        exit();
         return $this->startAction($this->controller, $url, $this->controllerUrl, $this->actionList);
     }
 
@@ -173,6 +171,8 @@ class Router
         }
         $action = $this->getActionName(false, $controllerUrl, $actions);
         if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
+            // proceed params
+            // ...
             $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
@@ -229,7 +229,6 @@ class Router
         $view = $this->getViewObject(new Controller());
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
-
         header("HTTP/1.1 {$code} {$message}");
         $result = $view->render();
         if ($forceRedirect) {
@@ -651,7 +650,7 @@ class Router
      */
     private function getSubdomain(): string
     {
-        $domain = $this->getHost();
+        $domain = $this->getDomain();
         $domain = explode('.', $domain);
         return $domain[0] ?? '';
     }
@@ -663,6 +662,7 @@ class Router
      */
     private function findMatchesInURL(string $string, array $urls): array
     {
+        $string = str_replace("/", "\/", $string);
         foreach ($urls as $key => $data) {
             if (preg_match("/^$string/", $data['url'])) {
                 return [

@@ -90,8 +90,9 @@ class Controller
         global $app;
         $this->app = $app;
         if ($enableTracker) {
-            PHPJet::$app->system->tracker->manageTable();
-            PHPJet::$app->system->tracker->trackEverythingYouFind();
+            // todo
+//            PHPJet::$app->system->tracker->manageTable();
+//            PHPJet::$app->system->tracker->trackEverythingYouFind();
         }
     }
 
