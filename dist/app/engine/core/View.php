@@ -145,10 +145,8 @@ class View
     public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', MessageBox $messageBox = null): ViewResponse
     {
         if ($this->isSPA()) { // proceed as SPA
-
             return $this->json($status, $data, $action, $messageBox);
         } else { // proceed as MPA
-
             return $this->html($templateName, $data);
         }
     }
