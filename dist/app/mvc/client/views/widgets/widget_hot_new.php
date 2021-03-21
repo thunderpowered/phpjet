@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \Jet\App\Engine\ActiveRecord\Tables\Mods[] $mods
+ * @var \Jet\App\Engine\Core\Tables\Mods[] $mods
  */
 ?>
 <ul class="d-flex flex-column p-0 m-0 pb-3 js-plugin_niceScroll">

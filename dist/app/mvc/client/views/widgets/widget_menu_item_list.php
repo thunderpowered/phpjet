@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \Jet\App\Engine\ActiveRecord\Tables\Items $items
+ * @var \Jet\App\Engine\Core\Tables\Items $items
  */
 ?>
 <div class="p-4 theme__border-color theme__border-bottom theme__background-color3 theme__text-color">

@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
- * Class Items
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * Class Post
+ * @package Jet\App\Database
  */
-class Items extends ActiveRecord
+class Post extends Table
 {
     /**
      * @var int
@@ -23,7 +23,7 @@ class Items extends ActiveRecord
     /**
      * @var int
      */
-    public $users_id;
+    public $user_id;
     /**
      * @var int
      */
@@ -48,8 +48,4 @@ class Items extends ActiveRecord
      * @var string
      */
     public $since;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

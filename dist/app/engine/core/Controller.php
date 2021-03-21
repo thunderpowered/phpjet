@@ -55,6 +55,7 @@ class Controller
     protected $SEO;
     /**
      * @var array
+     * @deprecated
      */
     protected $methods = [
         'POST', 'GET'
@@ -78,28 +79,36 @@ class Controller
 
     /**
      * Controller constructor.
-     * @param string $name
+     * @param string $name deprecated
      * @param bool $enableTracker
      */
     public function __construct(string $name = "", bool $enableTracker = false)
     {
-        $this->name = $name;
+        $this->name = get_class($this);
+//        $this->name = $name;
         $this->title = Config::$page['default_page_title'];
 
         global $app;
         $this->app = $app;
         if ($enableTracker) {
-            PHPJet::$app->system->tracker->manageTable();
-            PHPJet::$app->system->tracker->trackEverythingYouFind();
+            // todo
+//            PHPJet::$app->system->tracker->manageTable();
+//            PHPJet::$app->system->tracker->trackEverythingYouFind();
         }
     }
 
     /**
+     * @param bool $onlyClass
      * @return string
      */
-    public function getName(): string
+    public function getName(bool $onlyClass = true): string
     {
-        return $this->name;
+        if ($onlyClass) {
+            $name = explode("\\", $this->name);
+            return end($name);
+        } else {
+            return $this->name;
+        }
     }
 
     /**
@@ -141,6 +150,7 @@ class Controller
 
     /**
      * @return string
+     * @deprecated
      */
     public function getRobots(): string
     {
@@ -161,6 +171,7 @@ class Controller
 
     /**
      * @return string
+     * @deprecated
      */
     public function getURLCanonical(): string
     {

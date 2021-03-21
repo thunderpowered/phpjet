@@ -1,17 +1,17 @@
-import {fetch2} from "../tools/fetch2";
+import api from "../tools/api";
 import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 
-export const checkAuthorization = callback => (
+export const checkAuthorization = () => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth/check', {}, result => (
+        api.get('auth/check', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         ))
     )
 );
 
-export const logout = callback => (
+export const logout = () => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth/logout', {}, result => (
+        api.post('auth/logout', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, null))
         ))
     )
@@ -19,7 +19,7 @@ export const logout = callback => (
 
 export const authorizationFirstFactor = (values, callback) => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth', {queryParams: values}, result => {
+        api.post('auth', {queryParams: values}, result => {
             callback(result);
             return dispatch(setAuthorizationAction(result.action))
         })
@@ -28,7 +28,7 @@ export const authorizationFirstFactor = (values, callback) => (
 
 export const authorizationSecondFactor = (values, callback) => (
     dispatch => (
-        fetch2(globalSystemRootURL + '/auth/verify', {queryParams: values}, result => {
+        api.post('auth/verify', {queryParams: values}, result => {
             callback(result);
             return dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         })

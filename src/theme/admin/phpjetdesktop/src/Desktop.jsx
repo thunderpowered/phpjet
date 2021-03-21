@@ -17,7 +17,6 @@ class Desktop extends React.Component {
         const {dispatch} = this.props;
         dispatch(checkAuthorization());
         this.interval = setInterval(() => dispatch(checkAuthorization()), 60000);
-        // load all stuff
         dispatch(fetchMisc());
     }
 

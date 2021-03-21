@@ -33,7 +33,7 @@ class ConfigManager
             PHPJet::$app->exit('Website ' . $domain . ' does not exist on the server. Please, contact administrator.');
         }
 
-        // it's very important to load site_id before any other query through Store or ActiveRecord
+        // it's very important to load site_id before any other query through Store or Table
         $config = $config[0];
         Config::$config['site_id'] = $config['id'];
         Config::$config['admin'] = $config['admin'];

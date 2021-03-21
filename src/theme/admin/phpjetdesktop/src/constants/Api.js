@@ -1,0 +1,1 @@
+export const API_BASE_URL = window.__INITIAL_STATE__.__api_base;

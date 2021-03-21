@@ -12,13 +12,13 @@ namespace Jet\App;
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Config\ConfigManager;
 use Jet\App\Engine\Config\Database;
-use Jet\App\Engine\Core\PageBuilder;
 use Jet\App\Engine\Core\Router;
 use Jet\App\Engine\Core\Selector;
 use Jet\App\Engine\Core\Store;
 use Jet\App\Engine\Core\System;
 use Jet\App\Engine\Core\Tool;
 use Jet\App\Engine\System\Error;
+use Jet\App\Engine\System\PageBuilder;
 use Jet\PHPJet;
 
 /**
@@ -81,7 +81,7 @@ class App
     /**
      * @return string
      */
-    public function start()
+    public function start(): string
     {
         // Select the config
         $configSelector = new Selector();
@@ -97,12 +97,13 @@ class App
         $this->configManager->prepareConfig();
 
         // Start the engine
-        return $this->execute($this->router);
+        return $this->router->start();
     }
 
     /**
      * @param Router $router
      * @return string
+     * @deprecated
      */
     public function execute(Router $router): string
     {

@@ -1,13 +1,14 @@
 <?php
 
 
-namespace Jet\App\Engine\Core;
+namespace Jet\App\Engine\System;
 
 use Jet\PHPJet;
 
 /**
  * Class PageBuilder
  * @package Jet\App\Engine\Core
+ * @deprecated since 02.02.2021, will be in use after aligning it with current architecture
  */
 class PageBuilder
 {
@@ -147,14 +148,14 @@ class PageBuilder
 
     /**
      * @param string $url
-     * @return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder|bool
+     * @return \Jet\App\Engine\Core\Tables\PageBuilder|bool
      */
     public function getPageData(string $url)
     {
         return false;
 
         // todo prepare url
-        return \Jet\App\Engine\ActiveRecord\Tables\PageBuilder::getOne(['url' => $url, 'type' => 'page'], [], [], false);
+        return \Jet\App\Engine\Core\Tables\PageBuilder::getOne(['url' => $url, 'type' => 'page'], [], [], false);
     }
 
     /**
@@ -162,7 +163,7 @@ class PageBuilder
      */
     public function getTemplates(): array
     {
-        $templates = \Jet\App\Engine\ActiveRecord\Tables\PageBuilder::get(['type' => 'template'], [], [], false);
+        $templates = \Jet\App\Engine\Core\Tables\PageBuilder::get(['type' => 'template'], [], [], false);
         if (!$templates) {
             return [];
         }
@@ -225,12 +226,12 @@ class PageBuilder
     }
 
     /**
-     * @param \Jet\App\Engine\ActiveRecord\Tables\PageBuilder $pageData
+     * @param \Jet\App\Engine\Core\Tables\PageBuilder $pageData
      * @param View $view
      * @param bool $jsonEncoded
      * @return object
      */
-    public function generatePage(\Jet\App\Engine\ActiveRecord\Tables\PageBuilder $pageData, View $view, bool $jsonEncoded = true): object
+    public function generatePage(\Jet\App\Engine\Core\Tables\PageBuilder $pageData, View $view, bool $jsonEncoded = true): object
     {
         if ($jsonEncoded) {
             $pageData->content = json_decode($pageData->content);

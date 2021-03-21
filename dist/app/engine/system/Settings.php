@@ -3,7 +3,7 @@
 
 namespace Jet\App\Engine\System;
 
-use Jet\App\Engine\ActiveRecord\Tables\Context;
+use Jet\App\Database\Context;
 use Jet\PHPJet;
 
 /**

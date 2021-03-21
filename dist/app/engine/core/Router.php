@@ -2,6 +2,7 @@
 
 namespace Jet\App\Engine\Core;
 
+use Exception;
 use Jet\App\Engine\Config;
 use Jet\PHPJet;
 
@@ -48,9 +49,17 @@ class Router
      */
     private $view;
     /**
-     * @varstring
+     * @var string
      */
     private $controllerName;
+    /**
+     * @var string
+     */
+    private $controllerUrl;
+    /**
+     * @var array
+     */
+    private $actionList;
     /**
      * @var array
      */
@@ -61,7 +70,8 @@ class Router
     /**
      * @var array
      */
-    private $httpErrorCodes = [
+    private $httpCodes = [
+        '200' => 'OK',
         '500' => 'Internal Server Error',
         '404' => 'Not Found'
     ];
@@ -77,84 +87,94 @@ class Router
      * @var string
      */
     private $subdomain;
-
     /**
-     * Router constructor.
+     * @var string
      */
-    public function __construct()
-    {
-        // There is nothing to see here, citizen...
-    }
+    private $urlConfigFilename = 'urls.php';
 
     /**
+     * 1.
      * @return string
      */
     public function start(): string
     {
-        $this->MVCSector = Config\Config::$config['admin'] ? Config\Config::$urlRules['admin'] : Config\Config::$urlRules['']; // mostly temp
+        $this->subdomain = $this->getSubdomain();
+        $this->MVCSector =  Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
         define('MVC_SECTOR', $this->MVCSector);
         define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
 
         // page builder is disabled at the moment
-        if (Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
-            $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false)); // or get exception
+        if (false && Config\Config::$pageBuilder[MVC_SECTOR]['active']) {
+            $page = PHPJet::$app->pageBuilder->getPageData($this->getURL(false));
             if ($page) {
-                return $this->proceedRouterScheme('pageBuilder'); // todo add data
+                return $this->proceedRouterScheme('pageBuilder');
             }
         }
         return $this->proceedRouterScheme('default');
     }
 
     /**
+     * 2.
      * @param string $scheme
      * @return string
+     * @deprecated
      */
-    private function proceedRouterScheme(string $scheme = 'default'): string
+    private function proceedRouterScheme(string $scheme): string
     {
-        if ($scheme === 'pageBuilder') {
-            $this->setControllerName('page');
-        } else {
-            $controllerName = $this->getControllerName(true);
-            // check if this controller in the list of controllers
-            // i personally think it'd be better to check the property of controller, not the list
-            if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector)) {
+        $url = $this->getURL(false);
+        switch ($scheme) {
+            case 'pageBuilder':
+                $this->controllerName = 'page';
+                break;
+            case 'default':
+                $controllerData = $this->getControllerName($url);
+                $this->controllerName = $controllerData['controllerName'];
+                if ($controllerData['data']) {
+                    $this->controllerUrl = $controllerData['data']['url'];
+                }
+                if (!$this->controllerName || !PHPJet::$app->system->isControllerActive($this->controllerName, $this->MVCSector)) {
+                    return $this->errorPage404();
+                }
+                break;
+            default:
                 return $this->errorPage404();
-            }
         }
-
-        $this->controller = $this->getControllerObject();
-
-        // If there is no such controller
-        if (!$this->controller) {
+        $this->controller = $this->getControllerObject($this->controllerName);
+        if (
+            !$this->controller
+            || !$this->doesControllerSupportRequestMethod($this->controller)
+            || !$this->checkURLToken($this->controller)
+        ) {
             return $this->errorPage404();
         }
-
-        // check if this query method supported by controller, and also check csrf-token
-        if (!$this->doesControllerSupportRequestMethod($this->controller)) {
-            return $this->errorPage404();
-        }
-
-        // check special url token
-        // mostly in use to 'hide' particular urls
-        if (!$this->checkURLToken($this->controller)) {
-            return $this->errorPage404();
-        }
-
-        return $this->startAction($this->controller);
+        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
     }
 
     /**
-     * @param $controller
+     * 3.
+     * @param Controller $controller controller object
+     * @param string $url current url
+     * @param string $controllerUrl url from urls.php that matches current url
+     * @param string $controllerName name of controller, btw it could be gotten using getName function, but it is also OK
      * @return string
      */
-    private function startAction(Controller $controller): string
+    private function startAction(Controller $controller, string $url, string $controllerUrl, string $controllerName): string
     {
-        $action = $this->parseURL($this->getRoute());
-        if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
-            return call_user_func_array([$controller, $action['actionName']], $action['parameters']);
+        if ($controllerUrl) {
+            $controllerUrl = str_replace($controllerUrl, '', $url);
         }
-
+        $action = $this->getActionName(false, $controllerUrl, $controllerName);
+        if ($action['actionName'] && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
+            if ($action['params']) {
+                $action['params'] = $this->proceedQueryParams($action['params']);
+            }
+            $result = call_user_func_array([$controller, $action['actionName']], $action['params']);
+            if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
+                $this->refresh();
+            }
+            return $result->response;
+        }
         return $this->errorPage404();
     }
 
@@ -166,18 +186,6 @@ class Router
         PHPJet::$app->system->buffer->destroyBuffer();
         echo $content;
         PHPJet::$app->exit();
-    }
-
-    /**
-     * @return string
-     * @deprecated
-     */
-    public function blocked(): string
-    {
-        $view = $this->getViewObject(new Controller());
-        $view->setLayout("block");
-        $view->buffer->destroyBuffer();
-        return $view->render();
     }
 
     /**
@@ -217,15 +225,15 @@ class Router
         $view = $this->getViewObject(new Controller());
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
-
         header("HTTP/1.1 {$code} {$message}");
         $result = $view->render();
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
-            echo $result;
+            echo $result->response;
             PHPJet::$app->exit();
         }
-        return $result;
+        // todo if SPA return JSON
+        return $result->response;
     }
 
     /**
@@ -373,35 +381,26 @@ class Router
     }
 
     /**
+     * @param string $controllerName
      * @return Controller
-     * @todo use constant instead of explicitly set of namespaces
      */
-    public function getControllerObject(): Controller
+    private function getControllerObject(string $controllerName): Controller
     {
-        if ($this->controller) {
-            return $this->controller;
-        }
         /**
          * @var Controller $controller
          */
         $controller = null;
 
-        // Create controller name
-        $name = '';
-        $partName = $this->getControllerName(false);
-        if ($partName) {
-            $name = 'Controller' . $partName;
+        if ($controllerName) {
+            $controllerName = 'Controller' . $controllerName;
         }
-
         // Namespace sector
         $MVCRoot = $this->MVCSector ? ucfirst($this->MVCSector) : ucfirst(Config\Config::$urlRules['']);
         // Create full controller name with namespace
-        $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $name;
-        // Create object
+        $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $controllerName;
         if (class_exists($Class)) {
-            $controller = new $Class($name, true);
+            $controller = new $Class($controllerName, true);
         } else {
-            // If there is no such class
             PHPJet::$app->exit("Class '{$Class}' Not Found");
         }
 
@@ -410,42 +409,69 @@ class Router
         $view->loadWidgets();
         $controller->setView($view);
 
-        // Create and set model
-        $model = $this->getModelObject();
-        $controller->setModel($model);
-
         return $controller;
     }
 
     /**
+     * @param string $controllerUrl
      * @param bool $lowerCase
-     * @return string
+     * @return string[]
      */
-    public function getControllerName(bool $lowerCase = true): string
+    public function getControllerName(string $controllerUrl, bool $lowerCase = false): array
     {
-        if (!$this->controllerName) {
-            $routePart = $this->getRoutePart($this->defaultControllerRoutePart, true);
+        $controllerName = [
+            'controllerName' => '',
+            'data' => []
+        ];
 
-            $this->controllerName = $this->default['controller'];
-            if ($routePart) {
-                $this->controllerName = $routePart;
-            }
+        try {
+            $urls = $this->parseURLConfig(MVC_PATH);
+        } catch (Exception $e) {
+            return $controllerName;
         }
 
-        if ($lowerCase) {
-            $this->controllerName = strtolower($this->controllerName);
-        } else {
-            $this->controllerName = ucfirst($this->controllerName);
+        $url = $this->findMatchesInURL($controllerUrl, $urls);
+        if ($url) {
+            $controllerName['controllerName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
+            $controllerName['data'] = $url['data'];
         }
 
-        return $this->controllerName;
+        return $controllerName;
+    }
+
+    /**
+     * @param bool $lowerCase
+     * @param string $actionUrl
+     * @param string $controllerName
+     * @return array
+     */
+    public function getActionName(bool $lowerCase, string $actionUrl, string $controllerName): array
+    {
+        $actionName = [
+            'actionName' => '',
+            'data' => []
+        ];
+        try {
+            $urls = $this->parseURLConfig(MVC_PATH . 'controllers/'); // todo maybe define another constant?
+        } catch (Exception $e) {
+            return $actionName;
+        }
+        if (!isset($urls[$controllerName]) || !isset($urls[$controllerName]['actions'])) {
+            return $actionName;
+        }
+        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? []);
+        if ($url) {
+            $actionName['actionName'] = $lowerCase ? strtolower($lowerCase) : $url['key'];
+            $actionName['data'] = $url['data'];
+        }
+        return $actionName;
     }
 
     /**
      * @param string $controllerName
      * @return bool
      */
-    public function setControllerName(string $controllerName): bool
+    public function setControllerName(string $controllerName, bool $loserCase = false): bool
     {
         if (!PHPJet::$app->system->isControllerActive($controllerName, $this->MVCSector, true)) {
             return false;
@@ -453,38 +479,6 @@ class Router
 
         $this->controllerName = $controllerName;
         return true;
-    }
-
-    /**
-     * @return Model
-     * @deprecated
-     * It'd be better to set model explicitly, not like that. Because one controller can use multiple models.
-     */
-    public function getModelObject(): Model
-    {
-        if ($this->model) {
-            return $this->model;
-        }
-
-        $name = $this->getRoutePart(1, true);
-        if (!$name) {
-            $name = $this->default['model'];
-        }
-        $name = ucfirst($name);
-        $name = 'Model' . $name;
-
-        $Class = '\Jet\App\Engine\Models\\' . $name;
-        if (MVC_PATH !== ENGINE) {
-            $Class = '\Site\Content\Models\\' . $name;
-        }
-
-        if (class_exists($Class)) {
-            $this->model = new $Class($name);
-        } else {
-            $this->model = new Model();
-        }
-
-        return $this->model;
     }
 
     /**
@@ -525,6 +519,12 @@ class Router
         return '';
     }
 
+    public function refresh(): void
+    {
+        header("Location: " . $this->getURL(), true, 301);
+        PHPJet::$app->exit();
+    }
+
     /**
      * @param string $url
      * @param int $code
@@ -560,7 +560,7 @@ class Router
         $supportedMethods = $controller->getSupportedQueryMethods();
         $actualMethod = PHPJet::$app->system->request->getRequestMethod();
         if (!in_array($actualMethod, $supportedMethods)) {
-            return false;
+//            return false;
         }
 
         // and also check the special case
@@ -570,6 +570,25 @@ class Router
         }
 
         return true;
+    }
+
+    /**
+     * @param string $path
+     * @return array
+     * @throws Exception
+     */
+    private function parseURLConfig(string $path): array
+    {
+        $fileName = $path . $this->urlConfigFilename;
+        if (!file_exists($fileName)) {
+            throw new Exception($this->urlConfigFilename . ' does not exist in ' . $path);
+        }
+        // temporary solution, need better way to do it
+        require_once $fileName;
+        if (!isset($urls) || !method_exists($urls, 'getUrls')) {
+            throw new Exception($this->urlConfigFilename . ' is set incorrectly');
+        }
+        return $urls->getUrls();
     }
 
     /**
@@ -583,7 +602,6 @@ class Router
         if (!$isURLTokenRequired) {
             return true;
         }
-
         $URLTokenURLKey = $controller->getURLTokenURLKey();
         $URlTokenSessionKey = $controller->getURLTokenSessionKey();
         $tokenInURL = PHPJet::$app->system->request->getGET($URLTokenURLKey);
@@ -591,7 +609,6 @@ class Router
         if (!$tokenInURL || !$tokenInURL || $tokenInURL !== $tokenInSession) {
             return false;
         }
-
         return true;
     }
 
@@ -604,14 +621,14 @@ class Router
     {
         $actionName = $this->actionPrefix;
         $parameters = [];
-        if (!isset($route[$this->defaultActionRoutePart])) {
+        if (empty($route[$this->defaultActionRoutePart + 1])) {
             $actionName .= ucfirst($this->actionBasic);
         }
-        for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l; $i++) {
+        for ($i = $this->defaultActionRoutePart, $l = count($route) + 1; $i < $l && isset($route[$i]); $i++) {
             if ($i % 2 === 0) {
                 // ID
-                $parameterName = $route[$i - 1] ? strtoupper($route[$i - 1]) . '_' : '' . 'ID';
-                $parameters[$parameterName] = $route[$i] ?? null; // the idea is to set parameters even if there is no parameter in the url
+                $parameterName = ($route[$i - 1] ? strtoupper($route[$i - 1]) . '_' : '') . 'ID';
+                $parameters[$parameterName] = $route[$i] ?? null;
             } else {
                 // ACTION
                 $actionName .= ucfirst($route[$i]);
@@ -627,12 +644,42 @@ class Router
 
     /**
      * @return string
-     * @deprecated
      */
     private function getSubdomain(): string
     {
-        $domain = $this->getHost();
+        $domain = $this->getDomain();
         $domain = explode('.', $domain);
-        return isset($domain[0]) ? $domain[0] : '';
+        return $domain[0] ?? '';
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    private function proceedQueryParams(array $params): array
+    {
+
+    }
+
+    /**
+     * @param string $string
+     * @param array $urls
+     * @return array
+     */
+    private function findMatchesInURL(string $string, array $urls): array
+    {
+        if (substr($string, 0, 1) !== "/") {
+            $string  = "/{$string}";
+        }
+        $string = str_replace("/", "\/", $string);
+        foreach ($urls as $key => $data) {
+            if (preg_match("/^$string/", $data['url'])) {
+                return [
+                    'key' => $key,
+                    'data' => $data,
+                ];
+            }
+        }
+        return [];
     }
 }

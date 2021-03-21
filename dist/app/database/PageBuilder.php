@@ -1,16 +1,17 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
- * Class Pages
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * Class PageBuilder
+ * @package Jet\App\Database
+ * @deprecated (more into in main pb class)
  */
-class PageBuilder extends ActiveRecord
+class PageBuilder extends Table
 {
     /**
      * @var int
@@ -44,8 +45,4 @@ class PageBuilder extends ActiveRecord
      * @var bool
      */
     public $cache;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }

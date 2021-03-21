@@ -4,7 +4,7 @@
 namespace Jet\App\MVC\Client\Models;
 
 
-use Jet\App\Engine\ActiveRecord\Tables\Users;
+use Jet\App\Engine\Core\Tables\Users;
 use Jet\App\Engine\Core\Model;
 
 /**

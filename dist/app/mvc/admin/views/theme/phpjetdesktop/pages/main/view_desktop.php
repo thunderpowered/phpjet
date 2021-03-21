@@ -4,7 +4,7 @@
  */
 ?>
 <script>
-    window.__INITIAL_STATE__ = JSON.parse("<?php echo json_encode($__INITIAL_STATE__) ?>");
+    window.__INITIAL_STATE__ = JSON.parse('<?php echo json_encode($__INITIAL_STATE__) ?>');
 </script>
 <!-- MESSAGE FOR NON-JS USERS -->
 <noscript>JavaScript is disabled. You have to enable it to load this app.</noscript>

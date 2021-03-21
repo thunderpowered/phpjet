@@ -2,9 +2,9 @@
 
 namespace Jet\App\MVC\Admin\Models;
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
-use Jet\App\Engine\ActiveRecord\Tables\Authority;
-use Jet\App\Engine\ActiveRecord\Tables\Tracker_Authority;
+use Jet\App\Engine\Core\ActiveRecord;
+use Jet\App\Engine\Core\Tables\Authority;
+use Jet\App\Engine\Core\Tables\Tracker_Authority;
 use Jet\App\Engine\Core\Model;
 use Jet\PHPJet;
 
@@ -400,6 +400,7 @@ class ModelAdmin extends Model
      * @param string $token
      * @param string $tokenURLKey
      * @return array
+     * @deprecated
      */
     public function getAdminAPIUrls(bool $includeToken = true, string $token = '', string $tokenURLKey = 'token'): array
     {

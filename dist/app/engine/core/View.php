@@ -3,6 +3,9 @@
 namespace Jet\App\Engine\Core;
 
 use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Interfaces\JSONOutput;
+use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\Engine\System\Buffer;
 use Jet\PHPJet;
 
@@ -61,6 +64,7 @@ class View
 
     /**
      * @var string
+     * @description string containing generated html
      */
     private $view;
     /**
@@ -83,6 +87,28 @@ class View
      * @var string
      */
     private $forcedTemplateName;
+    /**
+     * @var array
+     */
+    private $messageBoxStyles = [
+        'error',
+        'success',
+        'warning',
+        'danger',
+        'info'
+    ];
+    /**
+     * @var array
+     */
+    private $JSONOutput = [
+        'status' => false,
+        'message_box' => [
+            'style' => 'info',
+            'text' => ''
+        ],
+        'action' => '',
+        'data' => []
+    ];
 
     /**
      * View constructor.
@@ -111,63 +137,65 @@ class View
     /**
      * @param string $templateName
      * @param array $data
-     * @return string
+     * @param bool $status
+     * @param string $action
+     * @param MessageBox|null $messageBox
+     * @return ViewResponse
      */
-    public function render(string $templateName = "default", array $data = array()): string
+    public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', MessageBox $messageBox = null): ViewResponse
     {
-        // sometimes we need ignore controller's template name and force own (i.e. in PageBuilder)
-        // i still think i can find better solution
-        // todo think about it
+        if ($this->isSPA()) { // proceed as SPA
+
+            return $this->json($status, $data, $action, $messageBox);
+        } else { // proceed as MPA
+
+            return $this->html($templateName, $data);
+        }
+    }
+
+    /**
+     * @param string $templateName
+     * @param array $data
+     * @return ViewResponse
+     */
+    public function html(string $templateName = "default", array $data = []): ViewResponse
+    {
+        $response = new ViewResponse($this->isSPA());
         if ($this->forcedTemplateName) {
             $templateName = $this->forcedTemplateName;
         }
 
         // This variable will be echoed in layout
         $this->view = $this->returnHTMLOutput($templateName, $data);
-        if (!$this->includeLayout) {
-            return $this->view;
+        if ($this->includeLayout) {
+            // Create compressed buffer
+            $this->buffer->createBuffer();
+            $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
+            if (file_exists($filePath)) {
+                require_once $filePath;
+            } else {
+                PHPJet::$app->exit('template not found');
+            }
+
+            $this->view = $this->buffer->returnBuffer();
         }
 
-        // Create compressed buffer
-        $this->buffer->createBuffer();
-
-        $filePath = VIEW_PATH . 'layout/' . $this->layout . '.php';
-        if (file_exists($filePath)) {
-            require_once $filePath;
-        } else {
-            PHPJet::$app->exit('template not found');
-        }
-
-        return $this->buffer->returnBuffer();
+        $response->response = $this->view;
+        return $response;
     }
 
     /**
-     * @param string $templateName
      * @param array $data
-     * @return string
+     * @param bool $status
+     * @param string $action
+     * @param MessageBox|null $messageBox
+     * @return ViewResponse
      */
-    public function returnHTMLOutput(string $templateName = "default", array $data = array()): string
+    public function json(bool $status = true, array $data = [], string $action = '', MessageBox $messageBox = null): ViewResponse
     {
-        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
-        if (!file_exists($templatePath)) {
-            return "";
-        }
-
-        // Create buffer
-        $this->buffer->createBuffer();
-
-        // Create variables
-        if ($data) {
-            foreach ($data as $key => $value) {
-                $$key = $value;
-            }
-        }
-
-        // Include view
-        include $templatePath;
-
-        // Return html
-        return $this->buffer->returnBuffer();
+        $response = new ViewResponse($this->isSPA());
+        $response->response = $this->returnJsonOutput($status, $data, $action, $messageBox);
+        return $response;
     }
 
     /**
@@ -310,17 +338,56 @@ class View
     }
 
     /**
-     * @param bool $success
+     * @param string $templateName
      * @param array $data
      * @return string
      */
-    public function returnJsonOutput(bool $success = false, array $data = []): string
+    private function returnHTMLOutput(string $templateName = "default", array $data = array()): string
     {
-        $data['success'] = $success;
-        return json_encode($data);
+        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
+        if (!file_exists($templatePath)) {
+            return "";
+        }
+
+        // Create buffer
+        $this->buffer->createBuffer();
+
+        // Create variables
+        if ($data) {
+            foreach ($data as $key => $value) {
+                $$key = $value;
+            }
+        }
+
+        // Include view
+        include $templatePath;
+
+        // Return html
+        return $this->buffer->returnBuffer();
     }
 
-    private function loadTheme()
+    /**
+     * @param bool $status
+     * @param array $data
+     * @param string $action
+     * @param MessageBox|null $messageBox
+     * @return string
+     */
+    private function returnJsonOutput(bool $status = false, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
+    {
+        // do i really need it? it'd be easier to just return an array
+        // todo think about it
+        $jsonOutput = new JSONOutput();
+        $jsonOutput->status = $status;
+        $jsonOutput->data = $data;
+        $jsonOutput->action = $action;
+        if ($messageBox) {
+            $jsonOutput->messageBox = $messageBox;
+        }
+        return $jsonOutput->returnJsonOutput();
+    }
+
+    private function loadTheme(): void
     {
         $theme = PHPJet::$app->system->settings->getContext('theme');
         if (!$theme) {
@@ -334,17 +401,14 @@ class View
         }
     }
 
-    /**
-     * @return bool
-     */
-    private function createConstants(): bool
+    private function createConstants(): void
     {
         // Create template constants
         // In some cases, for instance when using modules, View can be created several times
         // But we need to define all constants once
         // It's temporary, so now i don't care about better realization
         if (defined("THEME_LAYOUT")) {
-            return false;
+            return;
         }
 
         $host = PHPJet::$app->router->getHost();
@@ -363,8 +427,14 @@ class View
         define("COMMON", WEB . 'common/');
         define("COMMON_URL", $host . '/common/');
         define("VIEW_PATH", MVC_PATH . "views/theme/" . THEME);
+    }
 
-        return true;
+    /**
+     * @return bool
+     */
+    public function isSPA(): bool
+    {
+        return Config::$availableThemes[MVC_SECTOR][$this->theme]['SPA'];
     }
 
     /**

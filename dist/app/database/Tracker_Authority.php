@@ -1,16 +1,17 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\ActiveRecord;
+use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Tracker_Authority
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * @package Jet\App\Database
+ * @deprecated
  */
-class Tracker_Authority extends ActiveRecord
+class Tracker_Authority extends Table
 {
     /**
      * @var int
@@ -52,8 +53,4 @@ class Tracker_Authority extends ActiveRecord
      * @var string
      */
     public $post;
-    /**
-     * @var string
-     */
-    protected $_primaryKey = 'id';
 }
