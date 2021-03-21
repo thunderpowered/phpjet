@@ -132,7 +132,6 @@ class Router
                 $this->controllerName = $controllerData['controllerName'];
                 if ($controllerData['data']) {
                     $this->controllerUrl = $controllerData['data']['url'];
-                    $this->actionList = $controllerData['data']['actions'];
                 }
                 if (!$this->controllerName || !PHPJet::$app->system->isControllerActive($this->controllerName, $this->MVCSector)) {
                     return $this->errorPage404();
@@ -149,31 +148,28 @@ class Router
         ) {
             return $this->errorPage404();
         }
-        var_dump($url);
-        var_dump($this->controllerUrl);
-        var_dump($this->actionList);
-        exit();
-        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->actionList);
+        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
     }
 
     /**
      * 3.
-     * @param Controller $controller
-     * @param string $url
-     * @param string $controllerUrl
-     * @param array $actions
+     * @param Controller $controller controller object
+     * @param string $url current url
+     * @param string $controllerUrl url from urls.php that matches current url
+     * @param string $controllerName name of controller, btw it could be gotten using getName function, but it is also OK
      * @return string
      */
-    private function startAction(Controller $controller, string $url, string $controllerUrl = '', array $actions = []): string
+    private function startAction(Controller $controller, string $url, string $controllerUrl, string $controllerName): string
     {
         if ($controllerUrl) {
             $controllerUrl = str_replace($controllerUrl, '', $url);
         }
-        $action = $this->getActionName(false, $controllerUrl, $actions);
-        if ($action && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
-            // proceed params
-            // ...
-            $result = call_user_func_array([$controller, $action['actionName']], $action['parameters']);
+        $action = $this->getActionName(false, $controllerUrl, $controllerName);
+        if ($action['actionName'] && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
+            if ($action['params']) {
+                $action['params'] = $this->proceedQueryParams($action['params']);
+            }
+            $result = call_user_func_array([$controller, $action['actionName']], $action['params']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
             }
@@ -446,27 +442,28 @@ class Router
     /**
      * @param bool $lowerCase
      * @param string $actionUrl
-     * @param array $actions
+     * @param string $controllerName
      * @return array
      */
-    public function getActionName(bool $lowerCase, string $actionUrl, array $actions): array
+    public function getActionName(bool $lowerCase, string $actionUrl, string $controllerName): array
     {
         $actionName = [
             'actionName' => '',
             'data' => []
         ];
         try {
-            $urls = $this->parseURLConfig(MVC_PATH . 'controllers'); // todo maybe define another constant?
+            $urls = $this->parseURLConfig(MVC_PATH . 'controllers/'); // todo maybe define another constant?
         } catch (Exception $e) {
             return $actionName;
         }
-
-        $url = $this->findMatchesInURL($actionUrl, $actions);
+        if (!isset($urls[$controllerName]) || !isset($urls[$controllerName]['actions'])) {
+            return $actionName;
+        }
+        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? []);
         if ($url) {
             $actionName['actionName'] = $lowerCase ? strtolower($lowerCase) : $url['key'];
-            $actionName['data'] = $urls['data'];
+            $actionName['data'] = $url['data'];
         }
-
         return $actionName;
     }
 
@@ -656,12 +653,24 @@ class Router
     }
 
     /**
+     * @param array $params
+     * @return array
+     */
+    private function proceedQueryParams(array $params): array
+    {
+
+    }
+
+    /**
      * @param string $string
      * @param array $urls
      * @return array
      */
     private function findMatchesInURL(string $string, array $urls): array
     {
+        if (substr($string, 0, 1) !== "/") {
+            $string  = "/{$string}";
+        }
         $string = str_replace("/", "\/", $string);
         foreach ($urls as $key => $data) {
             if (preg_match("/^$string/", $data['url'])) {
