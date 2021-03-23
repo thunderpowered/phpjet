@@ -676,6 +676,7 @@ class Router
     private function proceedQueryParams(array $params, bool $validateData = true): array
     {
         $method = PHPJet::$app->system->request->getRequestMethod();
+        $result = [$method];
         foreach ($params as $paramMethod => &$paramData) {
             foreach ($paramData as $key => $type) {
                 $funcName = "get{$paramMethod}";
@@ -698,10 +699,10 @@ class Router
                 }
                 $paramData[$key] = $value;
             }
+            $result[] = $paramData;
+            unset ($paramData);
         }
-        // todo change order somehow
-        $params['method'] = $method;
-        return $params;
+        return $result;
     }
 
     /**

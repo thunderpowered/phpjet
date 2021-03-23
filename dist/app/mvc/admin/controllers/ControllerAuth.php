@@ -153,16 +153,16 @@ class ControllerAuth extends ControllerAdmin
     }
 
     /**
+     * @param string $method
      * @param array $POST
      * @param array $GET
-     * @param string $method
      * @return ViewResponse
      */
-    public function actionLogin(array $POST, array $GET, string $method): ViewResponse
+    public function actionLogin(string $method, array $POST, array $GET): ViewResponse
     {
+        var_dump($method);
         var_dump($POST);
         var_dump($GET);
-        var_dump($method);
         // todo change order
         exit('actionLogin');
     }
