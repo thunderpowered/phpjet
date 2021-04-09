@@ -1,5 +1,6 @@
 import {API_BASE_URL} from "../constants/Api";
 import {TOKEN} from "../constants/Token";
+import {shoutOut} from "./alert";
 
 class Api {
     constructor(apiBaseUrl, token) {
@@ -60,7 +61,13 @@ class Api {
         options.body = method === 'GET' ? null : json ? JSON.stringify(options.queryParams) : options.queryParams;
         delete options.queryParams;
         return fetch(this.apiBaseUrl + url, options)
-            .then(result => result.json())
+            .then(result => {
+                if (result.ok) {
+                    return result.json();
+                } else {
+                    throw new Error(`${result.status} ${result.statusText} ${result.url}`);
+                }
+            })
             .then(
                 result => {
                     if (typeof callbackOnSuccess !== 'undefined') {
@@ -72,18 +79,13 @@ class Api {
                         if (typeof result.messageBox.style !== 'undefined') {
                             style = result.messageBox.style;
                         }
-
-                        if (typeof Msg === 'function') {
-                            Msg[style](result.messageBox.text, 5000);
-                        }
+                        shoutOut(result.messageBox.text, style);
                     }
-                }, error => {
-                    Msg.danger(error, 5000);
-                    console.error(error);
-                    if (typeof callbackOnError !== 'undefined') {
-                        callbackOnError(error);
-                    }
-                });
+                })
+            .catch(error => {
+                shoutOut(error, 'danger');
+                console.error(error);
+            });
     }
 }
 

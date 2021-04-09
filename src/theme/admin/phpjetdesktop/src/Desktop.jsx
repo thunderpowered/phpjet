@@ -19,8 +19,7 @@ class Desktop extends React.Component {
     }
 
     render() {
-        const {authorized} = this.props;
-        if (typeof authorized === 'undefined') {
+        if (typeof this.props.authorized === 'undefined') {
             return <SimpleLoader/>
         }
         if (this.props.authorized) {
