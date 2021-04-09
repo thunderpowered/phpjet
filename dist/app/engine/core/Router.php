@@ -133,7 +133,7 @@ class Router
                  * @var string $controllerName
                  * @var array $data
                  */
-                extract($this->getControllerName($url));
+                extract($this->compileControllerName($url));
                 $this->controllerName = $controllerName;
                 if ($data) {
                     $this->controllerUrl = $data['url'];
@@ -428,11 +428,20 @@ class Router
     }
 
     /**
+     * @param bool $lowerCase
+     * @return string
+     */
+    public function getControllerName(bool $lowerCase = false): string
+    {
+        return $lowerCase ? strtolower($this->controllerName) : $this->controllerName;
+    }
+
+    /**
      * @param string $controllerUrl
      * @param bool $lowerCase
      * @return array
      */
-    public function getControllerName(string $controllerUrl, bool $lowerCase = false): array
+    public function compileControllerName(string $controllerUrl, bool $lowerCase = false): array
     {
         $controllerName = [
             'controllerName' => '',

@@ -73,7 +73,9 @@ class Api {
                             style = result.messageBox.style;
                         }
 
-                        Msg[style](result.messageBox.text, 5000);
+                        if (typeof Msg === 'function') {
+                            Msg[style](result.messageBox.text, 5000);
+                        }
                     }
                 }, error => {
                     Msg.danger(error, 5000);

@@ -342,7 +342,8 @@ class View
      */
     private function returnHTMLOutput(string $templateName = "default", array $data = array()): string
     {
-        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
+        $controllerName = PHPJet::$app->router->getControllerName(true);
+        $templatePath = VIEW_PATH . "pages/{$controllerName}/{$templateName}.php";
         if (!file_exists($templatePath)) {
             return "";
         }
