@@ -24,14 +24,14 @@ class JSONOutput
     /**
      * @var MessageBox
      */
-    public $messageBox;
+    public $message;
 
     /**
      * JSONOutput constructor.
      */
     public function __construct()
     {
-        $this->messageBox = new MessageBox();
+        $this->message = new MessageBox();
     }
 
     /**
@@ -43,7 +43,7 @@ class JSONOutput
             'status' => $this->status,
             'action' => $this->action,
             'data' => $this->data,
-            'message_box' => $this->messageBox
+            'message' => $this->message
         ]);
     }
 }

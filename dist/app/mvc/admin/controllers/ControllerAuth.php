@@ -3,6 +3,7 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
+use Jet\App\Engine\Interfaces\MessageBox;
 use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
@@ -165,7 +166,7 @@ class ControllerAuth extends ControllerAdmin
             ]);
         } else {
             return $this->view->json(true, [
-                'auth' => false
+                'auth' => false,
             ]);
         }
     }

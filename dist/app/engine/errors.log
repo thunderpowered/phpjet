@@ -96,3 +96,11 @@ Stack trace:
 #2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(187): call_user_func_array(Array, Array)
 #3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(156): Jet\App\Engine\Core\Router->startAction(Object(Jet\App\MVC\Admin\Controllers\ControllerAuth), '/auth/login', '/login', 'Auth')
 #4 D:\Go; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\mvc\admin\models\ModelAdmin.php; Строка: 124Доп.сведения: [todo]
+( 2021-04-11 09:19:18 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 2; Информация об ошибке: Invalid callback Jet\App\Database\Context::exceptionHandler, cannot access protected method Jet\App\Database\Context::exceptionHandler(); Файл: Unknown; Строка: 0Доп.сведения: [todo]
+( 2021-04-11 09:19:18 (UTC) ) Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 3 passed to Jet\App\Engine\Core\View::json() must be of the type string, null given, called in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\mvc\admin\controllers\ControllerAuth.php on line 170 and defined in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\View.php:192
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\mvc\admin\controllers\ControllerAuth.php(170): Jet\App\Engine\Core\View->json(true, Array, NULL, Object(Jet\App\Engine\Interfaces\MessageBox))
+#1 [internal function]: Jet\App\MVC\Admin\Controllers\ControllerAuth->actionCheck('GET', Array)
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(190): call_user_func_array(Array, Array)
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(159): Jet\App\Engine\Core\Router->startAction(Object(Jet\App\MVC\Admin\Controllers\ControllerAuth), '/auth', '', 'Auth')
+#4 D:\Google Drive\Prog; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\View.php; Строка: 192Доп.сведения: [todo]

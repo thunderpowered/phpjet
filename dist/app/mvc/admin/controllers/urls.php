@@ -5,7 +5,9 @@ use Jet\App\Engine\Core\Urls;
 $urls = new Urls();
 
 /* <==== MAIN CONTROLLER ====> */
-$urls->setAction('Main', '/', 'Home');
+$urls->setAction('Main', '/', 'Home', [
+    'GET' => []
+]);
 
 /* <==== AUTH CONTROLLER ==== > */
 $urls->setAction('Auth', '/', 'Check', [

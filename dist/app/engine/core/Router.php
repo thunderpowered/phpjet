@@ -4,6 +4,8 @@ namespace Jet\App\Engine\Core;
 
 use Exception;
 use Jet\App\Engine\Config;
+use Jet\App\Engine\Exceptions\CoreException;
+use Jet\App\Engine\Exceptions\WrongDataException;
 use Jet\App\Engine\Interfaces\MessageBox;
 use Jet\PHPJet;
 
@@ -70,6 +72,7 @@ class Router
     ];
     /**
      * @var array
+     * @deprecated
      */
     private $httpCodes = [
         '200' => 'OK',
@@ -181,8 +184,8 @@ class Router
         if (method_exists($controller, $actionName) && is_callable([$controller, $actionName])) {
             try {
                 $data['params'] = $this->proceedQueryParams($data['params']);
-            } catch (Exception $e) {
-                return $this->errorPage500(false, $e->getMessage());
+            } catch (Exception $exception) {
+                return $this->serverErrorPage($exception);
             }
             $result = call_user_func_array([$controller, $actionName], $data['params']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
@@ -207,6 +210,7 @@ class Router
      * @param bool $forceRedirect
      * @param string $information
      * @return string
+     * @deprecated
      */
     public function errorPage404(bool $forceRedirect = false, string $information = 'Not Found'): string
     {
@@ -216,6 +220,7 @@ class Router
     /**
      * @param bool $forceRedirect
      * @param string $information
+     * @deprecated
      * @return string
      */
     public function errorPage500(bool $forceRedirect = false, string $information = 'Internal Server Error'): string
@@ -223,6 +228,15 @@ class Router
         return $this->errorPage('500', 'Internal Server Error', 'error', $forceRedirect, $information);
     }
 
+    /**
+     * @param Exception $exception
+     * @param bool $forceRedirect
+     * @return string
+     */
+    public function serverErrorPage(CoreException $exception, bool $forceRedirect = false): string
+    {
+        return $this->errorPage($exception->getCode(), $exception->getMessage(), 'error', $forceRedirect, $exception->getNotes());
+    }
 
     /**
      * @param string $code
@@ -685,18 +699,22 @@ class Router
     private function proceedQueryParams(array $params, bool $validateData = true): array
     {
         $method = PHPJet::$app->system->request->getRequestMethod();
+        // quick check if method exists in config
+        if (!isset($params[$method])) {
+            throw new WrongDataException("method '{$method}' is not supported by this action");
+        }
         $result = [$method];
         foreach ($params as $paramMethod => &$paramData) {
             foreach ($paramData as $key => $type) {
                 $funcName = "get{$paramMethod}";
                 if (!method_exists(PHPJet::$app->system->request, $funcName)) {
-                    throw new Exception("unexpected method");
+                    throw new WrongDataException("unexpected method");
                 }
                 $value = PHPJet::$app->system->request->{$funcName}($key);
                 if ($validateData && $method === $paramMethod) {
                     // 1. check if no data at all
                     if (!$value) {
-                        throw new Exception("parameter '{$key}' cannot be empty");
+                        throw new WrongDataException("parameter '{$key}' cannot be empty");
                     }
                     // 2. todo validate data
                     /*
@@ -708,7 +726,7 @@ class Router
                 }
                 $paramData[$key] = $value;
             }
-            $result[] = $paramData;
+            $result[$paramMethod] = $paramData;
             unset ($paramData);
         }
         return $result;

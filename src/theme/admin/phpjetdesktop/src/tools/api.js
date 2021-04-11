@@ -74,12 +74,12 @@ class Api {
                     if (typeof callbackOnSuccess !== 'undefined') {
                         callbackOnSuccess(result);
                     }
-                    if (typeof result.messageBox !== 'undefined' && typeof result.messageBox.text !== 'undefined' && result.messageBox.text) {
+                    if (typeof result.message !== 'undefined' && typeof result.message.text !== 'undefined' && result.message.text) {
                         let style = 'info';
-                        if (typeof result.messageBox.style !== 'undefined') {
-                            style = result.messageBox.style;
+                        if (typeof result.message.style !== 'undefined') {
+                            style = result.message.style;
                         }
-                        shoutOut(result.messageBox.text, style);
+                        shoutOut(result.message.text, style);
                     }
                 },
                 error => {

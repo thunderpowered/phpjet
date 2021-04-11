@@ -102,7 +102,7 @@ class View
      */
     private $JSONOutput = [
         'status' => false,
-        'message_box' => [
+        'message' => [
             'style' => 'info',
             'text' => ''
         ],
@@ -381,7 +381,7 @@ class View
         $jsonOutput->data = $data;
         $jsonOutput->action = $action;
         if ($messageBox) {
-            $jsonOutput->messageBox = $messageBox;
+            $jsonOutput->message = $messageBox;
         }
         return $jsonOutput->returnJsonOutput();
     }
