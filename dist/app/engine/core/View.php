@@ -145,10 +145,8 @@ class View
     public function render(string $templateName = "default", array $data = [], bool $status = true, string $action = '', MessageBox $messageBox = null): ViewResponse
     {
         if ($this->isSPA()) { // proceed as SPA
-
             return $this->json($status, $data, $action, $messageBox);
         } else { // proceed as MPA
-
             return $this->html($templateName, $data);
         }
     }
@@ -344,7 +342,8 @@ class View
      */
     private function returnHTMLOutput(string $templateName = "default", array $data = array()): string
     {
-        $templatePath = VIEW_PATH . 'pages/' . PHPJet::$app->router->getControllerName(true) . '/' . $templateName . '.php';
+        $controllerName = PHPJet::$app->router->getControllerName(true);
+        $templatePath = VIEW_PATH . "pages/{$controllerName}/{$templateName}.php";
         if (!file_exists($templatePath)) {
             return "";
         }

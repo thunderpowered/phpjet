@@ -3,6 +3,7 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
 
@@ -149,5 +150,20 @@ class ControllerAuth extends ControllerAdmin
         }
 
         return $this->returnSuccessfulAuthorizationMessage($result);
+    }
+
+    /**
+     * @param string $method
+     * @param array $POST
+     * @param array $GET
+     * @return ViewResponse
+     */
+    public function actionLogin(string $method, array $POST, array $GET): ViewResponse
+    {
+        var_dump($method);
+        var_dump($POST);
+        var_dump($GET);
+        // todo change order
+        exit('actionLogin');
     }
 }

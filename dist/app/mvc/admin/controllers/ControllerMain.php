@@ -36,14 +36,14 @@ class ControllerMain extends Controller
     /**
      * @return ViewResponse
      */
-    public function actionBasicGET(): ViewResponse
+    public function actionHome(): ViewResponse
     {
         $this->title = 'PHPJet Admin Desktop'; // todo include site name
         $initState = [
             '__api_base' => PHPJet::$app->router->getHost() . '/'
         ];
-        return $this->view->html('view_desktop', [
-            '__INITIAL_STATE__' => $initState
+        return $this->view->html('desktop', [
+            '__INIT_STATE__' => $initState
         ]);
     }
 }

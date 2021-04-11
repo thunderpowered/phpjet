@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import Workspace from './layouts/Workspace';
 import Auth from './layouts/Auth';
 import {checkAuthorization} from "./api/auth";
-import {fetchMisc} from "./api/misc";
 import SimpleLoader from "./components/Loaders/SimpleLoader";
 
 class Desktop extends React.Component {
@@ -17,7 +16,6 @@ class Desktop extends React.Component {
         const {dispatch} = this.props;
         dispatch(checkAuthorization());
         this.interval = setInterval(() => dispatch(checkAuthorization()), 60000);
-        dispatch(fetchMisc());
     }
 
     render() {

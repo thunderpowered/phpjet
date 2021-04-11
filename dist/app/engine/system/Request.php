@@ -157,10 +157,13 @@ class Request
     /**
      * @param string $name
      * @param bool $removeSpecialChars
-     * @return string|array
+     * @return array|string|null
      */
     public function getPOST(string $name = '', bool $removeSpecialChars = false)
     {
+        /**
+         * todo if the name exists return null|string, if not - array
+         */
         if (!$this->post) {
             return [];
         }
@@ -173,17 +176,17 @@ class Request
             }
         }
 
-        $result = [];
         if (!$name) {
-            // return entire POST array
             $result = $this->post;
         } else {
             if (array_key_exists($name, $this->post)) {
                 $result = $this->post[$name];
+            } else {
+                $result = NULL;
             }
         }
 
-        if ($removeSpecialChars) {
+        if ($result && $removeSpecialChars) {
             $result = PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
 
@@ -211,7 +214,6 @@ class Request
         if (!$this->json) {
             return [];
         }
-
         return $this->getPOST($name, $removeSpecialChars);
     }
 

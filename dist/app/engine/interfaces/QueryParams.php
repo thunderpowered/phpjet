@@ -10,7 +10,7 @@ namespace Jet\App\Engine\Interfaces;
 class QueryParams
 {
     /**
-     * @var
+     * @var object
      */
     public $get;
 }

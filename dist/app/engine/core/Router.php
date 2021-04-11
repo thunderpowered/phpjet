@@ -4,6 +4,7 @@ namespace Jet\App\Engine\Core;
 
 use Exception;
 use Jet\App\Engine\Config;
+use Jet\App\Engine\Interfaces\MessageBox;
 use Jet\PHPJet;
 
 /**
@@ -128,10 +129,14 @@ class Router
                 $this->controllerName = 'page';
                 break;
             case 'default':
-                $controllerData = $this->getControllerName($url);
-                $this->controllerName = $controllerData['controllerName'];
-                if ($controllerData['data']) {
-                    $this->controllerUrl = $controllerData['data']['url'];
+                /**
+                 * @var string $controllerName
+                 * @var array $data
+                 */
+                extract($this->compileControllerName($url));
+                $this->controllerName = $controllerName;
+                if ($data) {
+                    $this->controllerUrl = $data['url'];
                 }
                 if (!$this->controllerName || !PHPJet::$app->system->isControllerActive($this->controllerName, $this->MVCSector)) {
                     return $this->errorPage404();
@@ -164,12 +169,22 @@ class Router
         if ($controllerUrl) {
             $controllerUrl = str_replace($controllerUrl, '', $url);
         }
-        $action = $this->getActionName(false, $controllerUrl, $controllerName);
-        if ($action['actionName'] && method_exists($controller, $action['actionName']) && is_callable([$controller, $action['actionName']])) {
-            if ($action['params']) {
-                $action['params'] = $this->proceedQueryParams($action['params']);
+        /**
+         * @var string $actionName
+         * @var array $data
+         */
+        extract($this->getActionName(false, $controllerUrl, $controllerName));
+        if (!$actionName) {
+            return $this->errorPage404();
+        }
+        $actionName = $this->actionPrefix . $actionName;
+        if (method_exists($controller, $actionName) && is_callable([$controller, $actionName])) {
+            try {
+                $data['params'] = $this->proceedQueryParams($data['params']);
+            } catch (Exception $e) {
+                return $this->errorPage500(false, $e->getMessage());
             }
-            $result = call_user_func_array([$controller, $action['actionName']], $action['params']);
+            $result = call_user_func_array([$controller, $actionName], $data['params']);
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
             }
@@ -189,23 +204,23 @@ class Router
     }
 
     /**
-     * @param bool $forceRedirect and forget about anything else
+     * @param bool $forceRedirect
+     * @param string $information
      * @return string
-     * Just a shortcut for errorPage()
      */
-    public function errorPage404(bool $forceRedirect = false): string
+    public function errorPage404(bool $forceRedirect = false, string $information = 'Not Found'): string
     {
-        return $this->errorPage('404', 'Not Found', '404', $forceRedirect);
+        return $this->errorPage('404', 'Not Found', '404', $forceRedirect, $information);
     }
 
     /**
      * @param bool $forceRedirect
+     * @param string $information
      * @return string
-     * Just a shortcut for errorPage()
      */
-    public function errorPage500(bool $forceRedirect = false): string
+    public function errorPage500(bool $forceRedirect = false, string $information = 'Internal Server Error'): string
     {
-        return $this->errorPage('500', 'Internal Server Error', 'error', $forceRedirect);
+        return $this->errorPage('500', 'Internal Server Error', 'error', $forceRedirect, $information);
     }
 
 
@@ -214,9 +229,10 @@ class Router
      * @param string $message
      * @param string $layout
      * @param bool $forceRedirect
+     * @param string $information
      * @return string
      */
-    public function errorPage(string $code = '500', string $message = 'Internal Server Error', string $layout = 'error', bool $forceRedirect = false): string
+    public function errorPage(string $code = '500', string $message = 'Internal Server Error', string $layout = 'error', bool $forceRedirect = false, string $information = ''): string
     {
         if (!$message) {
             $message = $this->httpErrorCodes[$code] ?? null;
@@ -226,13 +242,12 @@ class Router
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
         header("HTTP/1.1 {$code} {$message}");
-        $result = $view->render();
+        $result = $view->render("default", [], false, '', new MessageBox(0, $information));
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
             echo $result->response;
             PHPJet::$app->exit();
         }
-        // todo if SPA return JSON
         return $result->response;
     }
 
@@ -413,11 +428,20 @@ class Router
     }
 
     /**
+     * @param bool $lowerCase
+     * @return string
+     */
+    public function getControllerName(bool $lowerCase = false): string
+    {
+        return $lowerCase ? strtolower($this->controllerName) : $this->controllerName;
+    }
+
+    /**
      * @param string $controllerUrl
      * @param bool $lowerCase
-     * @return string[]
+     * @return array
      */
-    public function getControllerName(string $controllerUrl, bool $lowerCase = false): array
+    public function compileControllerName(string $controllerUrl, bool $lowerCase = false): array
     {
         $controllerName = [
             'controllerName' => '',
@@ -461,7 +485,7 @@ class Router
         }
         $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? []);
         if ($url) {
-            $actionName['actionName'] = $lowerCase ? strtolower($lowerCase) : $url['key'];
+            $actionName['actionName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
             $actionName['data'] = $url['data'];
         }
         return $actionName;
@@ -654,11 +678,40 @@ class Router
 
     /**
      * @param array $params
+     * @param bool $validateData
      * @return array
+     * @throws Exception
      */
-    private function proceedQueryParams(array $params): array
+    private function proceedQueryParams(array $params, bool $validateData = true): array
     {
-
+        $method = PHPJet::$app->system->request->getRequestMethod();
+        $result = [$method];
+        foreach ($params as $paramMethod => &$paramData) {
+            foreach ($paramData as $key => $type) {
+                $funcName = "get{$paramMethod}";
+                if (!method_exists(PHPJet::$app->system->request, $funcName)) {
+                    throw new Exception("unexpected method");
+                }
+                $value = PHPJet::$app->system->request->{$funcName}($key);
+                if ($validateData && $method === $paramMethod) {
+                    // 1. check if no data at all
+                    if (!$value) {
+                        throw new Exception("parameter '{$key}' cannot be empty");
+                    }
+                    // 2. todo validate data
+                    /*
+                    $validated = some_magic_function($type, $value);
+                    if (!$validated) {
+                        throw new Exception("value of parameter '{$key}' does not match the requirements");
+                    }
+                    */
+                }
+                $paramData[$key] = $value;
+            }
+            $result[] = $paramData;
+            unset ($paramData);
+        }
+        return $result;
     }
 
     /**
@@ -668,12 +721,14 @@ class Router
      */
     private function findMatchesInURL(string $string, array $urls): array
     {
+        $string = explode('?', $string);
+        $string = (string)reset($string);
         if (substr($string, 0, 1) !== "/") {
             $string  = "/{$string}";
         }
         $string = str_replace("/", "\/", $string);
         foreach ($urls as $key => $data) {
-            if (preg_match("/^$string/", $data['url'])) {
+            if (preg_match("/^{$string}/", $data['url'])) {
                 return [
                     'key' => $key,
                     'data' => $data,
