@@ -3,7 +3,7 @@ import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 
 export const checkAuthorization = () => (
     dispatch => (
-        api.get('auth/check', {}, result => (
+        api.get('auth', {}, result => (
             dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
         ))
     )

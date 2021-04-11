@@ -33,7 +33,7 @@ $result = \Jet\PHPJet::$app->start();
 echo $result;
 
 // Some debug info (temporary)
-if (!\Jet\PHPJet::$app->system->request->getPOST()) {
+if (!\Jet\PHPJet::$app->system->request->getPOST() && false) {
     if (\Jet\App\Engine\Config\Config::$dev['debug']) {
         echo '<!-- Generation time: ' . (microtime(true) - $start) . ' s. -->';
         echo '<!-- SQL-queries: ' . \Jet\PHPJet::$app->store->getNumberOfQueries() . ' -->';

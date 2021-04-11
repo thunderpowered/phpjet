@@ -160,10 +160,26 @@ class ControllerAuth extends ControllerAdmin
      */
     public function actionLogin(string $method, array $POST, array $GET): ViewResponse
     {
-        var_dump($method);
-        var_dump($POST);
-        var_dump($GET);
-        // todo change order
-        exit('actionLogin');
+        if ($method === 'GET') {
+            // Check whether or not admin authorized
+            $isAdminAuthorized = $this->modelAdmin->isAdminAuthorized();
+            if ($isAdminAuthorized) {
+                return $this->view->json(true, [
+                    'auth' => true
+                ]);
+            } else {
+                return $this->view->json(true, [
+                    'auth' => false
+                ]);
+            }
+        } else if ($method === 'POST') {
+            // proceed authorization
+            $email = $POST['email'];
+            $password = $POST['password'];
+
+            $result = $this->modelAdmin->authorizeAdmin($email, $password);
+            // todo ...
+            return $this->view->json(false, ['auth' => false]);
+        }
     }
 }

@@ -9,10 +9,8 @@ $urls->setAction('Main', '/', 'Home');
 /* <==== AUTH CONTROLLER ==== > */
 $urls->setAction('Auth', '/', 'Login', [
     'POST' => [
-        'email' => ['email', false],
+        'email' => ['email', true],
         'password' => ['password', true]
     ],
-    'GET' => [
-        'cho' => ['not_empty', false]
-    ]
+    'GET' => []
 ]);

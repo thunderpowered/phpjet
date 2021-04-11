@@ -1,14 +1,16 @@
-import {getCookie} from "./tools/cookie";
+import {getCookie, setCookie} from "./tools/cookie";
 import {IS_BROWSER} from "./constants/Misc";
-import i18next from "i18next";
 import common_en from "./translations/en/common.json";
+import common_ru from "./translations/ru/common.json";
 import i18n from "i18next";
 import {initReactI18next} from "react-i18next";
 
-export const LANGUAGES = ['en']; // add more if needed
+const cookieName = 'language';
+
+export const LANGUAGES = ['en', 'ru']; // add more if needed
 
 export const getSavedLanguage = () => {
-    return getCookie('language');
+    return getCookie(cookieName);
 };
 
 export const getClientLanguage = (checkIfSupported = true) => {
@@ -18,7 +20,6 @@ export const getClientLanguage = (checkIfSupported = true) => {
             lang = lang.match(/[a-z]{2,3}/g) || []
             lang = lang[0];
         }
-
         if (checkIfSupported) {
             return LANGUAGES.includes(lang) ? lang : null;
         } else {
@@ -26,6 +27,18 @@ export const getClientLanguage = (checkIfSupported = true) => {
         }
     }
 };
+
+export const changeLanguage = (lang, saveLang = true) => {
+    console.log(lang, `save: ${saveLang}`);
+    if (LANGUAGES.includes(lang)) {
+        i18n.changeLanguage(lang);
+        if (saveLang) {
+            setCookie(cookieName, lang, 365);
+        }
+    } else {
+        console.error(`${lang} is not a supported language`);
+    }
+}
 
 export const DEFAULT_LANGUAGE = LANGUAGES[0];
 export const LANGUAGE = getSavedLanguage() ?? getClientLanguage() ?? DEFAULT_LANGUAGE;
@@ -38,9 +51,15 @@ i18n
         fallbackLng: DEFAULT_LANGUAGE,
         resources: {
             en: {
-                common: common_en // todo add other languages
+                common: common_en
+            },
+            ru: {
+                common: common_ru
             }
-        }
+        },
+
+        ns: ["common"],
+        defaultNS: "common"
     });
 
 export default i18n;

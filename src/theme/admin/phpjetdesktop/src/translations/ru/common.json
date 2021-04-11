@@ -1,0 +1,12 @@
+{
+  "Auth": {
+    "EnterYourEmail": "Ваш Email",
+    "EnterYourPassword": "Ваш пароль",
+    "EnterVerificationCode": "Введите код верификации",
+    "Login": "Войти",
+    "Verify": "Проверить"
+  },
+  "Theme": {
+    "ChangeWallpaper": "Сменить обои"
+  }
+}

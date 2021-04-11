@@ -61,19 +61,19 @@ class Api {
         options.body = method === 'GET' ? null : json ? JSON.stringify(options.queryParams) : options.queryParams;
         delete options.queryParams;
         return fetch(this.apiBaseUrl + url, options)
-            .then(result => {
-                if (result.ok) {
-                    return result.json();
-                } else {
-                    throw new Error(`${result.status} ${result.statusText} ${result.url}`);
-                }
+            .then(
+                result => {
+                    if (result.ok) {
+                        return result.json();
+                    } else {
+                        throw new Error(`${result.status} ${result.statusText} ${result.url}`);
+                    }
             })
             .then(
                 result => {
                     if (typeof callbackOnSuccess !== 'undefined') {
                         callbackOnSuccess(result);
                     }
-
                     if (typeof result.messageBox !== 'undefined' && typeof result.messageBox.text !== 'undefined' && result.messageBox.text) {
                         let style = 'info';
                         if (typeof result.messageBox.style !== 'undefined') {
@@ -81,8 +81,14 @@ class Api {
                         }
                         shoutOut(result.messageBox.text, style);
                     }
+                },
+                error => {
+                    // data errors caught here
+                    shoutOut(error, 'danger');
+                    console.error(error);
                 })
             .catch(error => {
+                // other errors caught here
                 shoutOut(error, 'danger');
                 console.error(error);
             });
