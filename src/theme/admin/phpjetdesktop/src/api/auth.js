@@ -19,7 +19,7 @@ export const logout = () => (
 
 export const authorizationFirstFactor = (values, callback) => (
     dispatch => (
-        api.post('auth', {queryParams: values}, result => {
+        api.post('auth/login', {queryParams: values}, result => {
             callback(result);
             return dispatch(setAuthorizationAction(result.action))
         })

@@ -1,16 +1,19 @@
 <?php
 
-// todo maybe create separate files for each controller
-$urls = new \Jet\App\Engine\Core\Urls();
+use Jet\App\Engine\Core\Urls;
+
+$urls = new Urls();
 
 /* <==== MAIN CONTROLLER ====> */
 $urls->setAction('Main', '/', 'Home');
 
 /* <==== AUTH CONTROLLER ==== > */
-$urls->setAction('Auth', '/', 'Login', [
+$urls->setAction('Auth', '/', 'Check', [
+    'GET' => []
+]);
+$urls->setAction('Auth', '/login', 'Login', [
     'POST' => [
         'email' => ['email', true],
-        'password' => ['password', true]
-    ],
-    'GET' => []
+        'password' => ['password__admin', true]
+    ]
 ]);

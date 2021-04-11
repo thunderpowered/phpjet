@@ -8,8 +8,7 @@
   }
 
   &__input {
-    border: $border-default;
-    border-color: $border-color-default;
+    border: $border-default $border-color-default;
     background-color: $background-color-darker;
     opacity:0.8;
     transition: border-color .1s;

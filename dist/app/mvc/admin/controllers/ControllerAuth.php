@@ -153,33 +153,36 @@ class ControllerAuth extends ControllerAdmin
     }
 
     /**
-     * @param string $method
-     * @param array $POST
-     * @param array $GET
      * @return ViewResponse
      */
-    public function actionLogin(string $method, array $POST, array $GET): ViewResponse
+    public function actionCheck(): ViewResponse
     {
-        if ($method === 'GET') {
-            // Check whether or not admin authorized
-            $isAdminAuthorized = $this->modelAdmin->isAdminAuthorized();
-            if ($isAdminAuthorized) {
-                return $this->view->json(true, [
-                    'auth' => true
-                ]);
-            } else {
-                return $this->view->json(true, [
-                    'auth' => false
-                ]);
-            }
-        } else if ($method === 'POST') {
-            // proceed authorization
-            $email = $POST['email'];
-            $password = $POST['password'];
-
-            $result = $this->modelAdmin->authorizeAdmin($email, $password);
-            // todo ...
-            return $this->view->json(false, ['auth' => false]);
+        // Check whether or not admin authorized
+        $isAdminAuthorized = $this->modelAdmin->isAdminAuthorized();
+        if ($isAdminAuthorized) {
+            return $this->view->json(true, [
+                'auth' => true
+            ]);
+        } else {
+            return $this->view->json(true, [
+                'auth' => false
+            ]);
         }
+    }
+
+    /**
+     * @param string $method
+     * @param array $POST
+     * @return ViewResponse
+     */
+    public function actionLogin(string $method, array $POST): ViewResponse
+    {
+        // proceed authorization
+        $email = $POST['email'];
+        $password = $POST['password'];
+
+        $result = $this->modelAdmin->authorizeAdmin($email, $password);
+        // todo ...
+        return $this->view->json(false, ['auth' => false, 'somedata' => 'hehe boi']);
     }
 }

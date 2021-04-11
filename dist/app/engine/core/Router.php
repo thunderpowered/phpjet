@@ -721,20 +721,34 @@ class Router
      */
     private function findMatchesInURL(string $string, array $urls): array
     {
+        // todo this algo is not the best possible (obviously), redo it someday
+        // 0. prepare the string (remove get-params and add first slash
         $string = explode('?', $string);
         $string = (string)reset($string);
         if (substr($string, 0, 1) !== "/") {
             $string  = "/{$string}";
         }
-        $string = str_replace("/", "\/", $string);
+
+        // 1. match multiple patterns against one string
+        $matches = [];
         foreach ($urls as $key => $data) {
-            if (preg_match("/^{$string}/", $data['url'])) {
-                return [
+            $pattern = str_replace("/", "\/", $data['url']);
+            $current = [];
+            if (preg_match("/^{$pattern}/", $string, $current)) {
+                $matches[ strlen($current[0]) ] = [
                     'key' => $key,
                     'data' => $data,
                 ];
             }
         }
-        return [];
+
+        // 2. return empty array if nothing found
+        if (!count($matches)) {
+            return [];
+        }
+
+        // 3. sort it and return the longest string that match the pattern
+        ksort($matches);
+        return end($matches);
     }
 }
