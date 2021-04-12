@@ -256,7 +256,7 @@ class Router
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
         header("HTTP/1.1 {$code} {$message}");
-        $result = $view->render("default", [], false, '', new MessageBox(0, $information));
+        $result = $view->render("default", [], false, '', new MessageBox(1, $information));
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
             echo $result->response;
@@ -497,7 +497,7 @@ class Router
         if (!isset($urls[$controllerName]) || !isset($urls[$controllerName]['actions'])) {
             return $actionName;
         }
-        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? []);
+        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? [], true);
         if ($url) {
             $actionName['actionName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
             $actionName['data'] = $url['data'];
@@ -735,9 +735,10 @@ class Router
     /**
      * @param string $string
      * @param array $urls
+     * @param bool $exact
      * @return array
      */
-    private function findMatchesInURL(string $string, array $urls): array
+    private function findMatchesInURL(string $string, array $urls, bool $exact = false): array
     {
         // todo this algo is not the best possible (obviously), redo it someday
         // 0. prepare the string (remove get-params and add first slash
@@ -751,8 +752,9 @@ class Router
         $matches = [];
         foreach ($urls as $key => $data) {
             $pattern = str_replace("/", "\/", $data['url']);
+            $pattern = $exact ? "/^{$pattern}$/" : "/^{$pattern}/";
             $current = [];
-            if (preg_match("/^{$pattern}/", $string, $current)) {
+            if (preg_match($pattern, $string, $current)) {
                 $matches[ strlen($current[0]) ] = [
                     'key' => $key,
                     'data' => $data,

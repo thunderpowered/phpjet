@@ -63,11 +63,7 @@ class Api {
         return fetch(this.apiBaseUrl + url, options)
             .then(
                 result => {
-                    if (result.ok) {
-                        return result.json();
-                    } else {
-                        throw new Error(`${result.status} ${result.statusText} ${result.url}`);
-                    }
+                    return result.json();
             })
             .then(
                 result => {
