@@ -16,6 +16,14 @@ class CoreException extends Exception
      * @var string
      */
     protected $notes = '';
+    /**
+     * @var int
+     */
+    protected $code = 500;
+    /**
+     * @var string
+     */
+    protected $message = 'Internal Server Error';
 
     /**
      * CoreException constructor.

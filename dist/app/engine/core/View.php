@@ -183,17 +183,19 @@ class View
     }
 
     /**
+     * @param int $status
      * @param array $data
-     * @param bool $status
      * @param string $action
      * @param MessageBox|null $messageBox
      * @return ViewResponse
      */
-    public function json(bool $status = true, array $data = [], string $action = '', MessageBox $messageBox = null): ViewResponse
+    public function json(int $status = HTTP_OK, array $data = [], string $action = '', MessageBox $messageBox = null): ViewResponse
     {
-        $response = new ViewResponse($this->isSPA());
-        $response->response = $this->returnJsonOutput($status, $data, $action, $messageBox);
-        return $response;
+        return new ViewResponse(
+            $this->isSPA(),
+            $this->returnJsonOutput($status, $data, $action, $messageBox),
+            $status
+        );
     }
 
     /**
@@ -366,16 +368,17 @@ class View
     }
 
     /**
-     * @param bool $status
+     * @param int $status
      * @param array $data
      * @param string $action
      * @param MessageBox|null $messageBox
      * @return string
      */
-    private function returnJsonOutput(bool $status = false, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
+    private function returnJsonOutput(int $status = HTTP_OK, array $data = [], string $action = '', MessageBox $messageBox = NULL): string
     {
         // do i really need it? it'd be easier to just return an array
         // todo think about it
+        // and also i don't think 'action' is really a thing that necessary
         $jsonOutput = new JSONOutput();
         $jsonOutput->status = $status;
         $jsonOutput->data = $data;

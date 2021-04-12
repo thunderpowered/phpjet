@@ -19,3 +19,8 @@ $urls->setAction('Auth', '/login', 'Login', [
         'password' => ['password', true]
     ]
 ]);
+$urls->setAction('Auth', '/verify', 'Verify', [
+    'POST' => [
+        'verification' => [null, true]
+    ]
+]);

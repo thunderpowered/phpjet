@@ -10,9 +10,10 @@ namespace Jet\App\Engine\Interfaces;
 class JSONOutput
 {
     /**
-     * @var bool
+     * @var int
+     * @deprecated
      */
-    public $status = false;
+    public $status = HTTP_OK;
     /**
      * @var string
      */

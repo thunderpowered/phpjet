@@ -7,7 +7,6 @@ use Jet\App\Engine\Config;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\App\Engine\Exceptions\WrongDataException;
 use Jet\App\Engine\Interfaces\MessageBox;
-use Jet\App\Engine\Tools\Validator;
 use Jet\PHPJet;
 
 /**
@@ -98,13 +97,21 @@ class Router
     private $urlConfigFilename = 'urls.php';
 
     /**
+     * Router constructor.
+     */
+    public function __construct()
+    {
+        $this->defineHttpConstants();
+    }
+
+    /**
      * 1.
      * @return string
      */
     public function start(): string
     {
         $this->subdomain = $this->getSubdomain();
-        $this->MVCSector =  Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
+        $this->MVCSector = Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
         define('MVC_SECTOR', $this->MVCSector);
         define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
@@ -189,6 +196,9 @@ class Router
                 return $this->serverErrorPage($exception);
             }
             $result = call_user_func_array([$controller, $actionName], $data['params']);
+            if ($result->status && is_int($result->status)) {
+                http_response_code($result->status); // well, maybe it's not the best place for that
+            }
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
             }
@@ -221,8 +231,8 @@ class Router
     /**
      * @param bool $forceRedirect
      * @param string $information
-     * @deprecated
      * @return string
+     * @deprecated
      */
     public function errorPage500(bool $forceRedirect = false, string $information = 'Internal Server Error'): string
     {
@@ -722,7 +732,7 @@ class Router
                     }
 
                     // 2. proceed automatic validation (if datatype is set)
-                    if ($dataType) {
+                    if ($dataType && $required) {
                         $validatorMethod = "validate" . ucfirst($dataType);
                         if (method_exists(PHPJet::$app->tool->validator, $validatorMethod)) {
                             $validated = call_user_func([PHPJet::$app->tool->validator, $validatorMethod], $value);
@@ -731,7 +741,8 @@ class Router
                                 // i suppose validator should return nothing if everything is fine and string with info if there are errors
                                 throw new WrongDataException("parameter '{$key}' has invalid format");
                             }
-                            // otherwise everything is fine
+                        } else {
+                            throw new CoreException("validator '{$dataType}' does not exist");
                         }
                     }
                 }
@@ -756,7 +767,7 @@ class Router
         $string = explode('?', $string);
         $string = (string)reset($string);
         if (substr($string, 0, 1) !== "/") {
-            $string  = "/{$string}";
+            $string = "/{$string}";
         }
 
         // 1. match multiple patterns against one string
@@ -766,7 +777,7 @@ class Router
             $pattern = $exact ? "/^{$pattern}$/" : "/^{$pattern}/";
             $current = [];
             if (preg_match($pattern, $string, $current)) {
-                $matches[ strlen($current[0]) ] = [
+                $matches[strlen($current[0])] = [
                     'key' => $key,
                     'data' => $data,
                 ];
@@ -781,5 +792,14 @@ class Router
         // 3. sort it and return the longest string that match the pattern
         ksort($matches);
         return end($matches);
+    }
+
+    private function defineHttpConstants(): void
+    {
+        define('HTTP_OK', 200);
+        define('HTTP_CREATED', 201);
+        define('HTTP_BAD_REQUEST', 400);
+        define('HTTP_UNAUTHORIZED', 401);
+        define('HTTP_INTERNAL_SERVER_ERROR', 500);
     }
 }

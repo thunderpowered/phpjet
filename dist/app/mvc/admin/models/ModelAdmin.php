@@ -4,7 +4,9 @@ namespace Jet\App\MVC\Admin\Models;
 
 use Jet\App\Database\Authority;
 use Jet\App\Engine\Core\Model;
+use Jet\App\Engine\Interfaces\ModelResponse;
 use Jet\PHPJet;
+use stdClass;
 
 /**
  * Class ModelAdmin
@@ -107,7 +109,6 @@ class ModelAdmin extends Model
         if (!$fingerprintSession || !$fingerprint || $fingerprintSession !== $fingerprint) {
             return false;
         }
-
         // everything is fine
         return true;
     }
@@ -115,44 +116,32 @@ class ModelAdmin extends Model
     /**
      * @param string $email
      * @param string $password
-     * @param string $urlTokenSessionKey
-     * @param string $urlTokenURLKey
-     * @return array
+     * @return ModelResponse
      */
-    public function authorizeAdmin(string $email, string $password): array
+    public function authorizeAdmin(string $email, string $password): ModelResponse
     {
-        $emailValid = PHPJet::$app->tool->formatter->validateEmail($email);
-        if (!$emailValid) {
-
-            $this->recordActions('Auth', false, 'attempt failed - invalid email.');
-            return ['valid' => false];
-        }
-
         $admin = Authority::getOne(['email' => $email], [], [], false);
         if (!$admin) {
-
             $this->recordActions('Auth', false, 'attempt failed - no such email in Database.');
-            return ['valid' => false];
+            return new ModelResponse(false, 'no such email in database');
         }
 
         $passwordCorrect = password_verify($password, $admin->password);
         if (!$passwordCorrect) {
-
             $this->recordActions('Auth', false, 'attempt failed - wrong password.');
-            return ['valid' => false];
+            return new ModelResponse(false, 'wrong password');
         }
 
         if (!$admin->two_factor_auth) {
             $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
-
             $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
-            return ['valid' => true, '2F' => false, 'urls' => $urls];
+            return new ModelResponse(true, 'successfully authorized', ['action' => null]);
         } else {
+
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
-
             $this->recordActions('Auth', true, 'attempt successful - waiting for 2F auth.');
-            return ['valid' => true, '2F' => true];
+            return new ModelResponse(true, 'verification required');
         }
     }
 
@@ -176,42 +165,39 @@ class ModelAdmin extends Model
 
     /**
      * @param string $verificationCode
-     * @return array
+     * @return ModelResponse
      */
-    public function validate2FAuthentication(string $verificationCode): array
+    public function validate2FAuthentication(string $verificationCode): ModelResponse
     {
         $adminID = PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
         if (!$adminID) {
 
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Session.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         $fingerPrint = $this->getFingerprint();
         $fingerPrintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerPrintSession || $fingerPrint !== $fingerPrintSession) {
-
             $this->recordActions('Auth', false, '2F verification failed - fingerprint incorrect.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
-
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Database.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         if (!password_verify($verificationCode, $admin->session_token)) {
-
             $this->recordActions('Auth', false, '2F verification failed - invalid verification code.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         // seems like everything is ok
         $this->recordActions('Auth', true, '2F verification successful - auth completed.');
         $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
-        return ['valid' => true, 'urls' => $urls];
+        return new ModelResponse(true);
     }
 
     /**
@@ -276,12 +262,14 @@ class ModelAdmin extends Model
      * @param string $action
      * @param bool $status
      * @param string $explanation
-     * @return bool
+     * @deprecated
      */
-    public function recordActions(string $action, bool $status, string $explanation = ''): bool
+    public function recordActions(string $action, bool $status, string $explanation = ''): void
     {
-        $adminID = (int)$this->getAdminID();
-        return PHPJet::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
+        return; // disabled until i figure out whether it is necessary or not
+
+//        $adminID = (int)$this->getAdminID();
+//        return PHPJet::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
     }
 
     /**
