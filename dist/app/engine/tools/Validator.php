@@ -13,7 +13,7 @@ class Validator
      * @param string $email
      * @return bool
      */
-    public function validateEmail(string $email): bool
+    public static function validateEmail(string $email): bool
     {
         return (bool)filter_var($email, FILTER_VALIDATE_EMAIL);
     }
@@ -25,7 +25,7 @@ class Validator
      * @param bool $pathRequired
      * @return bool
      */
-    public function validateURL(string $url, bool $hostRequired = false, bool $schemeRequired = false, bool $pathRequired = false): bool
+    public static function validateURL(string $url, bool $hostRequired = false, bool $schemeRequired = false, bool $pathRequired = false): bool
     {
         $flags = 0;
         if ($hostRequired) {
@@ -44,8 +44,17 @@ class Validator
      * @param string $password
      * @return bool
      */
-    public function validatePassword(string $password): bool
+    public static function validatePassword(string $password): bool
     {
-        return false;
+        $uppercase = preg_match('@[A-Z]@', $password);
+        $lowercase = preg_match('@[a-z]@', $password);
+        $number    = preg_match('@[0-9]@', $password);
+        $specialChars = preg_match('@[^\w]@', $password);
+
+        if (!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 8) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

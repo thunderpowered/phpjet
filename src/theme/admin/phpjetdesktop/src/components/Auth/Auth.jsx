@@ -13,7 +13,7 @@ const Auth = ({action, onSubmit}) => {
                 <Logotype/>
             </div>
             <div className="Auth__body p-5 pt-0 pb-0">
-                {action === '1F' &&
+                {(action === '1F' || !action) &&
                     <FormContainer id="AuthForm" onSubmit={onSubmit}>
                         <input required={true} minLength={8} maxLength={64} autoComplete={'email'}
                                type={'email'} name={'email'}

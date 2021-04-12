@@ -2,9 +2,7 @@
 
 namespace Jet\App\MVC\Admin\Models;
 
-use Jet\App\Engine\Core\ActiveRecord;
-use Jet\App\Engine\Core\Tables\Authority;
-use Jet\App\Engine\Core\Tables\Tracker_Authority;
+use Jet\App\Database\Authority;
 use Jet\App\Engine\Core\Model;
 use Jet\PHPJet;
 
@@ -144,7 +142,6 @@ class ModelAdmin extends Model
             return ['valid' => false];
         }
 
-        // Everything is fine
         if (!$admin->two_factor_auth) {
             $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
 

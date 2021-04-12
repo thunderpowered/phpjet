@@ -9,15 +9,15 @@ class Api {
     }
 
     get(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('GET', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('GET', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     post(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('POST', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('POST', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     put(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('PUT', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('PUT', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     file(url, options = {}, callbackOnSuccess, callbackOnError) {

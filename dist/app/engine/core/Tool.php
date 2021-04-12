@@ -9,6 +9,7 @@ use Jet\App\Engine\Tools\JSONOutput;
 use Jet\App\Engine\Tools\SEO;
 use Jet\App\Engine\Tools\Formatter;
 use Jet\App\Engine\Tools\Utils;
+use Jet\App\Engine\Tools\Validator;
 
 /**
  * Class Tool
@@ -20,6 +21,7 @@ use Jet\App\Engine\Tools\Utils;
  * @property Cache $cache
  * @property JSONOutput $JSONOutput
  * @property FileManager $fileManager
+ * @property Validator $validator
  */
 class Tool
 {
@@ -47,6 +49,10 @@ class Tool
      * @var FileManager
      */
     private $fileManager;
+    /**
+     * @var Validator
+     */
+    private $validator;
 
     /**
      * Tool constructor.

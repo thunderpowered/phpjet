@@ -16,6 +16,6 @@ $urls->setAction('Auth', '/', 'Check', [
 $urls->setAction('Auth', '/login', 'Login', [
     'POST' => [
         'email' => ['email', true],
-        'password' => ['password__admin', true]
+        'password' => ['password', true]
     ]
 ]);

@@ -7,6 +7,7 @@ use Jet\App\Engine\Config;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\App\Engine\Exceptions\WrongDataException;
 use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Tools\Validator;
 use Jet\PHPJet;
 
 /**
@@ -712,17 +713,27 @@ class Router
                 }
                 $value = PHPJet::$app->system->request->{$funcName}($key);
                 if ($validateData && $method === $paramMethod) {
-                    // 1. check if no data at all
-                    if (!$value) {
+                    $dataType = $type[0] ?? null;
+                    $required = $type[1] ?? null;
+
+                    // 1. check if no data at all (if required)
+                    if (!$value && $required) {
                         throw new WrongDataException("parameter '{$key}' cannot be empty");
                     }
-                    // 2. todo validate data
-                    /*
-                    $validated = some_magic_function($type, $value);
-                    if (!$validated) {
-                        throw new Exception("value of parameter '{$key}' does not match the requirements");
+
+                    // 2. proceed automatic validation (if datatype is set)
+                    if ($dataType) {
+                        $validatorMethod = "validate" . ucfirst($dataType);
+                        if (method_exists(PHPJet::$app->tool->validator, $validatorMethod)) {
+                            $validated = call_user_func([PHPJet::$app->tool->validator, $validatorMethod], $value);
+                            if (!$validated) {
+                                // todo return more information to users
+                                // i suppose validator should return nothing if everything is fine and string with info if there are errors
+                                throw new WrongDataException("parameter '{$key}' has invalid format");
+                            }
+                            // otherwise everything is fine
+                        }
                     }
-                    */
                 }
                 $paramData[$key] = $value;
             }
