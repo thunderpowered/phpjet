@@ -55,7 +55,6 @@ class Error
         if (error_reporting()) {
             $this->errorToFile($errno, $errStr, $errFile, $errLine, 'errorCatcher');
         }
-//        PHPJet::$app->exit();
     }
 
     /**
@@ -73,27 +72,15 @@ class Error
         if ($sendMail) {
             $this->errorToEmail($errno, $errStr, $errFile, $errLine, $funcName);
         }
-
-        header("HTTP/1.1 $code");
-
         $text = "( " . date('Y-m-d H:i:s (T)') . " ) ". ($errorID ? 'ID Ошибки: ' . $errorID . ' | ' : '')
                 . "Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine
-                . "Доп.сведения: [todo]\r\n";
-
-        // TODO: disable before release
-        if (!empty($_GET['debug'])) {
-            echo $text . "<hr>";
-        }
+                . "\r\n";
 
         // be sure to give a permission
         $errorFile = fopen(ENGINE . $this->logFile, 'a+');
         if ($errorFile) {
             fwrite($errorFile, $text);
             fclose($errorFile);
-        }
-
-        if ($sendMail) {
-            $this->errorToEmail($errno, $errStr, $errFile, $errLine, $funcName);
         }
     }
 
@@ -117,7 +104,7 @@ class Error
     public function exceptionCatcher($e)
     {
         $errorID = $this->generateErrorID();
-        $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true);
+        $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true, $errorID);
         echo PHPJet::$app->router->errorPage500();
         PHPJet::$app->exit();
     }
@@ -129,7 +116,7 @@ class Error
     {
         $errorID = $this->generateErrorID();
         if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
-            $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true);
+            $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true, $errorID);
             echo PHPJet::$app->router->errorPage500();
         }
     }

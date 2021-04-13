@@ -727,12 +727,12 @@ class Router
                     $required = $type[1] ?? null;
 
                     // 1. check if no data at all (if required)
-                    if (!$value && $required) {
+                    if ($required && !$value) {
                         throw new WrongDataException("parameter '{$key}' cannot be empty");
                     }
 
-                    // 2. proceed automatic validation (if datatype is set)
-                    if ($dataType && $required) {
+                    // 2. proceed validation (if datatype is set and not empty)
+                    if ($dataType && $value) {
                         $validatorMethod = "validate" . ucfirst($dataType);
                         if (method_exists(PHPJet::$app->tool->validator, $validatorMethod)) {
                             $validated = call_user_func([PHPJet::$app->tool->validator, $validatorMethod], $value);
