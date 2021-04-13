@@ -181,12 +181,12 @@ class ControllerAuth extends ControllerAdmin
         $password = $POST['password'];
         $result = $this->modelAdmin->authorizeAdmin($email, $password);
         if (!$result->status) {
-            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(1, 'Wrong login or password.'));
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(MessageBox::ERROR, 'Wrong login or password.'));
         }
         if (isset($result->customData['action']) && $result->customData['action'] === '2F') {
-            return $this->view->json(HTTP_OK, ['auth' => false], '2F', new MessageBox(0, 'We have sent you email with verification code.'));
+            return $this->view->json(HTTP_OK, ['auth' => false], '2F', new MessageBox(MessageBox::INFO, 'We have sent you email with verification code.'));
         } else {
-            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(0, 'Successfully authorized.'));
+            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized.'));
         }
     }
 
@@ -200,9 +200,9 @@ class ControllerAuth extends ControllerAdmin
         $verificationCode = $POST['verification'];
         $result = $this->modelAdmin->validate2FAuthentication($verificationCode);
         if (!$result->status) {
-            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(1, 'Wrong verification code'));
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(MessageBox::ERROR, 'Wrong verification code'));
         } else {
-            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(0, 'Successfully authorized'));
+            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
         }
     }
 }

@@ -9,6 +9,14 @@ namespace Jet\App\Engine\Interfaces;
  */
 class MessageBox
 {
+    const SUCCESS = 0;
+    const WARNING = 1;
+    const ERROR   = 2;
+    const DANGER  = 3;
+    const INFO    = 4;
+    /**
+     * @var string[]
+     */
     private $styles = [
         'success',
         'warning',
@@ -30,7 +38,7 @@ class MessageBox
      * @param int $style
      * @param string $text
      */
-    public function __construct(int $style = 1, string $text = '')
+    public function __construct(int $style = self::INFO, string $text = '')
     {
         $this->style = isset($this->styles[$style]) ? $this->styles[$style] : $this->styles[1];
         $this->text = $text;
