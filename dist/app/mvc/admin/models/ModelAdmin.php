@@ -135,7 +135,7 @@ class ModelAdmin extends Model
         if (!$admin->two_factor_auth) {
             $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
             $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
-            return new ModelResponse(true, 'successfully authorized', ['action' => null]);
+            return new ModelResponse(true, 'successfully authorized', ['action' => null, 'id' => $admin->id]);
         } else {
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
@@ -196,7 +196,7 @@ class ModelAdmin extends Model
         // seems like everything is ok
         $this->recordActions('Auth', true, '2F verification successful - auth completed.');
         $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
-        return new ModelResponse(true);
+        return new ModelResponse(true, '', ['id' => $admin->id]);
     }
 
     /**

@@ -186,7 +186,7 @@ class ControllerAuth extends ControllerAdmin
         if (isset($result->customData['action']) && $result->customData['action'] === '2F') {
             return $this->view->json(HTTP_OK, ['auth' => false], '2F', new MessageBox(MessageBox::INFO, 'We have sent you email with verification code.'));
         } else {
-            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized.'));
+            return $this->view->json(HTTP_OK, ['auth' => true, 'admin_id' => $result->customData['id']], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized.'));
         }
     }
 
@@ -202,7 +202,7 @@ class ControllerAuth extends ControllerAdmin
         if (!$result->status) {
             return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(MessageBox::ERROR, 'Wrong verification code'));
         } else {
-            return $this->view->json(HTTP_OK, ['auth' => true], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
+            return $this->view->json(HTTP_OK, ['auth' => true, 'admin_id' => $result->customData['id']], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
         }
     }
 }

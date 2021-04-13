@@ -4,7 +4,7 @@ import {setAuthorizationAction, setAuthorizedStatus} from "../actions/auth";
 export const checkAuthorization = () => (
     dispatch => (
         api.get('auth', {}, result => (
-            dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
+            dispatch(setAuthorizedStatus(result.data.auth, result.data.admin_id))
         ))
     )
 );
@@ -30,7 +30,7 @@ export const authorizationSecondFactor = (values, callback) => (
     dispatch => (
         api.post('auth/verify', {queryParams: values}, result => {
             callback(result);
-            return dispatch(setAuthorizedStatus(result.data.auth, result.data.urls))
+            return dispatch(setAuthorizedStatus(result.data.auth, result.data.admin_id))
         })
     )
 );

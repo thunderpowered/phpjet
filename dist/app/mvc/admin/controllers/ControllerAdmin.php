@@ -3,8 +3,9 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
-
 use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
 
@@ -28,6 +29,31 @@ class ControllerAdmin extends Controller
     {
         parent::__construct($name, $enableTracker);
         $this->modelAdmin = new ModelAdmin();
+
+        if (!$this->modelAdmin->isAdminAuthorized()) {
+            PHPJet::$app->router->immediateResponse(
+                $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, 'Not authorized'))
+            );
+        }
+    }
+
+    /**
+     * @param string $method
+     * @return ViewResponse
+     */
+    public function actionSettingsAppearance(string $method): ViewResponse
+    {
+        // todo
+        return new ViewResponse();
+    }
+
+    /**
+     * @param string $method
+     * @return ViewResponse
+     */
+    public function actionSettingsMode(string $method): ViewResponse
+    {
+
     }
 
     /**

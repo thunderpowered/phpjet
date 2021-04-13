@@ -7,6 +7,7 @@ use Jet\App\Engine\Config;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\App\Engine\Exceptions\WrongDataException;
 use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\PHPJet;
 
 /**
@@ -208,12 +209,16 @@ class Router
     }
 
     /**
-     * @param string $content
+     * @param ViewResponse $response
      */
-    public function immediateResponse(string $content = '')
+    public function immediateResponse(ViewResponse $response)
     {
         PHPJet::$app->system->buffer->destroyBuffer();
-        echo $content;
+        if ($response->status && is_int($response->status)) {
+            http_response_code($response->status);
+        }
+        // not the prettiest solution, but it works (for now)
+        echo $response->response;
         PHPJet::$app->exit();
     }
 

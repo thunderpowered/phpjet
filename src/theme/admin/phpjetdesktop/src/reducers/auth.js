@@ -2,7 +2,7 @@ import {SET_AUTHORIZATION_ACTION, SET_AUTHORIZED_STATUS} from "../actions/auth";
 
 const initialState = {
     authorized: undefined,
-    urls: {},
+    admin_id: null,
     action: '1F'
 };
 
@@ -12,7 +12,7 @@ const auth = (state = initialState, action) => {
             return {
                 ...state,
                 authorized: action.authorized,
-                urls: action.urls
+                admin_id: action.admin_id
             };
 
         case SET_AUTHORIZATION_ACTION:

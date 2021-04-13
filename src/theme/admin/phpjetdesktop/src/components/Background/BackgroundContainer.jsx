@@ -7,7 +7,7 @@ import {withTranslation} from "react-i18next";
 
 class BackgroundContainer extends React.Component {
     componentDidMount() {
-        this.props.dispatch(fetchWallpaper())
+        this.props.dispatch(fetchWallpaper(this.props.admin_id))
     }
 
     onChangeWallpaper(event) {
@@ -39,7 +39,8 @@ class BackgroundContainer extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    wallpaper: state.background.wallpaper
+    wallpaper: state.background.wallpaper,
+    admin_id: state.auth.admin_id
 });
 
 export default withTranslation('common')(connect(mapStateToProps)(BackgroundContainer))

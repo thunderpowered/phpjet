@@ -24,3 +24,12 @@ $urls->setAction('Auth', '/verify', 'Verify', [
         'verification' => [null, true]
     ]
 ]);
+$urls->setAction('Auth', '/logout', 'Logout', [
+    'GET' => []
+]);
+
+/* <==== ADMIN CONTROLLER ==== > */
+$urls->setAction('Admin', '/{ADMIN_ID}/settings/appearance', 'SettingsAppearance', [
+    'GET' => []
+    // todo file
+]);
