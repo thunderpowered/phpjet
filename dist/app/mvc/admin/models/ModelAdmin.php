@@ -137,11 +137,10 @@ class ModelAdmin extends Model
             $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
             return new ModelResponse(true, 'successfully authorized', ['action' => null]);
         } else {
-
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
             $this->recordActions('Auth', true, 'attempt successful - waiting for 2F auth.');
-            return new ModelResponse(true, 'verification required');
+            return new ModelResponse(true, 'verification required', ['action' => '2F']);
         }
     }
 

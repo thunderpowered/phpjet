@@ -16,7 +16,7 @@ class Workspace extends React.Component {
         return (
             <div className="Workspace" onClick={this.onClickMaster.bind(this)}>
                 {mode === PANEL_MODE_WINDOW &&
-                <BackgroundContainer/>
+                    <BackgroundContainer/>
                 }
                 <TaskbarContainer/>
                 <ContextMenu/>
