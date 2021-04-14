@@ -778,13 +778,27 @@ class Router
         // 1. match multiple patterns against one string
         $matches = [];
         foreach ($urls as $key => $data) {
+            $args = [];
             $pattern = str_replace("/", "\/", $data['url']);
-            $pattern = $exact ? "/^{$pattern}$/" : "/^{$pattern}/";
+            if ($exact) {
+                $pattern = preg_replace_callback(
+                    "/{(.*?)}/",
+                    function ($matches) use (&$args) {$args[] = $matches[1];return "(.*?)";},
+                    "/^{$pattern}$/"
+                );
+            } else {
+                $pattern = "/^{$pattern}/";
+            }
             $current = [];
-            if (preg_match($pattern, $string, $current)) {
-                $matches[strlen($current[0])] = [
+            if (preg_match_all($pattern, $string, $current)) {
+                foreach ($current[1] as $index => $value) {
+                    $args[$args[$index]] = $value;
+                    unset ($args[$index]);
+                }
+                $matches[strlen($current[0][0])] = [
                     'key' => $key,
                     'data' => $data,
+                    'args' => $args
                 ];
             }
         }

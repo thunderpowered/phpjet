@@ -31,9 +31,9 @@ class ControllerAdmin extends Controller
         $this->modelAdmin = new ModelAdmin();
 
         if (!$this->modelAdmin->isAdminAuthorized()) {
-            PHPJet::$app->router->immediateResponse(
-                $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, 'Not authorized'))
-            );
+//            PHPJet::$app->router->immediateResponse(
+//                $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, 'Not authorized'))
+//            );
         }
     }
 
@@ -44,6 +44,7 @@ class ControllerAdmin extends Controller
     public function actionSettingsAppearance(string $method): ViewResponse
     {
         // todo
+        exit('appearance');
         return new ViewResponse();
     }
 
