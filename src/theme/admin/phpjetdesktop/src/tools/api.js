@@ -37,26 +37,24 @@ class Api {
     }
 
     #__fetch(method, url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        if (typeof this.apiBaseUrl === 'undefined') {
-            throw new Error('API_BASE_URL is not defined');
+        if (typeof this.apiBaseUrl === 'undefined' || !this.apiBaseUrl) {
+            throw new Error('API_BASE_URL is not defined or empty');
         }
-        if (typeof this.token === 'undefined') {
-            throw new Error('TOKEN is not defined');
+        if (typeof this.token === 'undefined' || !this.token) {
+            throw new Error('TOKEN is not defined or empty');
         }
         options = {
             method: method,
             credentials: 'same-origin',
             redirect: 'error',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': this.token // should be everywhere
             },
             ...options,
         };
         if (!options.queryParams) {
             options.queryParams = {};
-        }
-        if (typeof options.queryParams.__csrf === 'undefined' || !options.queryParams.__csrf) {
-            options.queryParams.__csrf = this.token;
         }
         options.body = method === 'GET' ? null : json ? JSON.stringify(options.queryParams) : options.queryParams;
         delete options.queryParams;

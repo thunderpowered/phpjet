@@ -2,6 +2,7 @@
 
 namespace Jet\App\MVC\Admin\Models;
 
+use Exception;
 use Jet\App\Database\Authority;
 use Jet\App\Engine\Core\Model;
 use Jet\App\Engine\Interfaces\ModelResponse;
@@ -480,11 +481,11 @@ class ModelAdmin extends Model
      * @param Authority $admin
      * @param string $urlTokenURLKey
      * @param string $urlTokenSessionKey
-     * @return array
+     * @return array|string[]
      */
     private function grantAccess(Authority $admin, string $urlTokenURLKey, string $urlTokenSessionKey)
     {
-        $token = PHPJet::$app->system->token->generateHash();
+        $token = PHPJet::$app->system->token->generateRandomString();
         PHPJet::$app->system->request->setSESSION($this->sessionAuthorizedKey, true);
         PHPJet::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
         PHPJet::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());

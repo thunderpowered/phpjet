@@ -41,6 +41,6 @@ class MessageBox
     public function __construct(int $style = self::INFO, string $text = '')
     {
         $this->style = isset($this->styles[$style]) ? $this->styles[$style] : $this->styles[1];
-        $this->text = $text;
+        $this->text = ucfirst($text);
     }
 }

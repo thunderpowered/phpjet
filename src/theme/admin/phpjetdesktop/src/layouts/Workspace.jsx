@@ -13,7 +13,6 @@ class Workspace extends React.Component {
     };
 
     componentDidMount() {
-        console.log(this.props);
         this.props.dispatch(loadAdminSettings(this.props.admin_id, 'appearance'));
     }
 

@@ -48,7 +48,11 @@ class ControllerAdmin extends Controller
 
         if ($method === 'GET') {
             $settings = $this->modelAdmin->getAdminSettings($ARGS['ADMIN_ID'], $ARGS['SETTINGS']);
-            return $this->view->json(HTTP_OK, [$ARGS['SETTINGS'] => $settings->customData]);
+            if ($settings->status) {
+                return $this->view->json(HTTP_OK, [$ARGS['SETTINGS'] => $settings->customData]);
+            } else {
+                return $this->view->json(HTTP_BAD_REQUEST, [], '', new MessageBox(MessageBox::ERROR, $settings->message));
+            }
         } else {
             // todo
             exit('still not supported');
