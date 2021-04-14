@@ -268,7 +268,7 @@ class Router
             $message = $this->httpErrorCodes[$code] ?? null;
         }
 
-        $view = $this->getViewObject(new Controller());
+        $view = $this->getViewObject();
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
         header("HTTP/1.1 {$code} {$message}");
@@ -444,15 +444,13 @@ class Router
         // Create full controller name with namespace
         $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $controllerName;
         if (class_exists($Class)) {
-            $controller = new $Class($controllerName, true);
+            // Create and set view
+            $view = $this->getViewObject();
+            $view->loadWidgets();
+            $controller = new $Class($view, true);
         } else {
             PHPJet::$app->exit("Class '{$Class}' Not Found");
         }
-
-        // Create and set view
-        $view = $this->getViewObject($controller);
-        $view->loadWidgets();
-        $controller->setView($view);
 
         return $controller;
     }
@@ -517,6 +515,7 @@ class Router
         if ($url) {
             $actionName['actionName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
             $actionName['data'] = $url['data'];
+            $actionName['data']['params']['args'] = $url['args'];
         }
         return $actionName;
     }
@@ -536,14 +535,12 @@ class Router
     }
 
     /**
-     * @param Controller $controller
      * @return View
-     * Creates special view object for this controller
      */
-    public function getViewObject(Controller $controller): View
+    public function getViewObject(): View
     {
         if (!$this->view) {
-            $this->view = new View($controller);
+            $this->view = new View();
         }
 
         return $this->view;
@@ -719,7 +716,23 @@ class Router
         if (!isset($params[$method])) {
             throw new WrongDataException("method '{$method}' is not supported by this action");
         }
+
         $result = [$method];
+
+        // check for url-args
+        if ($params['args']) {
+            foreach ($params['args'] as $key => &$value) {
+                $value = $value[0] ?? null;
+                if (!$value) {
+                    throw new WrongDataException("parameter '{$key} cannot be empty'");
+                }
+            }
+            // no validation, just make sure they exist
+            $result['ARGS'] = $params['args'];
+            unset($params['args']);
+        }
+
+        // proceed query-params
         foreach ($params as $paramMethod => &$paramData) {
             foreach ($paramData as $key => $type) {
                 $funcName = "get{$paramMethod}";
@@ -781,6 +794,7 @@ class Router
             $args = [];
             $pattern = str_replace("/", "\/", $data['url']);
             if ($exact) {
+                // proceed url-variables
                 $pattern = preg_replace_callback(
                     "/{(.*?)}/",
                     function ($matches) use (&$args) {$args[] = $matches[1];return "(.*?)";},
@@ -791,9 +805,12 @@ class Router
             }
             $current = [];
             if (preg_match_all($pattern, $string, $current)) {
-                foreach ($current[1] as $index => $value) {
-                    $args[$args[$index]] = $value;
-                    unset ($args[$index]);
+                // combine arg names with values and create assoc array
+                if (count ($current) > 1) {
+                    for ($i = 1; $i < count ($current); $i++) {
+                        $args[$args[$i - 1]] = $current[$i];
+                        unset ($args[$i - 1]);
+                    }
                 }
                 $matches[strlen($current[0][0])] = [
                     'key' => $key,

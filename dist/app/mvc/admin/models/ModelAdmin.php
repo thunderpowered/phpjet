@@ -93,24 +93,37 @@ class ModelAdmin extends Model
     }
 
     /**
+     * @param int $id
      * @return bool
      */
-    public function isAdminAuthorized(): bool
+    public function validateAdmin(int $id): bool
+    {
+        // just check whether or not passed id is current authorized admin id
+        $adminId = $this->getAdminID();
+        return $id && $adminId && $id === $adminId;
+    }
+
+    /**
+     * @return ModelResponse
+     */
+    public function isAdminAuthorized(): ModelResponse
     {
         // basic auth check
         $isAdminAuthorized = PHPJet::$app->system->request->getSESSION($this->sessionAuthorizedKey);
         if (!$isAdminAuthorized) {
-            return false;
+            return new ModelResponse(false);
         }
 
         // extended auth check
         $fingerprint = $this->getFingerprint();
         $fingerprintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerprintSession || !$fingerprint || $fingerprintSession !== $fingerprint) {
-            return false;
+            return new ModelResponse(false);
         }
         // everything is fine
-        return true;
+        return new ModelResponse(true, '', [
+            'id' => $this->getAdminID()
+        ]);
     }
 
     /**
@@ -229,16 +242,38 @@ class ModelAdmin extends Model
     }
 
     /**
+     * @param int $adminId
+     * @param string $settings
+     * @return ModelResponse
+     */
+    public function getAdminSettings(int $adminId, string $settings): ModelResponse
+    {
+        switch ($settings) {
+            // todo maybe store it all together? It'd be easier to work with
+            case 'appearance':
+                // wallpaper (just because this is cool)
+                $wallpaper = $this->getAdminContext($this->contextKeyWallpaper, $adminId);
+                if ($wallpaper) {
+                    $wallpaper = PHPJet::$app->tool->utils->getImageLink($wallpaper);
+                }
+                // since
+                $panelMode = $this->getAdminContext($this->contextPanelState, $adminId);
+                return new ModelResponse(true, '', [
+                    'wallpaper' => $wallpaper,
+                    'panelMode' => $panelMode
+                ]);
+            default:
+                return new ModelResponse(false, 'unknown settings key');
+        }
+    }
+
+    /**
      * @param string $contextName
+     * @param int $adminID
      * @return string
      */
-    public function getAdminContext(string $contextName): string
+    public function getAdminContext(string $contextName, int $adminID): string
     {
-        $adminID = $this->getAdminID();
-        if (!$adminID || !$contextName) {
-            return '';
-        }
-
         return PHPJet::$app->system->settings->getContext($this->getAdminContextKey($contextName, $adminID));
     }
 

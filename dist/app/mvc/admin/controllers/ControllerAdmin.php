@@ -3,7 +3,9 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
+use http\Message;
 use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\View;
 use Jet\App\Engine\Interfaces\MessageBox;
 use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
@@ -20,32 +22,37 @@ class ControllerAdmin extends Controller
      */
     protected $modelAdmin;
 
-    /**
-     * ControllerAdmin constructor.
-     * @param string $name
-     * @param bool $enableTracker
-     */
-    public function __construct(string $name = "", bool $enableTracker = false)
+    public function __construct(View $view, bool $enableTracker = false)
     {
-        parent::__construct($name, $enableTracker);
+        parent::__construct($view, $enableTracker);
         $this->modelAdmin = new ModelAdmin();
 
-        if (!$this->modelAdmin->isAdminAuthorized()) {
-//            PHPJet::$app->router->immediateResponse(
-//                $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, 'Not authorized'))
-//            );
+        $admin = $this->modelAdmin->isAdminAuthorized();
+        if (!$admin->status) {
+            PHPJet::$app->router->immediateResponse(
+                $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, 'Not authorized'))
+            );
         }
     }
 
     /**
      * @param string $method
+     * @param array $ARGS
      * @return ViewResponse
      */
-    public function actionSettingsAppearance(string $method): ViewResponse
+    public function actionSettings(string $method, array $ARGS): ViewResponse
     {
-        // todo
-        exit('appearance');
-        return new ViewResponse();
+        if (!$this->modelAdmin->validateAdmin($ARGS['ADMIN_ID'])) {
+            return $this->view->json(HTTP_UNAUTHORIZED, [], '', new MessageBox(MessageBox::ERROR, "You don't have permissions for this action"));
+        }
+
+        if ($method === 'GET') {
+            $settings = $this->modelAdmin->getAdminSettings($ARGS['ADMIN_ID'], $ARGS['SETTINGS']);
+            return $this->view->json(HTTP_OK, [$ARGS['SETTINGS'] => $settings->customData]);
+        } else {
+            // todo
+            exit('still not supported');
+        }
     }
 
     /**

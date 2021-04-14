@@ -3,6 +3,7 @@
 namespace Jet\App\MVC\Admin\Controllers;
 
 use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\View;
 use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
@@ -23,14 +24,15 @@ class ControllerMain extends Controller
      * @var ModelAdmin
      */
     private $modelAdmin;
+
     /**
      * ControllerMain constructor.
-     * @param string $name
+     * @param View $view
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(View $view, bool $enableTracker = false)
     {
-        parent::__construct($name, true);
-        $this->modelAdmin = new ModelAdmin();
+        parent::__construct($view, $enableTracker);
     }
 
     /**

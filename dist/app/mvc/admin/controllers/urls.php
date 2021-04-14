@@ -29,7 +29,7 @@ $urls->setAction('Auth', '/logout', 'Logout', [
 ]);
 
 /* <==== ADMIN CONTROLLER ==== > */
-$urls->setAction('Admin', '/{ADMIN_ID}/settings/appearance', 'SettingsAppearance', [
+$urls->setAction('Admin', '/{ADMIN_ID}/settings/{SETTINGS}', 'Settings', [
     'GET' => []
     // todo file
 ]);

@@ -66,10 +66,12 @@ class Controller
     protected $tokenRequired = false;
     /**
      * @var string
+     * @deprecated
      */
     protected $urlTokenSessionKey = 'url_token';
     /**
      * @var string
+     * @deprecated
      */
     protected $urlTokenURLKey = 'token';
     /**
@@ -79,13 +81,15 @@ class Controller
 
     /**
      * Controller constructor.
-     * @param string $name deprecated
+     * @param View $view
      * @param bool $enableTracker
      */
-    public function __construct(string $name = "", bool $enableTracker = false)
+    public function __construct(View $view, bool $enableTracker = false)
     {
+        $this->view = $view;
+        $this->view->setController($this);
+
         $this->name = get_class($this);
-//        $this->name = $name;
         $this->title = Config::$page['default_page_title'];
 
         global $app;
@@ -113,6 +117,7 @@ class Controller
 
     /**
      * @param View $view
+     * @deprecated
      */
     public function setView(View $view)
     {

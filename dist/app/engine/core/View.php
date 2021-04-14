@@ -112,19 +112,20 @@ class View
 
     /**
      * View constructor.
-     * @param Controller|null $controller
      */
-    public function __construct(Controller $controller)
+    public function __construct()
     {
         $this->themePath = MVC_SECTOR . '/';
         $this->loadTheme();
         $this->createConstants();
 
-        $this->controller = $controller;
         $this->widget = new Widget();
-        $this->widget->setController($controller);
-
         $this->buffer = PHPJet::$app->system->buffer;
+    }
+
+    public function setController(Controller $controller) {
+        $this->controller = $controller;
+        $this->widget->setController($controller);
     }
 
     public function loadWidgets()
