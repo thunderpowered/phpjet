@@ -995,3 +995,21 @@ Stack trace:
 #3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(127): Jet\App\Engine\Core\Router->proceedRouterScheme('default')
 #4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(100): Jet\App\Engine\Core\Router->start()
 #5 D:\Google Drive\Programming\Projects\Local\modware.ru\di; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\mvc\admin\controllers\ControllerAdmin.php; Строка: 51
+( 2021-04-15 08:20:59 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 2; Информация об ошибке: Invalid callback Jet\App\Database\Context::exceptionHandler, cannot access protected method Jet\App\Database\Context::exceptionHandler(); Файл: Unknown; Строка: 0
+( 2021-04-15 08:20:59 (UTC) ) ID Ошибки: 373966a5fd335fef6a7729ed03068a1b1041ea383e5ee7e05dcbeb0db143073c | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\WrongDataException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php:195
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(168): Jet\App\Engine\Core\Router->startAction(Object(Jet\App\MVC\Admin\Controllers\ControllerAuth), '/auth', '', 'Auth')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(127): Jet\App\Engine\Core\Router->proceedRouterScheme('default')
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(100): Jet\App\Engine\Core\Router->start()
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(32): Jet\App\App->start()
+#4 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php; Строка: 195
+( 2021-04-15 08:21:58 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 2; Информация об ошибке: Invalid callback Jet\App\Database\Context::exceptionHandler, cannot access protected method Jet\App\Database\Context::exceptionHandler(); Файл: Unknown; Строка: 0
+( 2021-04-15 08:21:58 (UTC) ) ID Ошибки: 73878fe5b9472d44b2e8f8e29b99e893e9c2d02c3d23f378ac4ba490be511ef5 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\WrongDataException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php:195
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(168): Jet\App\Engine\Core\Router->startAction(Object(Jet\App\MVC\Admin\Controllers\ControllerAuth), '/auth', '', 'Auth')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php(127): Jet\App\Engine\Core\Router->proceedRouterScheme('default')
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(100): Jet\App\Engine\Core\Router->start()
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(32): Jet\App\App->start()
+#4 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Router.php; Строка: 195

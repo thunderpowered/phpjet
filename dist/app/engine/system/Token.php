@@ -26,6 +26,10 @@ class Token
      */
     private $hashingAlgorithm = 'sha3-256';
     /**
+     * @var string
+     */
+    public $headerCSRFTokenKey = 'X_CSRF_TOKEN';
+    /**
      * Token constructor.
      */
     public function __construct()
@@ -51,11 +55,16 @@ class Token
      */
     public function validateToken(string $token): bool
     {
-        if ($token && $this->csrfToken && $token === $this->csrfToken) {
-            return true;
-        }
+        return $token && $this->csrfToken && $token === $this->csrfToken;
+    }
 
-        return false;
+    /**
+     * @return bool
+     */
+    public function checkCSRFToken(): bool
+    {
+        $csrfToken = PHPJet::$app->system->request->getSERVER("HTTP_" . $this->headerCSRFTokenKey);
+        return $this->validateToken($csrfToken);
     }
 
     /**

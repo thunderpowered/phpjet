@@ -165,16 +165,21 @@ class Router
         ) {
             return $this->errorPage404();
         }
-        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
+        try {
+            return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
+        } catch (CoreException $exception) {
+            return $this->serverErrorPage($exception);
+        }
     }
 
     /**
-     * 3.
-     * @param Controller $controller controller object
-     * @param string $url current url
-     * @param string $controllerUrl url from urls.php that matches current url
-     * @param string $controllerName name of controller, btw it could be gotten using getName function, but it is also OK
+     * @param Controller $controller
+     * @param string $url
+     * @param string $controllerUrl
+     * @param string $controllerName
      * @return string
+     * @throws CoreException
+     * @throws WrongDataException
      */
     private function startAction(Controller $controller, string $url, string $controllerUrl, string $controllerName): string
     {
@@ -190,12 +195,12 @@ class Router
             return $this->errorPage404();
         }
         $actionName = $this->actionPrefix . $actionName;
+        // check csrf-token
+        if ($data['token'] && !PHPJet::$app->system->token->checkCSRFToken()) {
+            throw new WrongDataException('incorrect token');
+        }
         if (method_exists($controller, $actionName) && is_callable([$controller, $actionName])) {
-            try {
-                $data['params'] = $this->proceedQueryParams($data['params']);
-            } catch (Exception $exception) {
-                return $this->serverErrorPage($exception);
-            }
+            $data['params'] = $this->proceedQueryParams($data['params']);
             $result = call_user_func_array([$controller, $actionName], $data['params']);
             if ($result->status && is_int($result->status)) {
                 http_response_code($result->status); // well, maybe it's not the best place for that
@@ -707,7 +712,8 @@ class Router
      * @param array $params
      * @param bool $validateData
      * @return array
-     * @throws Exception
+     * @throws CoreException
+     * @throws WrongDataException
      */
     private function proceedQueryParams(array $params, bool $validateData = true): array
     {

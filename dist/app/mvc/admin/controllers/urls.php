@@ -7,7 +7,7 @@ $urls = new Urls();
 /* <==== MAIN CONTROLLER ====> */
 $urls->setAction('Main', '/', 'Home', [
     'GET' => []
-]);
+], false);
 
 /* <==== AUTH CONTROLLER ==== > */
 $urls->setAction('Auth', '/', 'Check', [

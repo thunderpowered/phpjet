@@ -18,6 +18,7 @@ class Workspace extends React.Component {
 
     render() {
         const {mode} = this.props;
+        console.log(mode);
         return (
             <div className="Workspace" onClick={this.onClickMaster.bind(this)}>
                 {mode === PANEL_MODE_WINDOW &&
@@ -31,7 +32,7 @@ class Workspace extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    mode: state.workspace.mode,
+    mode: state.admin.settings.appearance.mode,
     admin_id: state.auth.admin_id
 });
 

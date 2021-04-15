@@ -162,12 +162,6 @@ class Request
     public function getPOST(string $name = '', bool $removeSpecialChars = false)
     {
         $result = null;
-        // todo move csrf to headers
-        if (!$this->CSRFAlreadyChecked) {
-            if ($this->checkCSRFToken()) {
-                return null;
-            }
-        }
         if (!$name) {
             $result = $this->post;
         } else {
