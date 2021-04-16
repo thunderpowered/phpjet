@@ -622,7 +622,7 @@ class Router
         // and also check the special case
         // by PHPJet agreement all POST-queries must contain valid csrf-token
         if (($actualMethod === 'POST' || $actualMethod === 'PUT') && !PHPJet::$app->system->request->checkCSRFToken()) {
-            return false;
+//            return false;
         }
 
         return true;

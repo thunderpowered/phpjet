@@ -261,7 +261,7 @@ class ModelAdmin extends Model
                 $panelMode = $this->getAdminContext($this->contextPanelState, $adminId);
                 return new ModelResponse(true, '', [
                     'wallpaper' => $wallpaper,
-                    'panelMode' => $panelMode
+                    'mode' => $panelMode
                 ]);
             default:
                 return new ModelResponse(false, 'unknown settings key');
