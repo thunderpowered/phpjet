@@ -8,5 +8,10 @@
   },
   "Theme": {
     "ChangeWallpaper": "Сменить обои"
+  },
+  "Widgets": {
+    "Language": {
+      "ChangeLanguage": "Изменить отображаемый язык"
+    }
   }
 }

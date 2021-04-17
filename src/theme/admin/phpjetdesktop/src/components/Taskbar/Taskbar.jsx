@@ -3,6 +3,7 @@ import Tasklist from "./Tasklist";
 import StartButton from "../Buttons/StartButton";
 import './Tarkbar.scss';
 import ClocksContainer from "../Clocks/ClocksContainer";
+import Language from "../Widgets/Language";
 
 const Taskbar = ({windows, onClickStartButton, onClickTask}) => {
     return (
@@ -10,7 +11,8 @@ const Taskbar = ({windows, onClickStartButton, onClickTask}) => {
             <StartButton onClick={onClickStartButton}/>
             <Tasklist onClick={onClickTask} windows={windows}/>
             <div className="Taskbar__widget-rack justify-self-end ml-auto">
-                <ClocksContainer/>
+                <Language />
+                {/*<ClocksContainer/>*/}
             </div>
         </div>
     )

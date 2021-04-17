@@ -8,6 +8,16 @@ import {initReactI18next} from "react-i18next";
 const cookieName = 'language';
 
 export const LANGUAGES = ['en', 'ru']; // add more if needed
+export const LANGUAGE_LABELS = {
+    'en' : {
+        'label' : 'ENG',
+        'icon' : '/common/ff-us.svg'
+    },
+    'ru' : {
+        'label' : 'РУС',
+        'icon' : '/common/ff-ru.svg'
+    }
+};
 
 export const getSavedLanguage = () => {
     return getCookie(cookieName);
@@ -41,13 +51,14 @@ export const changeLanguage = (lang, saveLang = true) => {
 }
 
 export const DEFAULT_LANGUAGE = LANGUAGES[0];
-export const LANGUAGE = getSavedLanguage() ?? getClientLanguage() ?? DEFAULT_LANGUAGE;
+export const getLanguage = () => getSavedLanguage() ?? getClientLanguage() ?? DEFAULT_LANGUAGE;
+
 
 i18n
     .use(initReactI18next)
     .init({
         interpolation: {escapeValue: false},
-        lng: LANGUAGE,
+        lng: getLanguage(),
         fallbackLng: DEFAULT_LANGUAGE,
         resources: {
             en: {

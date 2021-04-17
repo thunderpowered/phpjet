@@ -1,3 +1,63 @@
+/* <======== FLEXBOX ========> */
+@mixin flex($ff) {
+  display: flex;
+
+  @if $ff == lt {
+    justify-content: flex-start;
+    align-items: flex-start;
+  } @else if $ff == lc {
+    justify-content: flex-start;
+    align-items: center;
+  } @else if $ff == lb {
+    justify-content: flex-start;
+    align-items: flex-end;
+  } @else if $ff == ct {
+    justify-content: center;
+    align-items: flex-start;
+  } @else if $ff == cc {
+    justify-content: center;
+    align-items: center;
+  } @else if $ff == cb {
+    justify-content: center;
+    align-items: flex-end;
+  } @else if $ff == rt {
+    justify-content: flex-end;
+    align-items: flex-start;
+  } @else if $ff == rc {
+    justify-content: flex-end;
+    align-items: center;
+  } @else if $ff == rb {
+    justify-content: flex-end;
+    align-items: flex-end;
+  } @else if $ff == st {
+    justify-content: space-between;
+    align-items: flex-start;
+  } @else if $ff == sc {
+    justify-content: space-between;
+    align-items: center;
+  } @else if $ff == sb {
+    justify-content: space-between;
+    align-items: flex-end;
+  } @else if $ff == ls {
+    justify-content: flex-start;
+    align-items: stretch;
+  } @else if $ff == cs {
+    justify-content: center;
+    align-items: stretch;
+  } @else if $ff == rs {
+    justify-content: flex-end;
+    align-items: stretch;
+  } @else if $ff == ss {
+    justify-content: space-between;
+    align-items: stretch;
+  } @else if $ff == sn {
+    justify-content: space-between;
+    align-items: baseline;
+  } @else {
+
+  }
+}
+
 @mixin position-($position, $location) {
   position: $position;
   @if $location == center {
