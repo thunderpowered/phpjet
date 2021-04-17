@@ -18,9 +18,8 @@ class Workspace extends React.Component {
 
     render() {
         const {mode} = this.props;
-        console.log(mode);
         return (
-            <div className="Workspace" onClick={this.onClickMaster.bind(this)}>
+            <div className={`Workspace Workspace-mode--${mode}`} onClick={this.onClickMaster.bind(this)}>
                 {mode === PANEL_MODE_WINDOW &&
                     <BackgroundContainer/>
                 }

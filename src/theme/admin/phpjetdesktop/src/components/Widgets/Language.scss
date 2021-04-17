@@ -13,7 +13,7 @@
 
   &__label {
     @include flex(sc);
-    margin-top: 2px;
+    margin-top: 0;
 
     img {
       width: 1.6rem;
@@ -24,7 +24,7 @@
     min-width: 3rem;
     background-color: $background-color-lighter;
     border-color: transparent;
-    padding: $gutter-default / 2 $gutter-larger;
+    padding: $gutter-default / 2 $gutter-default / 3;
     outline: none !important;
 
     &__item {
