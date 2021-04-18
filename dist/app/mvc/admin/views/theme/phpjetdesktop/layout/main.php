@@ -64,9 +64,6 @@ use Jet\PHPJet; ?>
 <!-- BOOTSTRAP MSG -->
 <?php echo $this->includeCommonJS('libs/bootstrap-msg-1.0.8/js/bootstrap-msg.js'); ?>
 
-<!-- NICESCROLL.JS -->
-<?php echo $this->includeCommonJS('libs/jquery.nicescroll-3.7.6/jquery.nicescroll.min.js'); ?>
-
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('js/desktop.js'); ?>
 

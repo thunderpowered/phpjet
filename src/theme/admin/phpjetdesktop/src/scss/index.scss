@@ -70,3 +70,25 @@ html, body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+/* <======== SCROLLBAR ========> */
+.custom-scroll {
+  padding-right: 7px;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color-lighter;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $button-color-default-active;
+  }
+
+  // FireFox
+  scrollbar-width: thin;
+  scrollbar-color: $button-color-default-active  $background-color-lighter;
+}

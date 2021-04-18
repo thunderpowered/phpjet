@@ -13,7 +13,7 @@ module.exports = {
                 loader: require.resolve('babel-loader'),
             },
             {
-                test: /\.s[ac]ss$/i,
+                test: /\.(s[ac]ss|css)$/i,
                 use: [
                     MiniCssExtractPlugin.loader,
                     "css-loader",

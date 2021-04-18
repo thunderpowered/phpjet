@@ -39,4 +39,4 @@ $urls->setAction('Record', '/{RECORD_ID}', 'Record', [
     'GET' => [
         'mode' => [null, true]
     ]
-]);
+], false);
