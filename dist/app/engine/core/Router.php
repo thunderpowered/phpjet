@@ -727,11 +727,12 @@ class Router
 
         // check for url-args
         if ($params['args']) {
-            foreach ($params['args'] as $key => &$value) {
+            foreach ($params['args'] as $key => $value) {
                 $value = $value[0] ?? null;
                 if (!$value) {
-                    throw new WrongDataException("parameter '{$key} cannot be empty'");
+                    throw new WrongDataException("parameter '$key' cannot be empty'");
                 }
+                $params['args'][$key] = $value;
             }
             // no validation, just make sure they exist
             $result['ARGS'] = $params['args'];
@@ -739,9 +740,9 @@ class Router
         }
 
         // proceed query-params
-        foreach ($params as $paramMethod => &$paramData) {
+        foreach ($params as $paramMethod => $paramData) {
             foreach ($paramData as $key => $type) {
-                $funcName = "get{$paramMethod}";
+                $funcName = "get$paramMethod";
                 if (!method_exists(PHPJet::$app->system->request, $funcName)) {
                     throw new WrongDataException("unexpected method");
                 }
@@ -752,7 +753,7 @@ class Router
 
                     // 1. check if no data at all (if required)
                     if ($required && !$value) {
-                        throw new WrongDataException("parameter '{$key}' cannot be empty");
+                        throw new WrongDataException("parameter '$key' cannot be empty");
                     }
 
                     // 2. proceed validation (if datatype is set and not empty)
@@ -763,17 +764,15 @@ class Router
                             if (!$validated) {
                                 // todo return more information to users
                                 // i suppose validator should return nothing if everything is fine and string with info if there are errors
-                                throw new WrongDataException("parameter '{$key}' has invalid format");
+                                throw new WrongDataException("parameter '$key' has invalid format");
                             }
                         } else {
                             throw new CoreException("validator '{$dataType}' does not exist");
                         }
                     }
                 }
-                $paramData[$key] = $value;
+                $result[$paramMethod][$key] = $value;
             }
-            $result[$paramMethod] = $paramData;
-            unset ($paramData);
         }
         return $result;
     }
@@ -841,6 +840,7 @@ class Router
         define('HTTP_OK', 200);
         define('HTTP_CREATED', 201);
         define('HTTP_BAD_REQUEST', 400);
+        define('HTTP_NOT_FOUND', 404);
         define('HTTP_UNAUTHORIZED', 401);
         define('HTTP_INTERNAL_SERVER_ERROR', 500);
     }

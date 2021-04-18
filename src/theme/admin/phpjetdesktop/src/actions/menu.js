@@ -1,4 +1,5 @@
 export const SET_MENU_VISIBILITY = 'SET_MENU_VISIBILITY';
+export const SET_MENU_LIST = 'SET_MENU_LIST';
 export const TOGGLE_MENU = 'TOGGLE_MENU';
 
 export const toggleMenu = () => ({
@@ -13,4 +14,9 @@ export const openMenu = () => ({
 export const closeMenu = () => ({
     type: SET_MENU_VISIBILITY,
     opened: false
+});
+
+export const setMenuList = list => ({
+    type: SET_MENU_LIST,
+    list
 });

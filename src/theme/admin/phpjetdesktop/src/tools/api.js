@@ -56,9 +56,14 @@ class Api {
         if (!options.queryParams) {
             options.queryParams = {};
         }
-        options.body = method === 'GET' ? null : json ? JSON.stringify(options.queryParams) : options.queryParams;
-        delete options.queryParams;
-        return fetch(this.apiBaseUrl + url, options)
+        url = new URL(this.apiBaseUrl + url);
+        if (method === 'GET') {
+            url.search = new URLSearchParams(options.queryParams).toString();
+            options.body = null;
+        } else {
+            options.body = json ? JSON.stringify(options.queryParams) : options.queryParams;
+        }
+        return fetch(url, options)
             .then(
                 result => {
                     return result.json();
