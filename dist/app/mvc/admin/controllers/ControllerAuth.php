@@ -128,4 +128,19 @@ class ControllerAuth extends Controller
             return $this->view->json(HTTP_OK, ['auth' => true, 'admin_id' => $result->customData['id']], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
         }
     }
+
+    /**
+     * @param string $method
+     * @return ViewResponse
+     */
+    public function actionLogout(string $method): ViewResponse
+    {
+        $result = $this->modelAdmin->logout();
+        if (!$result->status) {
+            // i really have no idea what i should return in this case
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => null], '', new MessageBox(MessageBox::ERROR, "Failed - " . $result->message));
+        } else {
+            return $this->view->json(HTTP_OK, ['auth' => false], '', new MessageBox(MessageBox::SUCCESS, 'Successfully signed off'));
+        }
+    }
 }

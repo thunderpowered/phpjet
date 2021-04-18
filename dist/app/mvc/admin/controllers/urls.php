@@ -25,7 +25,7 @@ $urls->setAction('Auth', '/verify', 'Verify', [
     ]
 ]);
 $urls->setAction('Auth', '/logout', 'Logout', [
-    'GET' => []
+    'POST' => []
 ]);
 
 /* <==== ADMIN CONTROLLER ==== > */

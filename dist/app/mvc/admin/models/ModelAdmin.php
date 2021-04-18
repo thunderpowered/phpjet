@@ -221,25 +221,25 @@ class ModelAdmin extends Model
         return (int)PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
     }
 
-    public function logout(): bool
+    public function logout(): ModelResponse
     {
         $adminID = $this->getAdminID();
         if (!$adminID) {
 
             $this->recordActions('Logout', false, 'attempt failed - admin is already signed off.');
-            return false;
+            return new ModelResponse(false, 'admin is already signed off');
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
 
             $this->recordActions('Logout', false, 'attempt failed - no such admin in Database.');
-            return false;
+            return new ModelResponse(false, 'no such admin in Database');
         }
 
         $this->recordActions('Logout', true, 'attempt successful - admin signing off completed.');
         $this->forbidAccess();
-        return true;
+        return new ModelResponse(true);
     }
 
     /**

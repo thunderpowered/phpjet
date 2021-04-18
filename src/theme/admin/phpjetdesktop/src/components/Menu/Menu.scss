@@ -1,0 +1,39 @@
+@import './../../scss/variables';
+
+.menu {
+  z-index: 2;
+
+  &__list {
+    max-height: 60vh;
+    overflow: auto;
+  }
+
+  &__inner {
+    background-color: $background-color-darker;
+  }
+}
+
+/* <======== WORKSPACE CLASSIC MODE ======== */
+.workspace-mode--classic {
+  .menu {
+    z-index: 4 !important;
+
+    & > div {
+      display: block !important;
+
+      & > div > div > div {
+        justify-content: space-between;
+      }
+    }
+
+    &__list {
+      & > div:last-of-type {
+        //border-bottom: 1px solid $border-color-default !important;
+      }
+    }
+
+    &__inner {
+      height: 100% !important;
+    }
+  }
+}

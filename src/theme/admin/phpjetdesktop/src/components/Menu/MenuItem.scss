@@ -1,0 +1,34 @@
+@import './../../scss/variables';
+
+.menu-item {
+  width: 400px;
+  max-width: 100%;
+  cursor: pointer;
+  border-left: 3px solid $button-color-accent;
+  border-top: 1px solid $border-color-default;
+
+  &:hover, &:active {
+    background-color: $button-color-default;
+  }
+
+
+  &__icon-container {
+    margin-right: 15px !important;
+    margin-left: 10px !important;
+  }
+
+  &__text {
+    //margin-bottom: 4px; // i have no idea why it is always happening
+  }
+}
+
+/* <======== WORKSPACE CLASSIC MODE ======== */
+.workspace-mode--classic {
+  .menu-item {
+    border-left-color: $border-color-default !important;
+
+    &--active {
+      border-left-color: $button-color-accent !important;
+    }
+  }
+}

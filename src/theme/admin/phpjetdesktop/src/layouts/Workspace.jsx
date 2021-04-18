@@ -6,6 +6,7 @@ import {closeContextMenu} from "../actions/contextMenu";
 import ContextMenu from "../components/ContextMenu/ContextMenu";
 import TaskbarContainer from "../components/Taskbar/TaskbarContainer";
 import {loadAdminSettings} from "../api/admin";
+import MenuContainer from "../components/Menu/MenuContainer";
 
 class Workspace extends React.Component {
     onClickMaster = () => {
@@ -19,10 +20,11 @@ class Workspace extends React.Component {
     render() {
         const {mode} = this.props;
         return (
-            <div className={`Workspace Workspace-mode--${mode}`} onClick={this.onClickMaster.bind(this)}>
+            <div className={`workspace workspace-mode--${mode}`} onClick={this.onClickMaster.bind(this)}>
                 {mode === PANEL_MODE_WINDOW &&
                     <BackgroundContainer/>
                 }
+                <MenuContainer/>
                 <TaskbarContainer/>
                 <ContextMenu/>
             </div>
