@@ -12,7 +12,7 @@ class AuthContainer extends React.Component {
         }
     }
     render() {
-        const {action} = this.props;
+        const action = this.props.action ? this.props.action : '1F'; // ?? '1F'
         return <Auth action={action} onSubmit={this.actions[action]}/>
     }
 }

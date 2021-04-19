@@ -6,9 +6,6 @@ import {closeContextMenu, openContextMenu} from "../../actions/contextMenu";
 import {withTranslation} from "react-i18next";
 
 class BackgroundContainer extends React.Component {
-    componentDidMount() {
-        this.props.dispatch(fetchWallpaper())
-    }
 
     onChangeWallpaper(event) {
         const {dispatch} = this.props;
@@ -39,7 +36,7 @@ class BackgroundContainer extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    wallpaper: state.background.wallpaper
+    wallpaper: state.admin.settings.appearance.wallpaper
 });
 
 export default withTranslation('common')(connect(mapStateToProps)(BackgroundContainer))

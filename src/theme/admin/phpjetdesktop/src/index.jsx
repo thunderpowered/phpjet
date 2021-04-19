@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+// disabled, don't forget to install this shit if you're going to use it (really why?)
+// import 'mdb-react-ui-kit/dist/css/mdb.min.css'
 import Desktop from "./Desktop";
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';

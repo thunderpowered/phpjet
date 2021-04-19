@@ -4,9 +4,15 @@
     "EnterYourPassword": "Your password",
     "EnterVerificationCode": "Enter verification code here",
     "Login": "Login",
-    "Verify": "Verify"
+    "Verify": "Verify",
+    "Logout": "Sign out"
   },
   "Theme": {
     "ChangeWallpaper": "Change wallpaper"
+  },
+  "Widgets": {
+    "Language": {
+      "ChangeLanguage": "Change the display language"
+    }
   }
 }

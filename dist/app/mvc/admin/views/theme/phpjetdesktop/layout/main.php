@@ -3,8 +3,10 @@
  * @var View $this
  * @var WidgetMisc $this->widget->widgetMisc
  */
+
 use Jet\App\Engine\Core\View;
-use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
+use Jet\App\MVC\Admin\Widgets\WidgetMisc;
+use Jet\PHPJet; ?>
 <!DOCTYPE html>
 <!--[if lt IE 7]>
 <html lang="ru" class="lt-ie9 lt-ie8 lt-ie7"><![endif]-->
@@ -18,10 +20,9 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <head>
     <!-- META -->
     <meta charset="UTF-8">
-
     <!-- TOKEN -->
-    <meta name="csrf_token" content="<?= \Jet\PHPJet::$app->system->token->generateToken() ?>">
-
+    <meta name="csrf_token" content="<?= PHPJet::$app->system->token->generateToken() ?>">
+    <!-- COLOR THEME -->
     <meta name="theme-color" content="#000">
     <!-- Color theme for Chrome, Firefox and Opera -->
     <meta name="theme-color" content="#000">
@@ -29,7 +30,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
     <meta name="msapplication-navbutton-color" content="#000">
     <!-- iOS Safari -->
     <meta name="apple-mobile-web-app-status-bar-style" content="#000">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- END META -->
 
@@ -54,6 +54,7 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 <body>
 <!-- VIEW -->
 <?php echo $this->view; ?>
+
 <!-- DATATABLES -->
 <?php echo $this->includeCommonJS('libs/datatables/datatables.min.js'); ?>
 
@@ -62,9 +63,6 @@ use Jet\App\MVC\Admin\Widgets\WidgetMisc; ?>
 
 <!-- BOOTSTRAP MSG -->
 <?php echo $this->includeCommonJS('libs/bootstrap-msg-1.0.8/js/bootstrap-msg.js'); ?>
-
-<!-- NICESCROLL.JS -->
-<?php echo $this->includeCommonJS('libs/jquery.nicescroll-3.7.6/jquery.nicescroll.min.js'); ?>
 
 <!-- REACT APPLICATION -->
 <?php echo $this->includeJS('js/desktop.js'); ?>

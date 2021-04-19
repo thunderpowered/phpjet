@@ -1,0 +1,18 @@
+{
+  "Auth": {
+    "EnterYourEmail": "Ваш Email",
+    "EnterYourPassword": "Ваш пароль",
+    "EnterVerificationCode": "Введите код верификации",
+    "Login": "Войти",
+    "Verify": "Проверить",
+    "Logout": "Выйти"
+  },
+  "Theme": {
+    "ChangeWallpaper": "Сменить обои"
+  },
+  "Widgets": {
+    "Language": {
+      "ChangeLanguage": "Изменить отображаемый язык"
+    }
+  }
+}

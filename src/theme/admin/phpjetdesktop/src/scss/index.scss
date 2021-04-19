@@ -8,11 +8,10 @@
 }
 
 html, body {
-  // temp
   min-width: 1024px !important;
 }
 
-// PLUGIN: bootstrap-msg
+/* <======== BOOTSTRAP-MSG ======== */
 #msg:before {
   display: block;
   content: '';
@@ -31,7 +30,6 @@ html, body {
   color: #ebebeb !important;
   padding: 14px 20px;
 }
-
 
 #msg i {
   display: none !important;
@@ -55,4 +53,42 @@ html, body {
 
 #msg.alert-info:before {
   background-color: orangered;
+}
+
+/* <======== FONT-AWESOME TWEAKS ========> */
+.fa-container {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+}
+
+.fa-container i {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* <======== SCROLLBAR ========> */
+.custom-scroll {
+  padding-right: 7px;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $background-color-lighter;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $button-color-default-active;
+  }
+
+  // FireFox
+  scrollbar-width: thin;
+  scrollbar-color: $button-color-default-active  $background-color-lighter;
 }

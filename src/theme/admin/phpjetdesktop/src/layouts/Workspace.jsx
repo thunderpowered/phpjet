@@ -5,19 +5,26 @@ import BackgroundContainer from "../components/Background/BackgroundContainer";
 import {closeContextMenu} from "../actions/contextMenu";
 import ContextMenu from "../components/ContextMenu/ContextMenu";
 import TaskbarContainer from "../components/Taskbar/TaskbarContainer";
+import {loadAdminSettings} from "../api/admin";
+import MenuContainer from "../components/Menu/MenuContainer";
 
 class Workspace extends React.Component {
     onClickMaster = () => {
         this.props.dispatch(closeContextMenu());
     };
 
+    componentDidMount() {
+        this.props.dispatch(loadAdminSettings(this.props.admin_id, 'appearance'));
+    }
+
     render() {
         const {mode} = this.props;
         return (
-            <div className="Workspace" onClick={this.onClickMaster.bind(this)}>
+            <div className={`workspace workspace-mode--${mode}`} onClick={this.onClickMaster.bind(this)}>
                 {mode === PANEL_MODE_WINDOW &&
-                <BackgroundContainer/>
+                    <BackgroundContainer/>
                 }
+                <MenuContainer/>
                 <TaskbarContainer/>
                 <ContextMenu/>
             </div>
@@ -26,7 +33,8 @@ class Workspace extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    mode: state.workspace.mode
+    mode: state.admin.settings.appearance.mode,
+    admin_id: state.auth.admin_id
 });
 
 export default connect(mapStateToProps)(Workspace)

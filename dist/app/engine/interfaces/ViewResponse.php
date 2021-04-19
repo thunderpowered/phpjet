@@ -17,15 +17,21 @@ class ViewResponse
      * @var string
      */
     public $response;
+    /**
+     * @var int
+     */
+    public $status;
 
     /**
      * ViewResponse constructor.
      * @param bool $SPA
      * @param string $response
+     * @param int $status
      */
-    public function __construct(bool $SPA = false, string $response = '')
+    public function __construct(bool $SPA = false, string $response = '', int $status = HTTP_OK)
     {
         $this->SPA = $SPA;
         $this->response = $response;
+        $this->status = $status;
     }
 }

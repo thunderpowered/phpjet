@@ -134,11 +134,11 @@ class Request
     /**
      * @param string $name
      * @param bool $removeSpecialChars
-     * @return string|array
+     * @return array|string|null
      */
     public function getGET(string $name = '', bool $removeSpecialChars = true)
     {
-        $result = [];
+        $result = null;
         if (!$name) {
             $result = $this->get;
         } else {
@@ -161,35 +161,17 @@ class Request
      */
     public function getPOST(string $name = '', bool $removeSpecialChars = false)
     {
-        /**
-         * todo if the name exists return null|string, if not - array
-         */
-        if (!$this->post) {
-            return [];
-        }
-
-        // Since Request owns POST-array, there's no need to check CSRF-token twice
-        // If it is already checked we assume that everything is correct
-        if (!$this->CSRFAlreadyChecked) {
-            if ($this->checkCSRFToken()) {
-                return [];
-            }
-        }
-
+        $result = null;
         if (!$name) {
             $result = $this->post;
         } else {
             if (array_key_exists($name, $this->post)) {
                 $result = $this->post[$name];
-            } else {
-                $result = NULL;
             }
         }
-
         if ($result && $removeSpecialChars) {
             $result = PHPJet::$app->tool->utils->removeSpecialChars($result);
         }
-
         return $result;
     }
 

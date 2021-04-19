@@ -2,11 +2,12 @@
 
 namespace Jet\App\MVC\Admin\Models;
 
-use Jet\App\Engine\Core\ActiveRecord;
-use Jet\App\Engine\Core\Tables\Authority;
-use Jet\App\Engine\Core\Tables\Tracker_Authority;
+use Exception;
+use Jet\App\Database\Authority;
 use Jet\App\Engine\Core\Model;
+use Jet\App\Engine\Interfaces\ModelResponse;
 use Jet\PHPJet;
+use stdClass;
 
 /**
  * Class ModelAdmin
@@ -93,69 +94,67 @@ class ModelAdmin extends Model
     }
 
     /**
+     * @param int $id
      * @return bool
      */
-    public function isAdminAuthorized(): bool
+    public function validateAdmin(int $id): bool
+    {
+        // just check whether or not passed id is current authorized admin id
+        $adminId = $this->getAdminID();
+        return $id && $adminId && $id === $adminId;
+    }
+
+    /**
+     * @return ModelResponse
+     */
+    public function isAdminAuthorized(): ModelResponse
     {
         // basic auth check
         $isAdminAuthorized = PHPJet::$app->system->request->getSESSION($this->sessionAuthorizedKey);
         if (!$isAdminAuthorized) {
-            return false;
+            return new ModelResponse(false);
         }
 
         // extended auth check
         $fingerprint = $this->getFingerprint();
         $fingerprintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerprintSession || !$fingerprint || $fingerprintSession !== $fingerprint) {
-            return false;
+            return new ModelResponse(false);
         }
-
         // everything is fine
-        return true;
+        return new ModelResponse(true, '', [
+            'id' => $this->getAdminID()
+        ]);
     }
 
     /**
      * @param string $email
      * @param string $password
-     * @param string $urlTokenSessionKey
-     * @param string $urlTokenURLKey
-     * @return array
+     * @return ModelResponse
      */
-    public function authorizeAdmin(string $email, string $password): array
+    public function authorizeAdmin(string $email, string $password): ModelResponse
     {
-        $emailValid = PHPJet::$app->tool->formatter->validateEmail($email);
-        if (!$emailValid) {
-
-            $this->recordActions('Auth', false, 'attempt failed - invalid email.');
-            return ['valid' => false];
-        }
-
         $admin = Authority::getOne(['email' => $email], [], [], false);
         if (!$admin) {
-
             $this->recordActions('Auth', false, 'attempt failed - no such email in Database.');
-            return ['valid' => false];
+            return new ModelResponse(false, 'no such email in database');
         }
 
         $passwordCorrect = password_verify($password, $admin->password);
         if (!$passwordCorrect) {
-
             $this->recordActions('Auth', false, 'attempt failed - wrong password.');
-            return ['valid' => false];
+            return new ModelResponse(false, 'wrong password');
         }
 
-        // Everything is fine
         if (!$admin->two_factor_auth) {
             $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
-
             $this->recordActions('Auth', true, 'attempt successful - no 2F auth needed.');
-            return ['valid' => true, '2F' => false, 'urls' => $urls];
+            return new ModelResponse(true, 'successfully authorized', ['action' => null, 'id' => $admin->id]);
         } else {
             $code = $this->start2FAuthentication($admin);
             $this->sendEmailWith2FAuthenticationData($code, $admin);
-
             $this->recordActions('Auth', true, 'attempt successful - waiting for 2F auth.');
-            return ['valid' => true, '2F' => true];
+            return new ModelResponse(true, 'verification required', ['action' => '2F']);
         }
     }
 
@@ -179,42 +178,39 @@ class ModelAdmin extends Model
 
     /**
      * @param string $verificationCode
-     * @return array
+     * @return ModelResponse
      */
-    public function validate2FAuthentication(string $verificationCode): array
+    public function validate2FAuthentication(string $verificationCode): ModelResponse
     {
         $adminID = PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
         if (!$adminID) {
 
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Session.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         $fingerPrint = $this->getFingerprint();
         $fingerPrintSession = PHPJet::$app->system->request->getSESSION($this->sessionFingerprint);
         if (!$fingerPrintSession || $fingerPrint !== $fingerPrintSession) {
-
             $this->recordActions('Auth', false, '2F verification failed - fingerprint incorrect.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
-
             $this->recordActions('Auth', false, '2F verification failed - no such admin in Database.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         if (!password_verify($verificationCode, $admin->session_token)) {
-
             $this->recordActions('Auth', false, '2F verification failed - invalid verification code.');
-            return ['valid' => false];
+            return new ModelResponse(false);
         }
 
         // seems like everything is ok
         $this->recordActions('Auth', true, '2F verification successful - auth completed.');
         $urls = $this->grantAccess($admin, $this->urlTokenURLKey, $this->urlTokenSessionKey);
-        return ['valid' => true, 'urls' => $urls];
+        return new ModelResponse(true, '', ['id' => $admin->id]);
     }
 
     /**
@@ -225,38 +221,60 @@ class ModelAdmin extends Model
         return (int)PHPJet::$app->system->request->getSESSION($this->sessionAdminID);
     }
 
-    public function logout(): bool
+    public function logout(): ModelResponse
     {
         $adminID = $this->getAdminID();
         if (!$adminID) {
 
             $this->recordActions('Logout', false, 'attempt failed - admin is already signed off.');
-            return false;
+            return new ModelResponse(false, 'admin is already signed off');
         }
 
         $admin = Authority::getOne(['id' => $adminID], [], [], false);
         if (!$admin) {
 
             $this->recordActions('Logout', false, 'attempt failed - no such admin in Database.');
-            return false;
+            return new ModelResponse(false, 'no such admin in Database');
         }
 
         $this->recordActions('Logout', true, 'attempt successful - admin signing off completed.');
         $this->forbidAccess();
-        return true;
+        return new ModelResponse(true);
+    }
+
+    /**
+     * @param int $adminId
+     * @param string $settings
+     * @return ModelResponse
+     */
+    public function getAdminSettings(int $adminId, string $settings): ModelResponse
+    {
+        switch ($settings) {
+            // todo maybe store it all together? It'd be easier to work with
+            case 'appearance':
+                // wallpaper (just because this is cool)
+                $wallpaper = $this->getAdminContext($this->contextKeyWallpaper, $adminId);
+                if ($wallpaper) {
+                    $wallpaper = PHPJet::$app->tool->utils->getImageLink($wallpaper);
+                }
+                // since
+                $panelMode = $this->getAdminContext($this->contextPanelState, $adminId);
+                return new ModelResponse(true, '', [
+                    'wallpaper' => $wallpaper,
+                    'mode' => $panelMode
+                ]);
+            default:
+                return new ModelResponse(false, 'unknown settings key');
+        }
     }
 
     /**
      * @param string $contextName
+     * @param int $adminID
      * @return string
      */
-    public function getAdminContext(string $contextName): string
+    public function getAdminContext(string $contextName, int $adminID): string
     {
-        $adminID = $this->getAdminID();
-        if (!$adminID || !$contextName) {
-            return '';
-        }
-
         return PHPJet::$app->system->settings->getContext($this->getAdminContextKey($contextName, $adminID));
     }
 
@@ -279,12 +297,14 @@ class ModelAdmin extends Model
      * @param string $action
      * @param bool $status
      * @param string $explanation
-     * @return bool
+     * @deprecated
      */
-    public function recordActions(string $action, bool $status, string $explanation = ''): bool
+    public function recordActions(string $action, bool $status, string $explanation = ''): void
     {
-        $adminID = (int)$this->getAdminID();
-        return PHPJet::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
+        return; // disabled until i figure out whether it is necessary or not
+
+//        $adminID = (int)$this->getAdminID();
+//        return PHPJet::$app->system->tracker->trackAdminActions($adminID, $action, $status, $explanation);
     }
 
     /**
@@ -461,11 +481,11 @@ class ModelAdmin extends Model
      * @param Authority $admin
      * @param string $urlTokenURLKey
      * @param string $urlTokenSessionKey
-     * @return array
+     * @return array|string[]
      */
     private function grantAccess(Authority $admin, string $urlTokenURLKey, string $urlTokenSessionKey)
     {
-        $token = PHPJet::$app->system->token->generateHash();
+        $token = PHPJet::$app->system->token->generateRandomString();
         PHPJet::$app->system->request->setSESSION($this->sessionAuthorizedKey, true);
         PHPJet::$app->system->request->setSESSION($this->sessionAdminID, $admin->id);
         PHPJet::$app->system->request->setSESSION($this->sessionFingerprint, $this->getFingerprint());

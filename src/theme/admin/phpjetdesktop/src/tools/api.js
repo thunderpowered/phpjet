@@ -1,5 +1,6 @@
 import {API_BASE_URL} from "../constants/Api";
 import {TOKEN} from "../constants/Token";
+import {shoutOut} from "./alert";
 
 class Api {
     constructor(apiBaseUrl, token) {
@@ -8,15 +9,15 @@ class Api {
     }
 
     get(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('GET', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('GET', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     post(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('POST', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('POST', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     put(url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        this.#__fetch('PUT', url, options = {}, callbackOnSuccess, callbackOnError, json);
+        this.#__fetch('PUT', url, options, callbackOnSuccess, callbackOnError, json);
     }
 
     file(url, options = {}, callbackOnSuccess, callbackOnError) {
@@ -36,54 +37,60 @@ class Api {
     }
 
     #__fetch(method, url, options = {}, callbackOnSuccess, callbackOnError, json = true) {
-        if (typeof this.apiBaseUrl === 'undefined') {
-            throw new Error('API_BASE_URL is not defined');
+        if (typeof this.apiBaseUrl === 'undefined' || !this.apiBaseUrl) {
+            throw new Error('API_BASE_URL is not defined or empty');
         }
-        if (typeof this.token === 'undefined') {
-            throw new Error('TOKEN is not defined');
+        if (typeof this.token === 'undefined' || !this.token) {
+            throw new Error('TOKEN is not defined or empty');
         }
         options = {
             method: method,
             credentials: 'same-origin',
             redirect: 'error',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': this.token // should be everywhere
             },
             ...options,
         };
         if (!options.queryParams) {
             options.queryParams = {};
         }
-        if (typeof options.queryParams.__csrf === 'undefined' || !options.queryParams.__csrf) {
-            options.queryParams.__csrf = this.token;
+        url = new URL(this.apiBaseUrl + url);
+        if (method === 'GET') {
+            url.search = new URLSearchParams(options.queryParams).toString();
+            options.body = null;
+        } else {
+            options.body = json ? JSON.stringify(options.queryParams) : options.queryParams;
         }
-        options.body = method === 'GET' ? null : json ? JSON.stringify(options.queryParams) : options.queryParams;
-        delete options.queryParams;
-        return fetch(this.apiBaseUrl + url, options)
-            .then(result => result.json())
+        return fetch(url, options)
+            .then(
+                result => {
+                    return result.json();
+            })
             .then(
                 result => {
                     if (typeof callbackOnSuccess !== 'undefined') {
                         callbackOnSuccess(result);
                     }
-
-                    if (typeof result.messageBox !== 'undefined' && typeof result.messageBox.text !== 'undefined' && result.messageBox.text) {
+                    if (typeof result.message !== 'undefined' && typeof result.message.text !== 'undefined' && result.message.text) {
                         let style = 'info';
-                        if (typeof result.messageBox.style !== 'undefined') {
-                            style = result.messageBox.style;
+                        if (typeof result.message.style !== 'undefined') {
+                            style = result.message.style;
                         }
-
-                        if (typeof Msg === 'function') {
-                            Msg[style](result.messageBox.text, 5000);
-                        }
+                        shoutOut(result.message.text, style);
                     }
-                }, error => {
-                    Msg.danger(error, 5000);
+                },
+                error => {
+                    // data errors caught here
+                    shoutOut(error, 'danger');
                     console.error(error);
-                    if (typeof callbackOnError !== 'undefined') {
-                        callbackOnError(error);
-                    }
-                });
+                })
+            .catch(error => {
+                // other errors caught here
+                shoutOut(error, 'danger');
+                console.error(error);
+            });
     }
 }
 

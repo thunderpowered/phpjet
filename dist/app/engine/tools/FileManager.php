@@ -72,7 +72,7 @@ class FileManager
         }
 
         // let's generate random name?
-        $fileName = PHPJet::$app->system->token->generateHash($this->hashingAlgorithm) . ".{$fileExtension}";
+        $fileName = PHPJet::$app->system->token->generateRandomString(64, $this->hashingAlgorithm) . ".{$fileExtension}";
         $filePath = $filePath . $fileName;
         $fileURL = $fileURL . $fileName;
 

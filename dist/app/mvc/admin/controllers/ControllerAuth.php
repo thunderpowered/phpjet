@@ -3,6 +3,9 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
+use Jet\App\Engine\Core\Controller;
+use Jet\App\Engine\Core\View;
+use Jet\App\Engine\Interfaces\MessageBox;
 use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\App\MVC\Admin\Models\ModelAdmin;
 use Jet\PHPJet;
@@ -11,7 +14,7 @@ use Jet\PHPJet;
  * Class ControllerAuth
  * @package Jet\App\MVC\Admin\Controllers
  */
-class ControllerAuth extends ControllerAdmin
+class ControllerAuth extends Controller
 {
     /**
      * @var ModelAdmin
@@ -38,11 +41,12 @@ class ControllerAuth extends ControllerAdmin
 
     /**
      * ControllerAuth constructor.
-     * @param string $name
+     * @param View $view
+     * @param bool $enableTracker
      */
-    public function __construct(string $name = "")
+    public function __construct(View $view, bool $enableTracker = false)
     {
-        parent::__construct($name, true);
+        parent::__construct($view, $enableTracker);
         $this->modelAdmin = new ModelAdmin('admin', $this->urlTokenURLKey, $this->urlTokenSessionKey);
     }
 
@@ -72,98 +76,71 @@ class ControllerAuth extends ControllerAdmin
     }
 
     /**
-     * @return string
+     * @return ViewResponse
      */
-    public function actionBasicPOST(): string
+    public function actionCheck(): ViewResponse
     {
-        $json = PHPJet::$app->system->request->getJSON();
-        PHPJet::$app->tool->JSONOutput->setAction('1F'); // actions: [1F, 2F, S]
-        if (!$json || empty($json[$this->jsonEmailField]) || empty($json[$this->jsonPasswordField])) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('No data');
-
-            $this->modelAdmin->recordActions('Auth', false, 'attempt failed - no data.');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
-        // Following actions recorded in Model
-        $email = $json[$this->jsonEmailField];
-        $password = $json[$this->jsonPasswordField];
-        $result = $this->modelAdmin->authorizeAdmin($email, $password);
-        if (!$result['valid']) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Wrong login or password.');
-
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
-        if (!$result['2F']) {
-            return $this->returnSuccessfulAuthorizationMessage($result);
+        $admin = $this->modelAdmin->isAdminAuthorized();
+        if ($admin->status) {
+            return $this->view->json(HTTP_OK, [
+                'auth' => true,
+                'admin_id' => $admin->customData['id']
+            ]);
         } else {
-            PHPJet::$app->tool->JSONOutput->setStatusTrue();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('We have sent you email with verification code.');
-            PHPJet::$app->tool->JSONOutput->setAction('2F');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
+            return $this->view->json(HTTP_OK, [
+                'auth' => false,
+            ]);
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function actionLogoutPOST(): string
-    {
-        // Following actions record in Model
-        $result = $this->modelAdmin->logout();
-        if (!$result) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Failed. Probably admin is already signed off.');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        } else {
-            PHPJet::$app->tool->JSONOutput->setStatusTrue();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('You have successfully signed out.');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        }
-    }
-
-    /**
-     * @return string
-     */
-    public function actionVerifyPOST(): string
-    {
-        $json = PHPJet::$app->system->request->getJSON();
-        if (!$json || empty($json[$this->json2FVerificationField])) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('No data provided.');
-
-            $this->modelAdmin->recordActions('Auth', false, '2F verification failed - empty data.');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
-        // Following actions record in Model
-
-        $verificationCode = $json[$this->json2FVerificationField];
-        $result = $this->modelAdmin->validate2FAuthentication($verificationCode);
-        if (!$result['valid']) {
-            PHPJet::$app->tool->JSONOutput->setStatusFalse();
-            PHPJet::$app->tool->JSONOutput->setMessageBoxText('Wrong verification code.');
-            return PHPJet::$app->tool->JSONOutput->returnJSONOutput();
-        }
-
-        return $this->returnSuccessfulAuthorizationMessage($result);
     }
 
     /**
      * @param string $method
      * @param array $POST
-     * @param array $GET
      * @return ViewResponse
      */
-    public function actionLogin(string $method, array $POST, array $GET): ViewResponse
+    public function actionLogin(string $method, array $POST): ViewResponse
     {
-        var_dump($method);
-        var_dump($POST);
-        var_dump($GET);
-        // todo change order
-        exit('actionLogin');
+        $email = $POST['email'];
+        $password = $POST['password'];
+        $result = $this->modelAdmin->authorizeAdmin($email, $password);
+        if (!$result->status) {
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(MessageBox::ERROR, 'Wrong login or password'));
+        }
+        if (isset($result->customData['action']) && $result->customData['action'] === '2F') {
+            return $this->view->json(HTTP_OK, ['auth' => false], '2F', new MessageBox(MessageBox::INFO, 'We have sent you email with verification code'));
+        } else {
+            return $this->view->json(HTTP_OK, ['auth' => true, 'admin_id' => $result->customData['id']], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
+        }
+    }
+
+    /**
+     * @param string $method
+     * @param array $POST
+     * @return ViewResponse
+     */
+    public function actionVerify(string $method, array $POST): ViewResponse
+    {
+        $verificationCode = $POST['verification'];
+        $result = $this->modelAdmin->validate2FAuthentication($verificationCode);
+        if (!$result->status) {
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => false], '', new MessageBox(MessageBox::ERROR, 'Wrong verification code'));
+        } else {
+            return $this->view->json(HTTP_OK, ['auth' => true, 'admin_id' => $result->customData['id']], 'S', new MessageBox(MessageBox::SUCCESS, 'Successfully authorized'));
+        }
+    }
+
+    /**
+     * @param string $method
+     * @return ViewResponse
+     */
+    public function actionLogout(string $method): ViewResponse
+    {
+        $result = $this->modelAdmin->logout();
+        if (!$result->status) {
+            // i really have no idea what i should return in this case
+            return $this->view->json(HTTP_BAD_REQUEST, ['auth' => null], '', new MessageBox(MessageBox::ERROR, "Failed - " . $result->message));
+        } else {
+            return $this->view->json(HTTP_OK, ['auth' => false], '', new MessageBox(MessageBox::SUCCESS, 'Successfully signed off'));
+        }
     }
 }

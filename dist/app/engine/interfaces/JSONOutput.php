@@ -10,9 +10,10 @@ namespace Jet\App\Engine\Interfaces;
 class JSONOutput
 {
     /**
-     * @var bool
+     * @var int
+     * @deprecated
      */
-    public $status = false;
+    public $status = HTTP_OK;
     /**
      * @var string
      */
@@ -24,14 +25,14 @@ class JSONOutput
     /**
      * @var MessageBox
      */
-    public $messageBox;
+    public $message;
 
     /**
      * JSONOutput constructor.
      */
     public function __construct()
     {
-        $this->messageBox = new MessageBox();
+        $this->message = new MessageBox();
     }
 
     /**
@@ -43,7 +44,7 @@ class JSONOutput
             'status' => $this->status,
             'action' => $this->action,
             'data' => $this->data,
-            'message_box' => $this->messageBox
+            'message' => $this->message
         ]);
     }
 }

@@ -1,2 +1,2 @@
-export const PANEL_MODE_WINDOW = 0;
-export const PANEL_MODE_CLASSIC = 1;
+export const PANEL_MODE_WINDOW = 'window';
+export const PANEL_MODE_CLASSIC = 'classic';

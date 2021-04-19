@@ -18,7 +18,7 @@ class ModelResponse
      */
     public $message;
     /**
-     * @var \stdClass
+     * @var array
      */
     public $customData;
 
@@ -26,9 +26,9 @@ class ModelResponse
      * ModelResponse constructor.
      * @param bool $status
      * @param string $message
-     * @param \stdClass|null $customData
+     * @param array $customData
      */
-    public function __construct(bool $status = false, string $message = '', \stdClass $customData = null)
+    public function __construct(bool $status = false, string $message = '', array $customData = [])
     {
         $this->status = $status;
         $this->message = $message;

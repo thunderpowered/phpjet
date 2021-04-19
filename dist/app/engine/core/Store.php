@@ -3,7 +3,9 @@
 
 namespace Jet\App\Engine\Core;
 
+use Exception;
 use Jet\App\Engine\Config\Config;
+use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 
 /**
@@ -129,6 +131,10 @@ class Store
      * Functions execGet() and execSet() will not be validated. It is up on developer.
      */
     private $validateEverything = true;
+    /**
+     * @var string
+     */
+    private $defaultErrorMessage = 'Database error';
 
     /**
      * @return string
@@ -285,7 +291,7 @@ class Store
      * @param array $condition
      * @param bool $removeSpecialChars
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function loadOne(string $table, array $condition = [], bool $removeSpecialChars = true): array
     {
@@ -303,7 +309,7 @@ class Store
      * @param array $limit
      * @param bool $removeSpecialChars
      * @return array
-     * @throws \Exception
+     * @throws Exception
      * @deprecated
      */
     public function load(string $table, array $condition = [], array $orderBy = [], array $limit = [], bool $removeSpecialChars = true): array
@@ -326,7 +332,7 @@ class Store
      * @param array $limit
      * @param bool $removeSpecialChars
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function load2(string $table, array $join = array(), array $condition = array(), array $orderBy = array(), array $limit = array(), bool $removeSpecialChars = true): array
     {
@@ -344,7 +350,7 @@ class Store
      * @param string $table
      * @param array $condition
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function collect(string $table, array $condition = []): bool
     {
@@ -364,7 +370,7 @@ class Store
      * @param array $fields
      * @param array $condition
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function update(string $table, array $fields, array $condition): bool
     {
@@ -384,7 +390,7 @@ class Store
      * @param string $table
      * @param array $condition
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function delete(string $table, array $condition): bool
     {
@@ -401,7 +407,7 @@ class Store
      * @param string $table
      * @param array $condition
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     public function count(string $table, array $condition = []): int
     {
@@ -421,6 +427,21 @@ class Store
     }
 
     /**
+     * @param string $tableName
+     * @return array
+     */
+    public function dangerouslyGetListOfTables(string $tableName = ''): array
+    {
+        if (!$tableName) {
+            return $this->tables;
+        } else {
+            return array_filter($this->tables, function ($element) use ($tableName) {
+                return $element === $tableName;
+            });
+        }
+    }
+
+    /**
      * @param string $table
      * @param array $join
      * @param array $updateFields
@@ -431,7 +452,7 @@ class Store
      * @param bool $count
      * @param bool $validateEverything
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function drawSQLString(string $table, array $join = [], array $updateFields = [], array $condition = [], array $orderBy = [], array $limit = [], string $type = 'select', bool $count = false, bool $validateEverything = true): string
     {
@@ -510,7 +531,7 @@ class Store
      * @param bool $count
      * @param array $join
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function drawSelect(string $table, array $join, array $condition, array $orderBy, array $limit, bool $count = false): string
     {
@@ -560,7 +581,7 @@ class Store
      * @param string $table
      * @param array $join
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function drawWhat(string $table, array $join): string
     {
@@ -636,7 +657,7 @@ class Store
      * @param array $join
      * @param string $table
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     private function drawJoin(array $join, string $table): string
     {
@@ -709,7 +730,7 @@ class Store
      * @param array $orderBy
      * @param string $table
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function prepareOrderBy(array $orderBy = [], string $table = '', bool $dieIfIncorrect = false): array
     {
@@ -738,7 +759,7 @@ class Store
      * @param array $condition
      * @param string $table
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function prepareCondition(array $condition = [], string $table = '', bool $dieIfIncorrect = false): array
     {
@@ -765,7 +786,7 @@ class Store
      * @param string $table
      * @param bool $dieIfIncorrect
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function prepareJoin(array $join = [], string $table = '', bool $dieIfIncorrect = false): array
     {
@@ -816,7 +837,7 @@ class Store
      * @param string $table
      * @param bool $dieIfIncorrect
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function prepareTable(string $table, bool $dieIfIncorrect = false): string
     {
@@ -860,7 +881,7 @@ class Store
     /**
      * @param array $limit
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function prepareLimit(array $limit): array
     {
@@ -916,7 +937,7 @@ class Store
      * @param string $table
      * @param array $params
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     private function setEmptyFields(string $table, array $params): array
     {
@@ -946,7 +967,7 @@ class Store
     /**
      * @param string $table
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     private function setFields(string $table): bool
     {
@@ -980,9 +1001,10 @@ class Store
     }
 
     /**
-     * @param string $tableType
+     * @param bool $return
+     * @return array
      */
-    private function showTables()
+    private function showTables(bool $return = false)
     {
         $rows = $this->execGet("show full tables");
         $rowKey = 'Tables_in_' . Config::$db['database'];
@@ -993,6 +1015,13 @@ class Store
             } else if ($value['Table_type'] === 'VIEW') {
                 $this->views[] = $value[$rowKey];
             }
+        }
+
+        if ($return) {
+            return [
+                'tables' => $this->tables,
+                'views' => $this->views
+            ];
         }
     }
 
@@ -1006,7 +1035,7 @@ class Store
     }
 
     /**
-     * @param $result
+     * @param array $result
      * @return array|string
      */
     private function removeSpecialChars(array $result): array
@@ -1017,14 +1046,17 @@ class Store
     /**
      * @param string $message
      * @param bool $die
-     * @throws \Exception
+     * @throws Exception
      */
     private function throwException(string $message, bool $die = false)
     {
+        if (!Config::$dev['debug']) {
+            $message = $this->defaultErrorMessage;
+        }
         if ($die) {
             PHPJet::$app->exit($message);
         } else {
-            throw new \Exception($message);
+            throw new CoreException($message);
         }
     }
 }

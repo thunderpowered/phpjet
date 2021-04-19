@@ -9,14 +9,21 @@ $start = microtime(true);
 
 // Root directory
 define('ROOT', __DIR__ . '/../');
+// Application directory
+define('APP', ROOT . 'app/');
 // Home directory
 define('MVC', ROOT . 'app/mvc/');
 // Web directory
 define('WEB', ROOT . 'web/');
 // Engine directory
 define('ENGINE', ROOT . 'app/engine/');
-// Images and thumbnails directories (relative paths)
+
+// both deprecated, i'm working on integrating a CDN
+// common images are still in the 'common' folder
+// todo remove this
+// Images
 define('IMAGES', 'storage/');
+// thumbnails
 define('THUMBNAILS', 'storage/thumbnails/');
 
 // Engine Core
@@ -33,7 +40,7 @@ $result = \Jet\PHPJet::$app->start();
 echo $result;
 
 // Some debug info (temporary)
-if (!\Jet\PHPJet::$app->system->request->getPOST()) {
+if (!\Jet\PHPJet::$app->system->request->getPOST() && false) {
     if (\Jet\App\Engine\Config\Config::$dev['debug']) {
         echo '<!-- Generation time: ' . (microtime(true) - $start) . ' s. -->';
         echo '<!-- SQL-queries: ' . \Jet\PHPJet::$app->store->getNumberOfQueries() . ' -->';

@@ -4,7 +4,10 @@ namespace Jet\App\Engine\Core;
 
 use Exception;
 use Jet\App\Engine\Config;
+use Jet\App\Engine\Exceptions\CoreException;
+use Jet\App\Engine\Exceptions\WrongDataException;
 use Jet\App\Engine\Interfaces\MessageBox;
+use Jet\App\Engine\Interfaces\ViewResponse;
 use Jet\PHPJet;
 
 /**
@@ -70,6 +73,7 @@ class Router
     ];
     /**
      * @var array
+     * @deprecated
      */
     private $httpCodes = [
         '200' => 'OK',
@@ -94,13 +98,21 @@ class Router
     private $urlConfigFilename = 'urls.php';
 
     /**
+     * Router constructor.
+     */
+    public function __construct()
+    {
+        $this->defineHttpConstants();
+    }
+
+    /**
      * 1.
      * @return string
      */
     public function start(): string
     {
         $this->subdomain = $this->getSubdomain();
-        $this->MVCSector =  Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
+        $this->MVCSector = Config\Config::$config[$this->subdomain] ? Config\Config::$urlRules[$this->subdomain] : Config\Config::$urlRules['']; // mostly temp
         define('MVC_SECTOR', $this->MVCSector);
         define('MVC_PATH', PHPJet::$app->system->getMVCPath($this->MVCSector));
         define('NAMESPACE_MVC_ROOT', NAMESPACE_ROOT . "\App\MVC\\" . $this->MVCSector . "\\");
@@ -153,16 +165,21 @@ class Router
         ) {
             return $this->errorPage404();
         }
-        return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
+        try {
+            return $this->startAction($this->controller, $url, $this->controllerUrl, $this->controllerName);
+        } catch (CoreException $exception) {
+            return $this->serverErrorPage($exception);
+        }
     }
 
     /**
-     * 3.
-     * @param Controller $controller controller object
-     * @param string $url current url
-     * @param string $controllerUrl url from urls.php that matches current url
-     * @param string $controllerName name of controller, btw it could be gotten using getName function, but it is also OK
+     * @param Controller $controller
+     * @param string $url
+     * @param string $controllerUrl
+     * @param string $controllerName
      * @return string
+     * @throws CoreException
+     * @throws WrongDataException
      */
     private function startAction(Controller $controller, string $url, string $controllerUrl, string $controllerName): string
     {
@@ -178,13 +195,16 @@ class Router
             return $this->errorPage404();
         }
         $actionName = $this->actionPrefix . $actionName;
+        // check csrf-token
+        if ($data['token'] && !PHPJet::$app->system->token->checkCSRFToken()) {
+            throw new WrongDataException('incorrect token');
+        }
         if (method_exists($controller, $actionName) && is_callable([$controller, $actionName])) {
-            try {
-                $data['params'] = $this->proceedQueryParams($data['params']);
-            } catch (Exception $e) {
-                return $this->errorPage500(false, $e->getMessage());
-            }
+            $data['params'] = $this->proceedQueryParams($data['params']);
             $result = call_user_func_array([$controller, $actionName], $data['params']);
+            if ($result->status && is_int($result->status)) {
+                http_response_code($result->status); // well, maybe it's not the best place for that
+            }
             if (!$result->SPA && PHPJet::$app->system->request->getRequestMethod() !== 'GET') {
                 $this->refresh();
             }
@@ -194,12 +214,16 @@ class Router
     }
 
     /**
-     * @param string $content
+     * @param ViewResponse $response
      */
-    public function immediateResponse(string $content = '')
+    public function immediateResponse(ViewResponse $response)
     {
         PHPJet::$app->system->buffer->destroyBuffer();
-        echo $content;
+        if ($response->status && is_int($response->status)) {
+            http_response_code($response->status);
+        }
+        // not the prettiest solution, but it works (for now)
+        echo $response->response;
         PHPJet::$app->exit();
     }
 
@@ -207,6 +231,7 @@ class Router
      * @param bool $forceRedirect
      * @param string $information
      * @return string
+     * @deprecated
      */
     public function errorPage404(bool $forceRedirect = false, string $information = 'Not Found'): string
     {
@@ -217,12 +242,22 @@ class Router
      * @param bool $forceRedirect
      * @param string $information
      * @return string
+     * @deprecated
      */
     public function errorPage500(bool $forceRedirect = false, string $information = 'Internal Server Error'): string
     {
         return $this->errorPage('500', 'Internal Server Error', 'error', $forceRedirect, $information);
     }
 
+    /**
+     * @param Exception $exception
+     * @param bool $forceRedirect
+     * @return string
+     */
+    public function serverErrorPage(CoreException $exception, bool $forceRedirect = false): string
+    {
+        return $this->errorPage($exception->getCode(), $exception->getMessage(), 'error', $forceRedirect, $exception->getNotes());
+    }
 
     /**
      * @param string $code
@@ -238,11 +273,11 @@ class Router
             $message = $this->httpErrorCodes[$code] ?? null;
         }
 
-        $view = $this->getViewObject(new Controller());
+        $view = $this->getViewObject();
         $view->setLayout($layout);
         $view->buffer->destroyBuffer();
         header("HTTP/1.1 {$code} {$message}");
-        $result = $view->render("default", [], false, '', new MessageBox(0, $information));
+        $result = $view->render("default", [], false, '', new MessageBox(1, $information));
         if ($forceRedirect) {
             // it's not a redirect technically, it just stops any further actions
             echo $result->response;
@@ -414,15 +449,13 @@ class Router
         // Create full controller name with namespace
         $Class = "\Jet\App\MVC\\$MVCRoot\Controllers\\" . $controllerName;
         if (class_exists($Class)) {
-            $controller = new $Class($controllerName, true);
+            // Create and set view
+            $view = $this->getViewObject();
+            $view->loadWidgets();
+            $controller = new $Class($view, true);
         } else {
             PHPJet::$app->exit("Class '{$Class}' Not Found");
         }
-
-        // Create and set view
-        $view = $this->getViewObject($controller);
-        $view->loadWidgets();
-        $controller->setView($view);
 
         return $controller;
     }
@@ -483,10 +516,11 @@ class Router
         if (!isset($urls[$controllerName]) || !isset($urls[$controllerName]['actions'])) {
             return $actionName;
         }
-        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? []);
+        $url = $this->findMatchesInURL($actionUrl, $urls[$controllerName]['actions'] ?? [], true);
         if ($url) {
             $actionName['actionName'] = $lowerCase ? strtolower($url['key']) : $url['key'];
             $actionName['data'] = $url['data'];
+            $actionName['data']['params']['args'] = $url['args'];
         }
         return $actionName;
     }
@@ -506,14 +540,12 @@ class Router
     }
 
     /**
-     * @param Controller $controller
      * @return View
-     * Creates special view object for this controller
      */
-    public function getViewObject(Controller $controller): View
+    public function getViewObject(): View
     {
         if (!$this->view) {
-            $this->view = new View($controller);
+            $this->view = new View();
         }
 
         return $this->view;
@@ -590,7 +622,7 @@ class Router
         // and also check the special case
         // by PHPJet agreement all POST-queries must contain valid csrf-token
         if (($actualMethod === 'POST' || $actualMethod === 'PUT') && !PHPJet::$app->system->request->checkCSRFToken()) {
-            return false;
+//            return false;
         }
 
         return true;
@@ -680,36 +712,67 @@ class Router
      * @param array $params
      * @param bool $validateData
      * @return array
-     * @throws Exception
+     * @throws CoreException
+     * @throws WrongDataException
      */
     private function proceedQueryParams(array $params, bool $validateData = true): array
     {
         $method = PHPJet::$app->system->request->getRequestMethod();
+        // quick check if method exists in config
+        if (!isset($params[$method])) {
+            throw new WrongDataException("method '{$method}' is not supported by this action");
+        }
+
         $result = [$method];
-        foreach ($params as $paramMethod => &$paramData) {
+
+        // check for url-args
+        if ($params['args']) {
+            foreach ($params['args'] as $key => $value) {
+                $value = $value[0] ?? null;
+                if (!$value) {
+                    throw new WrongDataException("parameter '$key' cannot be empty'");
+                }
+                $params['args'][$key] = $value;
+            }
+            // no validation, just make sure they exist
+            $result['ARGS'] = $params['args'];
+            unset($params['args']);
+        }
+
+        // proceed query-params
+        foreach ($params as $paramMethod => $paramData) {
             foreach ($paramData as $key => $type) {
-                $funcName = "get{$paramMethod}";
+                $funcName = "get$paramMethod";
                 if (!method_exists(PHPJet::$app->system->request, $funcName)) {
-                    throw new Exception("unexpected method");
+                    throw new WrongDataException("unexpected method");
                 }
                 $value = PHPJet::$app->system->request->{$funcName}($key);
                 if ($validateData && $method === $paramMethod) {
-                    // 1. check if no data at all
-                    if (!$value) {
-                        throw new Exception("parameter '{$key}' cannot be empty");
+                    $dataType = $type[0] ?? null;
+                    $required = $type[1] ?? null;
+
+                    // 1. check if no data at all (if required)
+                    if ($required && !$value) {
+                        throw new WrongDataException("parameter '$key' cannot be empty");
                     }
-                    // 2. todo validate data
-                    /*
-                    $validated = some_magic_function($type, $value);
-                    if (!$validated) {
-                        throw new Exception("value of parameter '{$key}' does not match the requirements");
+
+                    // 2. proceed validation (if datatype is set and not empty)
+                    if ($dataType && $value) {
+                        $validatorMethod = "validate" . ucfirst($dataType);
+                        if (method_exists(PHPJet::$app->tool->validator, $validatorMethod)) {
+                            $validated = call_user_func([PHPJet::$app->tool->validator, $validatorMethod], $value);
+                            if (!$validated) {
+                                // todo return more information to users
+                                // i suppose validator should return nothing if everything is fine and string with info if there are errors
+                                throw new WrongDataException("parameter '$key' has invalid format");
+                            }
+                        } else {
+                            throw new CoreException("validator '{$dataType}' does not exist");
+                        }
                     }
-                    */
                 }
-                $paramData[$key] = $value;
+                $result[$paramMethod][$key] = $value;
             }
-            $result[] = $paramData;
-            unset ($paramData);
         }
         return $result;
     }
@@ -717,24 +780,68 @@ class Router
     /**
      * @param string $string
      * @param array $urls
+     * @param bool $exact
      * @return array
      */
-    private function findMatchesInURL(string $string, array $urls): array
+    private function findMatchesInURL(string $string, array $urls, bool $exact = false): array
     {
+        // todo this algo is not the best possible (obviously), redo it someday
+        // 0. prepare the string (remove get-params and add first slash
         $string = explode('?', $string);
         $string = (string)reset($string);
         if (substr($string, 0, 1) !== "/") {
-            $string  = "/{$string}";
+            $string = "/{$string}";
         }
-        $string = str_replace("/", "\/", $string);
+
+        // 1. match multiple patterns against one string
+        $matches = [];
         foreach ($urls as $key => $data) {
-            if (preg_match("/^{$string}/", $data['url'])) {
-                return [
+            $args = [];
+            $pattern = str_replace("/", "\/", $data['url']);
+            if ($exact) {
+                // proceed url-variables
+                $pattern = preg_replace_callback(
+                    "/{(.*?)}/",
+                    function ($matches) use (&$args) {$args[] = $matches[1];return "(.*?)";},
+                    "/^{$pattern}$/"
+                );
+            } else {
+                $pattern = "/^{$pattern}/";
+            }
+            $current = [];
+            if (preg_match_all($pattern, $string, $current)) {
+                // combine arg names with values and create assoc array
+                if (count ($current) > 1) {
+                    for ($i = 1; $i < count ($current); $i++) {
+                        $args[$args[$i - 1]] = $current[$i];
+                        unset ($args[$i - 1]);
+                    }
+                }
+                $matches[strlen($current[0][0])] = [
                     'key' => $key,
                     'data' => $data,
+                    'args' => $args
                 ];
             }
         }
-        return [];
+
+        // 2. return empty array if nothing found
+        if (!count($matches)) {
+            return [];
+        }
+
+        // 3. sort it and return the longest string that match the pattern
+        ksort($matches);
+        return end($matches);
+    }
+
+    private function defineHttpConstants(): void
+    {
+        define('HTTP_OK', 200);
+        define('HTTP_CREATED', 201);
+        define('HTTP_BAD_REQUEST', 400);
+        define('HTTP_NOT_FOUND', 404);
+        define('HTTP_UNAUTHORIZED', 401);
+        define('HTTP_INTERNAL_SERVER_ERROR', 500);
     }
 }
