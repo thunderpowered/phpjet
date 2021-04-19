@@ -57,7 +57,7 @@ class Action extends Table
     public function __construct(bool $loaded = false)
     {
         parent::__construct($loaded);
-        $this->id = Field::int();
+        $this->id = Field::int()->setPrimary();
         $this->method = Field::varchar();
         $this->url = Field::varchar();
         $this->type = Field::varchar();

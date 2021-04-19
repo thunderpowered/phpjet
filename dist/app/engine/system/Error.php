@@ -101,7 +101,7 @@ class Error
     /**
      * @param \Exception $e
      */
-    public function exceptionCatcher($e)
+    public function exceptionCatcher(\Exception $e)
     {
         $errorID = $this->generateErrorID();
         $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true, $errorID);

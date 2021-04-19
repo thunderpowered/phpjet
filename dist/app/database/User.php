@@ -16,31 +16,31 @@ class User extends Table
     /**
      * @var int
      */
-    public $id;
+    protected $id;
     /**
      * @var string
      */
-    public $username;
+    protected $username;
     /**
      * @var string
      */
-    public $email;
+    protected $email;
     /**
      * @var string
      */
-    public $password;
+    protected $password;
     /**
      * @var string
      */
-    public $bio;
+    protected $bio;
     /**
      * @var int
      */
-    public $age;
+    protected $age;
     /**
      * @var bool
      */
-    public $validated;
+    protected $validated;
 
     /**
      * User constructor.
@@ -49,7 +49,7 @@ class User extends Table
     public function __construct(bool $loaded = false)
     {
         parent::__construct($loaded);
-        $this->id = Field::int();
+        $this->id = Field::int()->setPrimary();
         $this->username = Field::varchar();
         $this->email = Field::varchar();
         $this->password = Field::varchar();

@@ -8,11 +8,11 @@ import {useTranslation} from "react-i18next";
 const Auth = ({action, onSubmit}) => {
     const {t} = useTranslation();
     return (
-        <div className="Auth" id="Auth">
-            <div className="Auth__header pt-5 pb-4">
+        <div className="auth" id="Auth">
+            <div className="auth__header pt-5 pb-4">
                 <Logotype/>
             </div>
-            <div className="Auth__body p-5 pt-0 pb-0">
+            <div className="auth__body p-5 pt-0 pb-0">
                 {(action === '1F') &&
                     <FormContainer id="AuthForm" onSubmit={onSubmit}>
                         <input required={true} minLength={8} maxLength={64} autoComplete={'email'}
@@ -33,7 +33,7 @@ const Auth = ({action, onSubmit}) => {
                     </FormContainer>
                 }
             </div>
-            <div className="Auth__footer pb-3 pt-2">
+            <div className="auth__footer pb-3 pt-2">
                 <Version/>
             </div>
         </div>

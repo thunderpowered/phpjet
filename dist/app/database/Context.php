@@ -3,24 +3,30 @@
 
 namespace Jet\App\Database;
 
+use Jet\App\Engine\ActiveRecord\Field;
 use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Context
  * @package Jet\App\Database
+ * @property Field id
+ * @property Field name
+ * @property Field value
  */
 class Context extends Table
 {
+    protected $id;
+    protected $name;
+    protected $value;
     /**
-     * @var int
+     * Context constructor.
+     * @param bool $loaded
      */
-    public $id;
-    /**
-     * @var string
-     */
-    public $name;
-    /**
-     * @var string
-     */
-    public $value;
+    public function __construct(bool $loaded = false)
+    {
+        parent::__construct($loaded);
+        $this->id = Field::int()->setPrimary();
+        $this->name = Field::varchar();
+        $this->value = Field::text();
+    }
 }

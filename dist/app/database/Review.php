@@ -4,6 +4,7 @@
 namespace Jet\App\Database;
 
 
+use Jet\App\Engine\ActiveRecord\Field;
 use Jet\App\Engine\ActiveRecord\Table;
 
 /**
@@ -36,4 +37,11 @@ class Review extends Table
      * @var string
      */
     public $datetime;
+
+    public function __construct(bool $loaded = false)
+    {
+        parent::__construct($loaded);
+        $this->id = Field::int()->setPrimary();
+        $this->user_id = Field::int()->setIndex()->setForeignKey((new User())->id);
+    }
 }

@@ -8,6 +8,7 @@
 
 namespace Jet\App\Engine\ActiveRecord;
 
+use Exception;
 use Jet\PHPJet;
 
 /**
@@ -40,6 +41,10 @@ abstract class Table
      * @var string
      */
     protected $_deleted;
+    /**
+     * @var bool
+     */
+    protected $_has_data = false;
 
     /**
      * Table constructor.
@@ -58,6 +63,8 @@ abstract class Table
         $this->_loaded = $loaded;
 
         set_exception_handler([$this, 'exceptionHandler']);
+
+        $this->_config_id = Field::int();// todo set foreign key
     }
 
     /**
@@ -84,7 +91,7 @@ abstract class Table
 
         try {
             $rows = PHPJet::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             self::exceptionHandler($e);
         }
 
@@ -112,7 +119,7 @@ abstract class Table
         $table = self::convertClassNameIntoTableName($class);
         try {
             $rows = PHPJet::$app->store->load($table, $conditions, $orderBy, $limit, $removeSpecialChars);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             self::exceptionHandler($e);
         }
 
@@ -142,7 +149,7 @@ abstract class Table
 
         try {
             $rows = PHPJet::$app->store->load2($table, $join, $conditions, $orderBy, $limit);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             self::exceptionHandler($e);
         }
 
@@ -158,7 +165,7 @@ abstract class Table
     /**
      * @param array $conditions
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     public static function count(array $conditions = array()): int
     {
@@ -166,7 +173,7 @@ abstract class Table
         $table = self::convertClassNameIntoTableName($class);
         try {
             $result = PHPJet::$app->store->count($table, $conditions);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             self::exceptionHandler($e);
         }
 
@@ -199,7 +206,7 @@ abstract class Table
              */
             try {
                 $result = PHPJet::$app->store->update($table, $row, [$this->_primaryKey => $this->{$this->_primaryKey}]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 self::exceptionHandler($e);
             }
         } else {
@@ -209,7 +216,7 @@ abstract class Table
             $this->beforeInsert();
             try {
                 $result = PHPJet::$app->store->collect($table, $row);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 self::exceptionHandler($e);
             }
         }
@@ -219,7 +226,7 @@ abstract class Table
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function remove(): bool
     {
@@ -242,9 +249,9 @@ abstract class Table
     }
 
     /**
-     * @param \Exception $e
+     * @param Exception $e
      */
-    protected static function exceptionHandler(\Exception $e)
+    protected static function exceptionHandler(Exception $e)
     {
         PHPJet::$app->error->exceptionCatcher($e);
     }
@@ -286,7 +293,11 @@ abstract class Table
          */
         $object = new $class($loaded);
         foreach ($row as $key => $value) {
-            $object->$key = $value;
+            if ($object->$key instanceof Field) {
+                $object->$key->_setValue($value);
+            } else {
+                trigger_error("Field $key should be instance of Field", E_USER_NOTICE);
+            }
         }
 
         return $object;
@@ -326,6 +337,35 @@ abstract class Table
     private function isSystemProperty(string $propName): bool
     {
         return (strpos($propName, "_") === 0);
+    }
+
+    /**
+     * @param string $fieldName
+     * @return null|mixed
+     */
+    public function __get(string $fieldName)
+    {
+        if (!isset($this->$fieldName) || !($this->$fieldName instanceof Field)) {
+            return null;
+        }
+        if ($this->$fieldName->_hasValue()) {
+            return $this->$fieldName->_getValue();
+        } else {
+            return $this->$fieldName->_getStructure();
+        }
+    }
+
+    /**
+     * @param string $fieldName
+     * @param $value
+     */
+    public function __set(string $fieldName, $value)
+    {
+        if (!isset($this->$fieldName) || !($this->$fieldName instanceof Field)) {
+            trigger_error("Field $fieldName does not exist in '".get_class($this)."'", E_USER_NOTICE);
+        } else {
+            $this->$fieldName->_setValue($value);
+        }
     }
 
     /**

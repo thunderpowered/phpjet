@@ -2,6 +2,8 @@
 
 namespace Jet\App\MVC\Admin\Controllers;
 
+use Jet\App\Database\Context;
+use Jet\App\Database\User;
 use Jet\App\Engine\Core\Controller;
 use Jet\App\Engine\Core\View;
 use Jet\App\Engine\Interfaces\ViewResponse;

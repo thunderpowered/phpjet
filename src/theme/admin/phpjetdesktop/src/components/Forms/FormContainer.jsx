@@ -28,7 +28,12 @@ class FormContainer extends React.Component {
     render() {
         const {disabled, action, id, children} = this.props;
         return (
-            <Form id={id} action={action} disabled={disabled} onSubmit={this.onSubmit.bind(this)} onInput={this.onInput.bind(this)}>
+            <Form
+                id={id}
+                action={action}
+                disabled={disabled}
+                onSubmit={this.onSubmit.bind(this)}
+                onInput={this.onInput.bind(this)}>
                 {children}
             </Form>
         )
