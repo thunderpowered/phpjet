@@ -162,11 +162,11 @@ class Field
     }
 
     /**
-     * @return void
+     * @return string
      */
-    public function _getStructure()
+    public function _getType(): string
     {
-        // todo
+        return $this->type;
     }
 
     /**

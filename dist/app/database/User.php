@@ -10,37 +10,25 @@ use Jet\App\Engine\ActiveRecord\Table;
 /**
  * Class Users
  * @package Jet\App\Database
+ * @property Field id
+ * @property Field username
+ * @property Field email
+ * @property Field password
+ * @property Field bio
+ * @property Field age
+ * @property Field validated
+ * @property Field datetime
  */
 class User extends Table
 {
-    /**
-     * @var int
-     */
     protected $id;
-    /**
-     * @var string
-     */
     protected $username;
-    /**
-     * @var string
-     */
     protected $email;
-    /**
-     * @var string
-     */
     protected $password;
-    /**
-     * @var string
-     */
     protected $bio;
-    /**
-     * @var int
-     */
     protected $age;
-    /**
-     * @var bool
-     */
     protected $validated;
+    protected $datetime;
 
     /**
      * User constructor.
@@ -50,11 +38,12 @@ class User extends Table
     {
         parent::__construct($loaded);
         $this->id = Field::int()->setPrimary();
-        $this->username = Field::varchar();
-        $this->email = Field::varchar();
+        $this->username = Field::varchar()->setIndex();
+        $this->email = Field::varchar()->setIndex();
         $this->password = Field::varchar();
         $this->bio = Field::text();
         $this->age = Field::int();
         $this->validated = Field::bool();
+        $this->datetime = Field::dateTime();
     }
 }

@@ -10,6 +10,7 @@ namespace Jet\App\Engine\ActiveRecord;
 
 use Exception;
 use Jet\PHPJet;
+use stdClass;
 
 /**
  * Class Table
@@ -351,7 +352,7 @@ abstract class Table
         if ($this->$fieldName->_hasValue()) {
             return $this->$fieldName->_getValue();
         } else {
-            return $this->$fieldName->_getStructure();
+            return $this->getFieldType($fieldName);
         }
     }
 
@@ -366,6 +367,19 @@ abstract class Table
         } else {
             $this->$fieldName->_setValue($value);
         }
+    }
+
+    /**
+     * @param string $fieldName
+     * @return _FieldType
+     */
+    private function getFieldType(string $fieldName): _FieldType
+    {
+        $type = new _FieldType();
+        $type->table = get_class($this);
+        $type->field = $fieldName;
+        $type->type = $this->$fieldName->_getType();
+        return $type;
     }
 
     /**
