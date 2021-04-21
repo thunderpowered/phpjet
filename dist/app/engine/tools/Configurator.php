@@ -8,6 +8,20 @@ namespace Jet\App\Engine\Tools;
 class Configurator
 {
     /**
+     * @var array
+     */
+    private $argv;
+
+    /**
+     * Configurator constructor.
+     * @param array $argv
+     */
+    public function __construct(array $argv = [])
+    {
+        $this->argv = $argv;
+    }
+
+    /**
      * @return string
      */
     public function migrate()

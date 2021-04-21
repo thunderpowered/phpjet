@@ -15,10 +15,10 @@ class PHPJet
      */
     public static $app;
 
-    public static function init()
+    public static function init(string $mode)
     {
         self::defineConstants();
-        self::$app = new App();
+        self::$app = new App($mode);
     }
 
     private static function defineConstants()

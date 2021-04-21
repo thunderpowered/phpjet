@@ -89,6 +89,16 @@ class Request
      */
     public function __construct()
     {
+        $this->sessionStart();
+        // well session and cookie technically available even without this class, but it'd be good to still use it
+        $this->session = $_SESSION;
+        // don't forget to make sure that this session is active
+        $this->checkSessionActive();
+        // session has a lifespan, check if it is still alive
+        $this->checkSessionAlive();
+
+        $this->cookie = $_COOKIE;
+
         $this->post = $_POST;
         unset($_POST);
 
@@ -100,16 +110,6 @@ class Request
 
         $this->files = $_FILES;
         unset($_FILES);
-
-        $this->sessionStart();
-        // well session and cookie technically available even without this class, but it'd be good to still use it
-        $this->session = $_SESSION;
-        // don't forget to make sure that this session is active
-        $this->checkSessionActive();
-        // session has a lifespan, check if it is still alive
-        $this->checkSessionAlive();
-
-        $this->cookie = $_COOKIE;
 
         // Proceed JSON, if JSON exists -> replace POST with it
         $this->json = file_get_contents('php://input');
@@ -389,30 +389,26 @@ class Request
     }
 
     /**
-     * @return bool
+     * @return void
      */
-    private function checkSessionAlive(): bool
+    private function checkSessionAlive(): void
     {
         $sessionCreatedTime = $this->getSESSION('session_created');
         if (!$sessionCreatedTime || $sessionCreatedTime < time() - $this->sessionCurrentLifeSpan) {
             // session is outdated
             $this->sessionRegenerateId();
-            return false;
         }
-
-        // everything is fine
-        return true;
     }
 
     /**
-     * @return bool
+     * @return void
      */
-    private function checkSessionActive(): bool
+    private function checkSessionActive(): void
     {
         $sessionAnnihilated = $this->getSESSION('session_annihilated');
         if (!$sessionAnnihilated) {
             // everything is fine, nothing to check
-            return true;
+            return;
         }
 
         // if we are here - something definitely went wrong
@@ -430,7 +426,8 @@ class Request
             $details = "[Annihilated Session Access] [Session ID: $sessionID] [Date: $date] [IP: $userIP] [User Agent: $userAgent] [Method: $method]";
             $this->recordSuspiciousAction($details);
             session_destroy();
-            return session_start();
+            session_start();
+            return;
         }
 
         // if cookies are still alive, let's recreate identifier
@@ -438,7 +435,7 @@ class Request
         if (!$newSessionID) {
             // seems like it is impossible scenario, but i still have to check it
             // as they say, you never know
-            return false;
+            return;
         }
 
         // close session and set new id
@@ -447,7 +444,6 @@ class Request
 
         // everything is fine, let it be
         session_start();
-        return true;
     }
 
     /**

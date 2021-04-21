@@ -4,6 +4,7 @@
 namespace Jet\App\Engine\Core;
 
 use Jet\App\Engine\Tools\Cache;
+use Jet\App\Engine\Tools\Configurator;
 use Jet\App\Engine\Tools\FileManager;
 use Jet\App\Engine\Tools\JSONOutput;
 use Jet\App\Engine\Tools\SEO;
@@ -22,6 +23,7 @@ use Jet\App\Engine\Tools\Validator;
  * @property JSONOutput $JSONOutput
  * @property FileManager $fileManager
  * @property Validator $validator
+ * @property Configurator $configurator
  */
 class Tool
 {
@@ -53,6 +55,10 @@ class Tool
      * @var Validator
      */
     private $validator;
+    /**
+     * @var Configurator
+     */
+    private $configurator;
 
     /**
      * Tool constructor.

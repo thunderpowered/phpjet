@@ -58,21 +58,29 @@ class App
 
     /**
      * App constructor.
+     * @param string $mode
      */
-    public function __construct()
+    public function __construct(string $mode = 'default')
     {
         // Set main loader
         spl_autoload_register(array($this, "classLoader"));
         // Set config loader, because configs may be located in different directories
         spl_autoload_register(array($this, "configLoader"));
 
-        // Prepare some things
-        $this->router = new Router();
-        $this->store = new Store();
-        $this->system = new System();
-        $this->tool = new Tool();
-        $this->configManager = new ConfigManager();
-        $this->pageBuilder = new PageBuilder();
+        switch ($mode) {
+            case 'configure':
+                $this->store = new Store();
+                $this->tool = new Tool();
+                break;
+            default:
+                $this->router = new Router();
+                $this->store = new Store();
+                $this->system = new System();
+                $this->tool = new Tool();
+                $this->configManager = new ConfigManager();
+                $this->pageBuilder = new PageBuilder();
+                break;
+        }
 
         // Set up the error handler
         $this->error = new Error();
@@ -82,6 +90,39 @@ class App
      * @return string
      */
     public function start(): string
+    {
+        $this->prepare();
+        return $this->router->start();
+    }
+
+    /**
+     * @param array $argv
+     * @return string
+     */
+    public function configure(array $argv = []): string
+    {
+
+        $functionName = $argv[2] ?? null;
+        if ($functionName && method_exists($this->tool->configurator, $functionName)) {
+            return call_user_func([$this->tool->configurator, $functionName], $argv);
+        } else {
+            return "Unable to configure: method does not exist";
+        }
+    }
+
+    /**
+     * @param string $message
+     */
+    public function exit(string $message = '')
+    {
+        PHPJet::$app->system->buffer->clearBuffer();
+        if ($message) {
+            $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
+        }
+        exit($message);
+    }
+
+    private function prepare()
     {
         // Select the config
         $configSelector = new Selector();
@@ -95,9 +136,6 @@ class App
         // Set the config
         // All data for config is usually loading from database
         $this->configManager->prepareConfig();
-
-        // Start the engine
-        return $this->router->start();
     }
 
     /**
@@ -105,21 +143,9 @@ class App
      * @return string
      * @deprecated
      */
-    public function execute(Router $router): string
+    private function execute(Router $router): string
     {
         return $router->start();
-    }
-
-    /**
-     * @param string $message
-     */
-    public function exit(string $message = '')
-    {
-        PHPJet::$app->system->buffer->clearBuffer();
-        if ($message) {
-            $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
-        }
-        exit($message);
     }
 
     /**

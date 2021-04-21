@@ -1,30 +1,31 @@
 <?php
+
+use Jet\App\App;
+use Jet\App\Engine\Config\Config;
+use Jet\PHPJet;
+//
 $version = phpversion();
 if ((float)$version < 7.3) {
     exit('Version required: 7.3, but installed: ' . $version);
 }
-
+//
 date_default_timezone_set('UTC');
 $start = microtime(true);
-
+//
 // Root directory
-define('ROOT', __DIR__ . '/../');
+const ROOT = __DIR__ . '/../';
+// Web (static) directory
+const WEB = ROOT . 'web/';
 // Application directory
-define('APP', ROOT . 'app/');
+const APP = ROOT . 'app/';
 // Home directory
-define('MVC', ROOT . 'app/mvc/');
-// Web directory
-define('WEB', ROOT . 'web/');
+const MVC = ROOT . 'app/mvc/';
 // Engine directory
-define('ENGINE', ROOT . 'app/engine/');
-
-// both deprecated, i'm working on integrating a CDN
-// common images are still in the 'common' folder
-// todo remove this
+const ENGINE = ROOT . 'app/engine/';
 // Images
-define('IMAGES', 'storage/');
+const IMAGES = 'storage/';
 // thumbnails
-define('THUMBNAILS', 'storage/thumbnails/');
+const THUMBNAILS = 'storage/thumbnails/';
 
 // Engine Core
 require_once(ROOT . 'PHPJet.php');
@@ -34,17 +35,21 @@ require_once(ROOT . 'vendor/autoload.php');
 // Engine version
 require_once ENGINE . 'config/version.php';
 
-// Proceed everything
-\Jet\PHPJet::init();
-$result = \Jet\PHPJet::$app->start();
-echo $result;
+// todo allow this only in development mode
+$functionName = isset($argv) && !empty($argv[1]) ? $argv[1] : 'start';
+PHPJet::init($functionName);
+if (method_exists(PHPJet::$app, $functionName)) {
+    echo call_user_func([PHPJet::$app, $functionName], $argv);
+} else {
+    echo "Method does not exist";
+}
 
 // Some debug info (temporary)
-if (!\Jet\PHPJet::$app->system->request->getPOST() && false) {
-    if (\Jet\App\Engine\Config\Config::$dev['debug']) {
+if (false && !PHPJet::$app->system->request->getPOST() ) {
+    if (Config::$dev['debug']) {
         echo '<!-- Generation time: ' . (microtime(true) - $start) . ' s. -->';
-        echo '<!-- SQL-queries: ' . \Jet\PHPJet::$app->store->getNumberOfQueries() . ' -->';
+        echo '<!-- SQL-queries: ' . PHPJet::$app->store->getNumberOfQueries() . ' -->';
     }
     // Just for Fun!
-    echo '<!-- ' . \Jet\PHPJet::$app->system->getEngineVersion() . ' -->';
+    echo '<!-- ' . PHPJet::$app->system->getEngineVersion() . ' -->';
 }
