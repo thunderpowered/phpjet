@@ -5,3 +5,118 @@
 ( 2021-04-21 17:15:03 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
 ( 2021-04-21 17:15:03 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
 ( 2021-04-21 17:16:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:17:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:18:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:19:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:20:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:21:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:22:05 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:23:06 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:23:48 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:23:48 (UTC) ) ID Ошибки: b0861492e81d2ed4f6e6a374c84f5ce11f6ebbf614be15c7a0867a9f29ebdeea | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:23:49 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:23:49 (UTC) ) ID Ошибки: 4ef2c36d4290422d578e7b61483d3de25561959f2032d80f3df51ebcc0807c22 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:24:07 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:24:56 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:24:56 (UTC) ) ID Ошибки: 22cdb98231c3f15a8eae97aebb854c1aac4f4224e765cb7bfad855bebb39453a | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:24:57 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:24:57 (UTC) ) ID Ошибки: 057bccfd80edac3dcc13000aa36e9efbb58e6326ec98f00808ef14b043e0746f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:25:08 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:43 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:44 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:44 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:47 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:47 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:25:48 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:26:11 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:26:11 (UTC) ) ID Ошибки: e60e3323ad3c44d08cf166b94de4b377ac12d66cd02988ea353ecce4de735959 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:26:11 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:26:11 (UTC) ) ID Ошибки: e19be37b00d97efa42ca0f32addfbb8b8acb47344e413394aa6552c8bd4b0f38 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:26:17 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:26:17 (UTC) ) ID Ошибки: 4d7cc954bf41191d7fc2a9336845e5a1662b3910c999458cb107a12da730604d | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:26:48 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:27:48 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: argv; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php; Строка: 42
+( 2021-04-21 17:28:04 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:28:04 (UTC) ) ID Ошибки: 3a097146e915f0d58ef8301196a8c74a94ebd763d013a6102dc08a8fc55b3cf1 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:28:14 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:28:14 (UTC) ) ID Ошибки: 479f695f4fe292d14f605e61a956d6925c435ef8be9695e6faa648e58f09aff7 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:28:32 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:28:32 (UTC) ) ID Ошибки: 099e90bd1f0d3b2bd2f2ccee51bcb5674b85e4b9d4c302549a5d0c7986387f62 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:29:54 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:29:54 (UTC) ) ID Ошибки: 58afdddb25fe1cab961facad589bb7439a4805519a16df8dd552ba22d7b9fa33 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:30:01 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:30:01 (UTC) ) ID Ошибки: dd348496f9a96a25caeb64d66ddc2f282274ee168838fdb8d85a71667765a955 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:30:01 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'request' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Selector.php; Строка: 34
+( 2021-04-21 17:30:01 (UTC) ) ID Ошибки: be0e02cf7826b9aef78d211ffdef4eaab0777ce60a198edcec720b7081d9b3fc | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:31:00 (UTC) ) ID Ошибки: 8eacdda26294e038f74852bb42cd954cc0f6f390693d82965100d7b37857afea | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:31:13 (UTC) ) ID Ошибки: e8d303a7ccddc566d24dfc1d664de1d18851cf2bc03a2b41e0fadeb17b94e169 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:31:22 (UTC) ) ID Ошибки: e180fc8dc28610d178c775cfe1d63469a05921f562ad7f501d39f7352b441477 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-21 17:32:18 (UTC) ) ID Ошибки: 1589a61c9e135fbf7d81ffcb3bbe3cb92f680a15612884ac4dfe29cabe8d78c3 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104

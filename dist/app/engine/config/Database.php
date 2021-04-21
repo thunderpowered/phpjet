@@ -2,6 +2,8 @@
 
 namespace Jet\App\Engine\Config;
 
+use PDO;
+
 /**
  * Class Database
  * @package Jet\App\Engine\Config
@@ -14,16 +16,16 @@ class Database
      */
     public static $tables;
     /**
-     * @var \PDO
+     * @var PDO
      */
     private static $_db;
     /**
      * @var array
      */
     private static $opt = array(
-        \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
-        \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
-        \PDO::ATTR_EMULATE_PREPARES => false
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES => false
     );
     /**
      * @var array
@@ -47,15 +49,15 @@ class Database
     }
 
     /**
-     * @return \PDO
+     * @return PDO
      */
-    public static function getInstance(): \PDO
+    public static function getInstance(): PDO
     {
         if (!Database::$_db) {
 
             try {
 
-                Database::$_db = new \PDO(
+                Database::$_db = new PDO(
                     "mysql:host=" . Database::$config['host'] . ";dbname=" . Database::$config['database'] . ";charset=utf8mb4",
                     Database::$config['username'],
                     Database::$config['password'],

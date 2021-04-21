@@ -18,6 +18,7 @@ use Jet\PHPJet;
 /**
  * Class Selector
  * @package Jet\App\Engine\Core
+ * @deprecated
  */
 class Selector
 {
@@ -28,12 +29,16 @@ class Selector
 
     /**
      * Selector constructor.
+     * @deprecated
      */
     public function __construct()
     {
         $this->site = PHPJet::$app->system->request->getSERVER('HTTP_HOST');
     }
 
+    /**
+     * @deprecated
+     */
     public function select()
     {
         if (!file_exists(ENGINE . 'config/' . $this->site . '/')) {
@@ -43,5 +48,14 @@ class Selector
         }
 
         define("CONFIG_DIR", ENGINE . 'config/' . $this->site . '/');
+    }
+
+    /**
+     * @deprecated
+     * temporary
+     */
+    public static function __legacySelect()
+    {
+        define("CONFIG_DIR", ENGINE . 'config/default/');
     }
 }

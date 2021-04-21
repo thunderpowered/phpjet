@@ -60,26 +60,26 @@ class App
      * App constructor.
      * @param string $mode
      */
-    public function __construct(string $mode = 'default')
+    public function __construct(string $mode = 'start')
     {
         // Set main loader
         spl_autoload_register(array($this, "classLoader"));
         // Set config loader, because configs may be located in different directories
         spl_autoload_register(array($this, "configLoader"));
 
+        // load components
+        $this->store = new Store();
+        $this->tool = new Tool();
+        $this->configManager = new ConfigManager();
+
+        // load specific components for different modes
         switch ($mode) {
-            case 'configure':
-                $this->store = new Store();
-                $this->tool = new Tool();
-                break;
-            default:
+            case 'start':
                 $this->router = new Router();
-                $this->store = new Store();
                 $this->system = new System();
-                $this->tool = new Tool();
-                $this->configManager = new ConfigManager();
                 $this->pageBuilder = new PageBuilder();
-                break;
+            break;
+            // there were different options, now is only one
         }
 
         // Set up the error handler
@@ -91,7 +91,19 @@ class App
      */
     public function start(): string
     {
-        $this->prepare();
+        // Select the config
+        $configSelector = new Selector();
+        $configSelector->select();
+
+        // prepare class Store
+        Database::setConfig(Config::$db);
+        $this->store->setDB(Database::getInstance());
+        $this->store->prepareTables();
+
+        // Set the config
+        // All data for config is usually loading from database
+        $this->configManager->prepareConfig();
+
         return $this->router->start();
     }
 
@@ -101,9 +113,14 @@ class App
      */
     public function configure(array $argv = []): string
     {
-
         $functionName = $argv[2] ?? null;
         if ($functionName && method_exists($this->tool->configurator, $functionName)) {
+            // prepare database
+            Selector::__legacySelect();
+            Database::setConfig(Config::$db);
+            $this->store->setDB(Database::getInstance());
+            $this->store->prepareTables();
+
             return call_user_func([$this->tool->configurator, $functionName], $argv);
         } else {
             return "Unable to configure: method does not exist";
@@ -120,22 +137,6 @@ class App
             $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
         }
         exit($message);
-    }
-
-    private function prepare()
-    {
-        // Select the config
-        $configSelector = new Selector();
-        $configSelector->select();
-
-        // prepare class Store
-        Database::setConfig(Config::$db);
-        $this->store->setDB(Database::getInstance());
-        $this->store->prepareTables();
-
-        // Set the config
-        // All data for config is usually loading from database
-        $this->configManager->prepareConfig();
     }
 
     /**
