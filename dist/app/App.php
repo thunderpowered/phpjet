@@ -20,6 +20,7 @@ use Jet\App\Engine\Core\Tool;
 use Jet\App\Engine\System\Error;
 use Jet\App\Engine\System\PageBuilder;
 use Jet\PHPJet;
+use mysql_xdevapi\Exception;
 
 /**
  * Class Startup
@@ -121,7 +122,11 @@ class App
             $this->store->setDB(Database::getInstance());
             $this->store->prepareTables();
 
-            return call_user_func([$this->tool->configurator, $functionName], $argv);
+            try {
+                return call_user_func([$this->tool->configurator, $functionName], $argv);
+            } catch (Exception $exception) {
+                $this->exit($exception->getMessage());
+            }
         } else {
             return "Unable to configure: method does not exist";
         }
@@ -132,7 +137,9 @@ class App
      */
     public function exit(string $message = '')
     {
-        PHPJet::$app->system->buffer->clearBuffer();
+        if (PHPJet::$app->system) { // can be disabled in configure mode
+            PHPJet::$app->system->buffer->clearBuffer();
+        }
         if ($message) {
             $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
         }

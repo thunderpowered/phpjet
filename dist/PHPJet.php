@@ -3,6 +3,7 @@
 namespace Jet;
 
 use Jet\App\App;
+use Jet\App\Engine\Config\Config;
 
 /**
  * Class PHPJet
@@ -15,6 +16,9 @@ class PHPJet
      */
     public static $app;
 
+    /**
+     * @param string $mode
+     */
     public static function init(string $mode)
     {
         self::defineConstants();

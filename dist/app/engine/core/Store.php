@@ -135,6 +135,10 @@ class Store
      * @var string
      */
     private $defaultErrorMessage = 'Database error';
+    /**
+     * @var string
+     */
+    private $dumpFileLocation = ROOT . 'backups/database/';
 
     /**
      * @return string
@@ -879,6 +883,28 @@ class Store
     }
 
     /**
+     * @throws CoreException
+     */
+    public function dump(): string
+    {
+        if (!file_exists($this->dumpFileLocation)) {
+            mkdir($this->dumpFileLocation, 0666, true);
+        }
+        $database = Config::$db['database'];
+        $password = Config::$db['password'];
+        $host = Config::$db['host'];
+        $user = Config::$db['username'];
+        $fileName = realpath($this->dumpFileLocation) . "/{$database}_backup_" . time() . '.sql';
+        // i don't know, this code looks unsafe to me
+        exec("mysqldump --user=$user --password=$password --host=$host $database > \"$fileName\"");
+        if (!file_exists($fileName)) {
+            $this->throwException('Unable to dump database. See docs here: https://phpjet.org/docs/database');
+        }
+        // if everything is fine
+        return realpath($fileName);
+    }
+
+    /**
      * @param array $limit
      * @return array
      * @throws Exception
@@ -1046,7 +1072,7 @@ class Store
     /**
      * @param string $message
      * @param bool $die
-     * @throws Exception
+     * @throws CoreException
      */
     private function throwException(string $message, bool $die = false)
     {

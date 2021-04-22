@@ -37,11 +37,11 @@ class Error
         //set basic error handler
         set_error_handler([$this, 'errorCatcher']);
 
-        //set exception handler
-        set_exception_handler([$this, 'exceptionCatcher']);
-
         //set fatal error handler
         register_shutdown_function([$this, 'fatalErrorCatcher']);
+
+        //set exception handler
+//        set_exception_handler([$this, 'exceptionCatcher']);
     }
 
     /**
@@ -117,7 +117,7 @@ class Error
         $errorID = $this->generateErrorID();
         if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
             $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true, $errorID);
-            echo PHPJet::$app->router->errorPage500();
+//            echo PHPJet::$app->router->errorPage500();
         }
     }
 

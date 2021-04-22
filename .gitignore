@@ -76,3 +76,6 @@
 
 # log files
 *.log
+
+# sql files (mostly backups)
+*.sql

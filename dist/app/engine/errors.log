@@ -120,3 +120,235 @@ Stack trace:
 #0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
 #1 {main}
   thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:25:57 (UTC) ) ID Ошибки: 17c73bcd0f6cfb22eef213f9872bf120c40c99de01112e3be132f72226768330 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:27:29 (UTC) ) ID Ошибки: d500455f86082a0eae52a231852b29b790dd10c38180a315109d1e444447011b | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:14 (UTC) ) ID Ошибки: 295187609f153961403fe2de561a4f7466ccad4f1f23b3ecd814d0ed80affe4b | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:25 (UTC) ) ID Ошибки: a54342f17025ab84a236076ba592a2567ad7f9416d648c84915f2d817785bf41 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:26 (UTC) ) ID Ошибки: fff54573512c9a1eb3aa33d0833f4a34213b8189eb53a1ab365b7d31b81b863a | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:40 (UTC) ) ID Ошибки: ea0adfc367d8abb758d62be088bea85eeff438400f682baff7f464c086ded8cb | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:41 (UTC) ) ID Ошибки: 25f29b7bc9fe7072210c699a657d60039c300abf527e1426a05cede8509c0f5e | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:42 (UTC) ) ID Ошибки: 249c4ee085c3d3aeae397d377997b2db5334541dca85cb1432de8044e399f3c9 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:42 (UTC) ) ID Ошибки: 4905a9ccf309b2b5e0b93c1f6a83007b0c85104029822dc33a2d9e8811163d1f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:32:56 (UTC) ) ID Ошибки: d7aedc8438ad701c2a60b31f65193af9146674d6c5595045050291507eaaeb14 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:33:04 (UTC) ) ID Ошибки: d3676c7f90b4da059f51aa854d3747da0f21a3ab0eef1139a88e0040a2ce0e90 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:33:05 (UTC) ) ID Ошибки: 9ebdb9d759bd6909e40b2d01b598fc91b22272594c253f26ff0d04b92f375a92 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:33:10 (UTC) ) ID Ошибки: f3e5edc6284ea552425c924e6d9f035357bfb45180a302e6093b5ed093fe2fc6 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:33:36 (UTC) ) ID Ошибки: 3fb3e26d718cd10fbeb1cf65d9a5bff4e03067b4177a05808e5f5b33619a6d84 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:12 (UTC) ) ID Ошибки: 40c0991bd5ac5cba4f8368f2c9249322a21e35dc155cb0f68d82cb347bb3b424 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:34 (UTC) ) ID Ошибки: 31fd9467647adf731195722b302c8a8921a21faf7b7c81e6cbc0ed31d260cc85 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:36 (UTC) ) ID Ошибки: 466931f9385251636fa159ebff9bfa4d7f5b3e1342292eeaa9ce5a251f5f0bc3 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:43 (UTC) ) ID Ошибки: ed03a6c54aadb8c28a1d1415754dc9c6ebf0a4f9333a96a2e8cacbf922faa5bc | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:44 (UTC) ) ID Ошибки: 512749ab075d8fa0c84f069e53e8d9f7164f99cedf05a3ece62daa9b8b22d19e | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:34:59 (UTC) ) ID Ошибки: ce02c3ff0bb2338c53b1d90d1cf18420c3e8e2cad19a617d625878e4bfe8076f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:35:37 (UTC) ) ID Ошибки: ce18465149a7041bb24fe4ad7165da3d9db35a2488314553bdad5a9321564391 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:26 (UTC) ) ID Ошибки: 754238a3bff2961ffd1c0cdf46315033ab9aba2148053346dc7f3a9fb72324c6 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:27 (UTC) ) ID Ошибки: 04ed628c8249e4b33f067a267c8fc78d86552e04b21a4ab0c7d5c80df024ce2f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:27 (UTC) ) ID Ошибки: ef833b98ceac67a13844ff07ee003f419e18552b3d988344eac0a5dde9692b0e | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:28 (UTC) ) ID Ошибки: 9673e8376059e39ce370071b6c7415618b773c7dcad969ae4d9796b76bb71dda | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:29 (UTC) ) ID Ошибки: 0e950cfdded9cad59f3f8cd0887b42f993456712a44d3df53e572fb98091b3d4 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:41 (UTC) ) ID Ошибки: a796db0a6f0eb502705d722f8193b8a2198a97767a4eebbe457bef2a6f4f0487 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:41 (UTC) ) ID Ошибки: b4c2711403f68c5440690c57271de267e8d8548a7b15f81d042a6c711f6a9ab9 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:36:42 (UTC) ) ID Ошибки: 892e2e8484f6dd74cf956eb9b03eb6a1136b1993d47acee86a3189e2fe64cf3e | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:37:06 (UTC) ) ID Ошибки: 226d376c3f4dbf12f311d63a1b790e68d9ac2ef9a8cc1ee73a9729f4c678f241 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:38:18 (UTC) ) ID Ошибки: c26b5b8d3ac3c02e3eca235ebee563e7afb40dd62a6acbf7f6ecce89d56a8412 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Return value of Jet\App\App::configure() must be of the type string, null returned in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php:124
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 124
+( 2021-04-22 18:38:39 (UTC) ) ID Ошибки: 4ee41caeeeca3a0e8e8817c5e1835f5d8d1692996417ea6652a02d2d40143e0e | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Return value of Jet\App\App::configure() must be of the type string, null returned in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php:124
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 124
+( 2021-04-22 18:38:53 (UTC) ) ID Ошибки: fca5b07bd2ec477d2e94fb5f7605ff688930eb306e17acbc4b3095fe79d11dae | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of TypeError given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(TypeError))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:39:08 (UTC) ) ID Ошибки: cc22fc9866f2b578578c49c060a3b3fb125550ad63c4cb5fa76390ca6521af2c | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Return value of Jet\App\App::configure() must be of the type string, null returned in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php:124
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 124
+( 2021-04-22 18:41:41 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'buffer' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 135
+( 2021-04-22 18:41:41 (UTC) ) ID Ошибки: 5d1792fc77ba34444be34d06b70ed859e12f2e137657300e6510040dc6a40d34 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\System\Error::exceptionCatcher() must be an instance of Exception, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php:104
+Stack trace:
+#0 [internal function]: Jet\App\Engine\System\Error->exceptionCatcher(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\system\Error.php; Строка: 104
+( 2021-04-22 18:46:15 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Trying to get property 'buffer' of non-object; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 135
+( 2021-04-22 18:46:15 (UTC) ) ID Ошибки: 1cd8237313887084e5c775ee286dc5a44659e309ce0bb94760f0ccfc70176d5a | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Error: Call to a member function clearBuffer() on null in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php:135
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(54): Jet\App\App->exit('')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(37): Jet\App\Engine\Tools\Configurator->migrateBackup()
+#2 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(124): call_user_func(Array, Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#5 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php; Строка: 135
+( 2021-04-22 18:53:15 (UTC) ) ID Ошибки: af77fed272b1604ef7a1df9a312f1f9a0eaa027ee75ab2bea5a24d4db6812667 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\CoreException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php:1085
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php(901): Jet\App\Engine\Core\Store->throwException('Unable to dump ...')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(53): Jet\App\Engine\Core\Store->dump()
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(37): Jet\App\Engine\Tools\Configurator->migrateBackup(Array)
+#3 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(126): call_user_func(Array, Array)
+#5 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#6 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php; Строка: 1085
+( 2021-04-22 18:54:00 (UTC) ) ID Ошибки: bd971eb837794a6e8ba70ac4b6b6183e4352bcfa6beeff09a37c468e51a3dd3f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\CoreException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php:1085
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php(901): Jet\App\Engine\Core\Store->throwException('Unable to dump ...')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(53): Jet\App\Engine\Core\Store->dump()
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(37): Jet\App\Engine\Tools\Configurator->migrateBackup(Array)
+#3 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(126): call_user_func(Array, Array)
+#5 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#6 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php; Строка: 1085
+( 2021-04-22 18:54:48 (UTC) ) ID Ошибки: b539c1d8fb11ebb50dfa239b1625dd7decbf71d5d310071cfb2dc43e6afe5058 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\CoreException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php:1085
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php(901): Jet\App\Engine\Core\Store->throwException('Unable to dump ...')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(53): Jet\App\Engine\Core\Store->dump()
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(37): Jet\App\Engine\Tools\Configurator->migrateBackup(Array)
+#3 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(126): call_user_func(Array, Array)
+#5 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#6 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php; Строка: 1085
+( 2021-04-22 18:55:26 (UTC) ) ID Ошибки: 8d682dd4be4d4655f07ca31297ecfdd22ebb89afcd7996eae337a929d9ecfa16 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 4; Информация об ошибке: syntax error, unexpected '{', expecting ')'; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 39
+( 2021-04-22 18:55:50 (UTC) ) ID Ошибки: 5824516d8e3fd7cca5247da66561efa4ebb9777f1a0ac350f6c12e6ed0d1487f | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Jet\App\Engine\Exceptions\CoreException in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php:1085
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php(901): Jet\App\Engine\Core\Store->throwException('Unable to dump ...')
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(53): Jet\App\Engine\Core\Store->dump()
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(37): Jet\App\Engine\Tools\Configurator->migrateBackup(Array)
+#3 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(126): call_user_func(Array, Array)
+#5 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#6 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\core\Store.php; Строка: 1085
+( 2021-04-22 18:59:42 (UTC) ) ID Ошибки: d22d409ab08ffbe2ce044d8d7aa47411c109e93f693444287523c7c85a9b1835 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Error: Cannot access protected property Jet\App\Engine\Exceptions\CoreException::$message in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php:35
+Stack trace:
+#0 [internal function]: Jet\App\Engine\Tools\Configurator->exceptionHandler(Object(Jet\App\Engine\Exceptions\CoreException))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 35

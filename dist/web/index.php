@@ -1,17 +1,16 @@
 <?php
 
-use Jet\App\App;
 use Jet\App\Engine\Config\Config;
 use Jet\PHPJet;
-//
+
 $version = phpversion();
 if ((float)$version < 7.3) {
     exit('Version required: 7.3, but installed: ' . $version);
 }
-//
+
 date_default_timezone_set('UTC');
 $start = microtime(true);
-//
+
 // Root directory
 const ROOT = __DIR__ . '/../';
 // Web (static) directory
