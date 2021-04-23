@@ -456,15 +456,24 @@ class Store
 
     /**
      * @param string $tableName
+     * @param bool $assoc
      * @return array
      */
-    public function getTableStructure(string $tableName): array
+    public function getTableStructure(string $tableName, bool $assoc = false): array
     {
         if (!$this->doesTableExist($tableName)) {
             return [];
         }
 
-        return $this->execGet("DESCRIBE $tableName");
+        $result = $this->execGet("DESCRIBE $tableName");
+        if ($assoc) {
+            foreach ($result as $key => $structure) {
+                $result[$structure['Field']] = $structure;
+                unset ($result[$key]);
+            }
+        }
+
+        return $result;
     }
 
     /**

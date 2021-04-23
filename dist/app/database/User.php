@@ -4,13 +4,14 @@
 namespace Jet\App\Database;
 
 
+use Jet\App\Engine\ActiveRecord\_FieldType;
 use Jet\App\Engine\ActiveRecord\Field;
 use Jet\App\Engine\ActiveRecord\Table;
 
 /**
  * Class Users
  * @package Jet\App\Database
- * @property Field id
+ * @property Field|_FieldType id
  * @property Field username
  * @property Field email
  * @property Field password

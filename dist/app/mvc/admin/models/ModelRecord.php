@@ -22,7 +22,7 @@ class ModelRecord
         $tableKey = $id === '*' ? '' : $id;
         switch ($mode) {
             case 'only_title':
-                $records = PHPJet::$app->tool->configurator->parseTables($tableKey);
+                $records = PHPJet::$app->tool->configurator->_parseTables($tableKey, false, false, true);
                 return new ModelResponse(!!$records, '', ['records' => $records]);
             default:
                 return new ModelResponse(false, 'unsupported mode');

@@ -130,17 +130,7 @@ class Configurator
                  * @var Table $object
                  */
                 $object = new $className();
-                $tableName = $object->_getDBTableName();
-
-                // check if exists
-                $exists = PHPJet::$app->store->doesTableExist($tableName);
-                if (!$exists) {
-                    $table['status'] = 0;
-                    continue;
-                }
-                // check structure
-                $structure = PHPJet::$app->store->getTableStructure($tableName);
-                // todo check structure
+                $table['status'] = $object->returnStatus();
             }
         }
 

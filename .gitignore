@@ -1,10 +1,11 @@
 # src
 /src/theme/**/node_modules/
 
-# dist
+# dist (auto-generated files)
 /dist/app/engine/config/default/*
 /dist/vendor/*
 /dist/cache/*
+/dist/backups/*
 
 # misc
 /.idea/
@@ -77,5 +78,5 @@
 # log files
 *.log
 
-# sql files (mostly backups)
+# sql files
 *.sql

@@ -255,11 +255,34 @@ abstract class Table
     }
 
     /**
-     * @return string
+     * @return int
+     * 0 - table does not exist
+     * 1 - table exists, yet outdated
+     * 2 - table exists and up to date
      */
-    public function _getDBTableName(): string
+    public function returnStatus(): int
     {
-        return self::convertClassNameIntoTableName(get_class($this));
+        $tableName = self::convertClassNameIntoTableName(get_class($this));
+        if (!PHPJet::$app->store->doesTableExist($tableName)) {
+            return 0;
+        }
+
+        $structure = PHPJet::$app->store->getTableStructure($tableName, true);
+        foreach ($this as $field => &$type) {
+            if ($this->isSystemProperty($field)) {
+                continue;
+            }
+
+            $type = $this->getFieldType($field);
+            if (
+                !isset($structure[$type->field])
+                || $structure[$type->field]['Type'] !== strtolower($type->type)
+            ) {
+                return 1;
+            }
+        }
+
+        return 2;
     }
 
     /**
@@ -393,14 +416,5 @@ abstract class Table
         $type->field = $fieldName;
         $type->type = $this->$fieldName->_getType();
         return $type;
-    }
-
-    /**
-     * @param array $objects
-     * @return object
-     */
-    private function mergeObjects(array $objects): object
-    {
-        // todo
     }
 }

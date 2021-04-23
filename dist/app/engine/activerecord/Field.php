@@ -9,11 +9,11 @@ namespace Jet\App\Engine\ActiveRecord;
  */
 class Field
 {
-    private const FIELD_TYPE_BOOL = 'FIELD_TYPE_BOOL';
-    private const FIELD_TYPE_INT = 'FIELD_TYPE_INT';
-    private const FIELD_TYPE_VARCHAR = 'FIELD_TYPE_VARCHAR';
-    private const FIELD_TYPE_TEXT = 'FIELD_TYPE_TEXT';
-    private const FIELD_TYPE_DATETIME = 'FIELD_TYPE_DATETIME';
+    private const FIELD_TYPE_BOOL = 'TINYINT(1)';
+    private const FIELD_TYPE_INT = 'INT';
+    private const FIELD_TYPE_VARCHAR = 'VARCHAR';
+    private const FIELD_TYPE_TEXT = 'LONGTEXT';
+    private const FIELD_TYPE_DATETIME = 'DATETIME';
 
     private const FIELD_INDEX_TYPE_BTREE = 'FIELD_INDEX_TYPE_BTREE';
 
@@ -52,6 +52,10 @@ class Field
      */
     private $foreignKeyType;
     /**
+     * @var bool
+     */
+    private $notNull = true; // always true
+    /**
      * @var mixed
      */
     private $_value;
@@ -75,7 +79,7 @@ class Field
      */
     public static function int(int $maxLength = 11): self
     {
-        return new self(self::FIELD_TYPE_INT, 11, $maxLength);
+        return new self(self::FIELD_TYPE_INT . "($maxLength)", 0, $maxLength);
     }
 
     /**
@@ -92,7 +96,7 @@ class Field
      */
     public static function varchar(int $maxLength = 255): self
     {
-        return new self(self::FIELD_TYPE_VARCHAR, 0, $maxLength);
+        return new self(self::FIELD_TYPE_VARCHAR . "($maxLength)", 0, $maxLength);
     }
 
     /**
