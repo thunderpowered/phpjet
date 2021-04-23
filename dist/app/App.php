@@ -115,7 +115,9 @@ class App
     public function configure(array $argv = []): string
     {
         $functionName = $argv[2] ?? null;
-        if ($functionName && method_exists($this->tool->configurator, $functionName)) {
+        if ($functionName
+            && substr($functionName, 0, 1) !== '_'
+            && method_exists($this->tool->configurator, $functionName)) {
             // prepare database
             Selector::__legacySelect();
             Database::setConfig(Config::$db);

@@ -446,6 +446,28 @@ class Store
     }
 
     /**
+     * @param string $tableName
+     * @return bool
+     */
+    public function doesTableExist(string $tableName): bool
+    {
+        return in_array($tableName, $this->tables);
+    }
+
+    /**
+     * @param string $tableName
+     * @return array
+     */
+    public function getTableStructure(string $tableName): array
+    {
+        if (!$this->doesTableExist($tableName)) {
+            return [];
+        }
+
+        return $this->execGet("DESCRIBE $tableName");
+    }
+
+    /**
      * @param string $table
      * @param array $join
      * @param array $updateFields

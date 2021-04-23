@@ -134,11 +134,11 @@ class Field
     }
 
     /**
-     * @param Field $field
+     * @param _FieldType $field
      * @param string $type
      * @return $this
      */
-    public function setForeignKey(Field $field, string $type = self::FIELD_FOREIGN_KEY_TYPE_CASCADE): self
+    public function setForeignKey(_FieldType $field, string $type = self::FIELD_FOREIGN_KEY_TYPE_CASCADE): self
     {
         $this->foreignKeyField = $field;
         $this->foreignKeyType = $type;

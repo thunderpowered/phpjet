@@ -352,3 +352,37 @@ Stack trace:
 #0 [internal function]: Jet\App\Engine\Tools\Configurator->exceptionHandler(Object(Jet\App\Engine\Exceptions\CoreException))
 #1 {main}
   thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 35
+( 2021-04-23 15:22:35 (UTC) ) ID Ошибки: 093b181102dd86b00cb934b4c830c2b076d8db169dc91f9be8dfe5a0e5304154 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 4; Информация об ошибке: syntax error, unexpected '('; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 124
+( 2021-04-23 15:23:20 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined variable: Jet\App\Database\Action; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 125
+( 2021-04-23 15:23:20 (UTC) ) ID Ошибки: 04b31f375cfdcde7fc41dbb65a19353d13c5db281f927d212a1d964486bda5f4 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\Tools\Configurator::exceptionHandler() must be an instance of Jet\App\Engine\Exceptions\CoreException, instance of Error given in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php:47
+Stack trace:
+#0 [internal function]: Jet\App\Engine\Tools\Configurator->exceptionHandler(Object(Error))
+#1 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 47
+( 2021-04-23 15:25:48 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 2; Информация об ошибке: Invalid callback Jet\App\Database\User::exceptionHandler, cannot access protected method Jet\App\Database\User::exceptionHandler(); Файл: Unknown; Строка: 0
+( 2021-04-23 15:25:48 (UTC) ) ID Ошибки: 52c18b19dc0175319b43c7d674b58e7ce989e7f9314ace37efdf2ab6c91a5f99 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught TypeError: Argument 1 passed to Jet\App\Engine\ActiveRecord\Field::setForeignKey() must be an instance of Jet\App\Engine\ActiveRecord\Field, instance of Jet\App\Engine\ActiveRecord\_FieldType given, called in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\database\Review.php on line 45 and defined in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\activerecord\Field.php:141
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\database\Review.php(45): Jet\App\Engine\ActiveRecord\Field->setForeignKey(Object(Jet\App\Engine\ActiveRecord\_FieldType))
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(129): Jet\App\Database\Review->__construct()
+#2 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(153): Jet\App\Engine\Tools\Configurator->_parseTables('', false, false, true)
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Confi; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\activerecord\Field.php; Строка: 141
+( 2021-04-23 15:32:31 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 2; Информация об ошибке: Invalid callback Jet\App\Database\Action::exceptionHandler, cannot access protected method Jet\App\Database\Action::exceptionHandler(); Файл: Unknown; Строка: 0
+( 2021-04-23 15:32:31 (UTC) ) ID Ошибки: cd3eb2211e100746dc65625cefbd027f9a259afd3f45f8f908374d9aba89c615 | Сработала функция fatalErrorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 1; Информация об ошибке: Uncaught Error: Cannot use object of type Jet\App\Database\Action as array in D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php:138
+Stack trace:
+#0 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(156): Jet\App\Engine\Tools\Configurator->_parseTables('', false, false, true)
+#1 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php(73): Jet\App\Engine\Tools\Configurator->migrateCheckTables()
+#2 [internal function]: Jet\App\Engine\Tools\Configurator->migrate(Array)
+#3 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\App.php(128): call_user_func(Array, Array)
+#4 D:\Google Drive\Programming\Projects\Local\modware.ru\dist\web\index.php(41): Jet\App\App->configure(Array)
+#5 {main}
+  thrown; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 138
+( 2021-04-23 15:33:13 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:13 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:13 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:13 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:13 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:38 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:38 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:38 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:38 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158
+( 2021-04-23 15:33:38 (UTC) ) Сработала функция errorCatcher; Сбой в работе сайта. Код ошибки/Класс ошибки: 8; Информация об ошибке: Undefined index: status; Файл: D:\Google Drive\Programming\Projects\Local\modware.ru\dist\app\engine\tools\Configurator.php; Строка: 158

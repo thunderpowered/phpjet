@@ -19,6 +19,11 @@ use stdClass;
 abstract class Table
 {
     /**
+     * @var int
+     * using only for migrations
+     */
+    public $_status;
+    /**
      * @var string
      */
     protected $_class;
@@ -247,6 +252,14 @@ abstract class Table
     public function lastInsertId(): int
     {
         return (int)PHPJet::$app->store->getLastInsertId();
+    }
+
+    /**
+     * @return string
+     */
+    public function _getDBTableName(): string
+    {
+        return self::convertClassNameIntoTableName(get_class($this));
     }
 
     /**
