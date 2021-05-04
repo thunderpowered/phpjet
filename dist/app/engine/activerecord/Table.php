@@ -9,6 +9,7 @@
 namespace Jet\App\Engine\ActiveRecord;
 
 use Exception;
+use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 use stdClass;
 
@@ -255,10 +256,11 @@ abstract class Table
     }
 
     /**
-     * @return int
      * 0 - table does not exist
      * 1 - table exists, yet outdated
      * 2 - table exists and up to date
+     * @return int
+     * @throws CoreException
      */
     public function returnStatus(): int
     {
@@ -272,7 +274,6 @@ abstract class Table
             if ($this->isSystemProperty($field)) {
                 continue;
             }
-
             $type = $this->getFieldType($field);
             if (
                 !isset($structure[$type->field])
@@ -379,10 +380,12 @@ abstract class Table
     /**
      * @param string $fieldName
      * @return null|mixed
+     * @throws CoreException
      */
     public function __get(string $fieldName)
     {
-        if (!isset($this->$fieldName) || !($this->$fieldName instanceof Field)) {
+        // todo remove double checking of object class
+        if (!isset($this->$fieldName) || $this->isSystemProperty($fieldName) || !($this->$fieldName instanceof Field)) {
             return null;
         }
         if ($this->$fieldName->_hasValue()) {
@@ -399,7 +402,7 @@ abstract class Table
     public function __set(string $fieldName, $value)
     {
         if (!isset($this->$fieldName) || !($this->$fieldName instanceof Field)) {
-            trigger_error("Field $fieldName does not exist in '".get_class($this)."'", E_USER_NOTICE);
+            trigger_error("Property $fieldName does not exist in '".get_class($this)."'", E_USER_NOTICE);
         } else {
             $this->$fieldName->_setValue($value);
         }
@@ -408,11 +411,15 @@ abstract class Table
     /**
      * @param string $fieldName
      * @return _FieldType
+     * @throws CoreException
      */
     private function getFieldType(string $fieldName): _FieldType
     {
         $type = new _FieldType();
         $type->table = get_class($this);
+        if (!($this->$fieldName instanceof Field)) {
+            throw new CoreException("Property '$fieldName' in class '$type->table' is not instance of 'Field'");
+        }
         $type->field = $fieldName;
         $type->type = $this->$fieldName->_getType();
         return $type;

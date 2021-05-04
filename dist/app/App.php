@@ -60,6 +60,7 @@ class App
     /**
      * App constructor.
      * @param string $mode
+     * @throws Engine\Exceptions\CoreException
      */
     public function __construct(string $mode = 'start')
     {
@@ -79,12 +80,16 @@ class App
                 $this->router = new Router();
                 $this->system = new System();
                 $this->pageBuilder = new PageBuilder();
-            break;
+                break;
             // there were different options, now is only one
         }
 
         // Set up the error handler
         $this->error = new Error();
+
+        // Select the config
+        $configSelector = new Selector();
+        $configSelector->select();
     }
 
     /**
@@ -92,10 +97,6 @@ class App
      */
     public function start(): string
     {
-        // Select the config
-        $configSelector = new Selector();
-        $configSelector->select();
-
         // prepare class Store
         Database::setConfig(Config::$db);
         $this->store->setDB(Database::getInstance());
@@ -136,13 +137,14 @@ class App
 
     /**
      * @param string $message
+     * @param bool $showTitle
      */
-    public function exit(string $message = '')
+    public function exit(string $message = '', bool $showTitle = false)
     {
         if (PHPJet::$app->system) { // can be disabled in configure mode
             PHPJet::$app->system->buffer->clearBuffer();
         }
-        if ($message) {
+        if ($message && $showTitle) {
             $message = "\n\r" . 'PHPJet Engine Shutdown Message: ' . $message . "\n\r";
         }
         exit($message);
@@ -223,7 +225,6 @@ class App
         $path = explode("\\", $className);
         $file = $path[count($path) - 1] . ".php";
         if (defined("CONFIG_DIR")) {
-
             $fileName = CONFIG_DIR . $file;
             $this->load($fileName);
         }

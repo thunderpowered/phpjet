@@ -2,8 +2,6 @@
 
 namespace Jet\App\Engine\Tools;
 
-use Exception;
-use Jet\App\Engine\ActiveRecord\_FieldType;
 use Jet\App\Engine\ActiveRecord\Table;
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Exceptions\CoreException;
@@ -33,12 +31,17 @@ class Configurator
     private $remove = [
         '.', '..'
     ];
+    /**
+     * @var bool
+     */
+    private $debug;
 
     /**
      * Configurator constructor.
      */
     public function __construct()
     {
+        $this->debug = Config::$dev['debug'];
         // use local exception handler
         set_exception_handler([$this, 'exceptionHandler']);
     }
@@ -62,7 +65,7 @@ class Configurator
         // this is essential thing, because migrations can really kill the entire database and data in it
         // it can be dangerous to perform it in production mode
         // don't do it
-        if (!Config::$dev['debug']) {
+        if (!$this->debug) {
             throw new CoreException('Migrations are disabled for production mode. See more information here: https://phpjet.org/docs/configure');
         }
         // backup is available in backups/database/
@@ -82,6 +85,41 @@ class Configurator
         }
 
         return '';
+    }
+
+    /**
+     * @param array $argv
+     * @return string
+     * @throws CoreException
+     */
+    public function createuser(array $argv = []): string
+    {
+        if (!$this->debug) {
+            throw new CoreException('Creating superusers is disabled for production mode. Set \'debug\' to true in Config.php if you want to continue');
+        }
+
+        $params = $this->proceedArgvParams($argv, [
+            '-login' => true,
+            '-password' => true,
+            '--2f' => false
+        ]);
+
+        // todo maybe create function for parsing params
+        $loginIndex = array_search('-login', $argv);
+        if ($loginIndex === false || !isset($argv[$loginIndex + 1])) {
+            throw new CoreException('flag -login is required');
+        }
+        $login = $argv[$loginIndex + 1];
+
+        $passwordIndex = array_search('-password', $argv);
+        if ($passwordIndex === false || !isset($argv[$passwordIndex + 1])) {
+            throw new CoreException('flag -password is required');
+        }
+        $password = $argv[$passwordIndex + 1];
+
+        $twoFactorAuth = in_array('--2f', $argv);
+
+        // todo do something special
     }
 
     /**
@@ -130,7 +168,14 @@ class Configurator
                  * @var Table $object
                  */
                 $object = new $className();
-                $table['status'] = $object->returnStatus();
+
+                // local exception handler doesn't work when running from cmd
+                // todo set up exception/fatal error handlers properly
+                try {
+                    $table['status'] = $object->returnStatus();
+                } catch (CoreException $e) {
+                    $this->exceptionHandler($e);
+                }
             }
         }
 
@@ -140,6 +185,7 @@ class Configurator
     /**
      * returns array of tables that have to be updated
      * @return array
+     * @throws CoreException
      */
     private function migrateCheckTables(): array
     {
@@ -180,5 +226,15 @@ class Configurator
     private function migrateSoft(array $tables)
     {
         // todo do something
+    }
+
+    /**
+     * @param array $argv
+     * @param array $params
+     * @return array
+     */
+    private function proceedArgvParams(array $argv, array $params = []): array
+    {
+        return [];
     }
 }

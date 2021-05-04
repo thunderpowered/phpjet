@@ -75,11 +75,9 @@ class Tool
      */
     public function __get(string $propertyName)
     {
-        // it'd better to use empty(), but i assume that nobody will try to get non-existent property
         if ($this->$propertyName) {
             return $this->$propertyName;
         }
-
         $Class = NAMESPACE_ROOT . "\App\Engine\Tools\\" . ucfirst($propertyName);
         $this->$propertyName = new $Class();
         return $this->$propertyName;

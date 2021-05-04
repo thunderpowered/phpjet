@@ -3,7 +3,6 @@
 namespace Jet;
 
 use Jet\App\App;
-use Jet\App\Engine\Config\Config;
 
 /**
  * Class PHPJet
@@ -18,6 +17,7 @@ class PHPJet
 
     /**
      * @param string $mode
+     * @throws App\Engine\Exceptions\CoreException
      */
     public static function init(string $mode)
     {

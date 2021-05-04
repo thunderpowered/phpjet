@@ -2,6 +2,7 @@
 
 namespace Jet\App\Engine\Core;
 
+use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 
 /**
@@ -33,21 +34,24 @@ class Selector
      */
     public function __construct()
     {
-        $this->site = PHPJet::$app->system->request->getSERVER('HTTP_HOST');
+        if ( PHPJet::$app->system) {
+            $this->site = PHPJet::$app->system->request->getSERVER('HTTP_HOST');
+        } else {
+            $this->site = 'default';
+        }
     }
 
     /**
+     * @throws CoreException
      * @deprecated
      */
     public function select()
     {
         if (!file_exists(ENGINE . 'config/' . $this->site . '/')) {
-
-            define("CONFIG_DIR", ENGINE . 'config/default/');
-            return;
+            PHPJet::$app->exit("Config '$this->site' does not exist");
+        } else {
+            define("CONFIG_DIR", ENGINE . 'config/' . $this->site . '/');
         }
-
-        define("CONFIG_DIR", ENGINE . 'config/' . $this->site . '/');
     }
 
     /**

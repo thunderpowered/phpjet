@@ -1,6 +1,7 @@
 <?php
 
 namespace Jet\App\Engine\System;
+
 use Jet\App\Engine\Config\Config;
 use Jet\PHPJet;
 use TheSeer\Tokenizer\Exception;
@@ -41,7 +42,7 @@ class Error
         register_shutdown_function([$this, 'fatalErrorCatcher']);
 
         //set exception handler
-//        set_exception_handler([$this, 'exceptionCatcher']);
+        set_exception_handler([$this, 'exceptionCatcher']);
     }
 
     /**
@@ -72,9 +73,9 @@ class Error
         if ($sendMail) {
             $this->errorToEmail($errno, $errStr, $errFile, $errLine, $funcName);
         }
-        $text = "( " . date('Y-m-d H:i:s (T)') . " ) ". ($errorID ? 'ID Ошибки: ' . $errorID . ' | ' : '')
-                . "Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine
-                . "\r\n";
+        $text = "( " . date('Y-m-d H:i:s (T)') . " ) " . ($errorID ? 'ID Ошибки: ' . $errorID . ' | ' : '')
+            . "Сработала функция " . $funcName . "; Сбой в работе сайта. Код ошибки/Класс ошибки: " . $errno . "; Информация об ошибке: " . $errStr . "; Файл: " . $errFile . "; Строка: " . $errLine
+            . "\r\n";
 
         // be sure to give a permission
         $errorFile = fopen(ENGINE . $this->logFile, 'a+');
@@ -90,7 +91,6 @@ class Error
      * @param $errFile
      * @param $errLine
      * @param $funcName
-     * @throws \phpmailerException
      */
     public function errorToEmail($errno, $errStr, $errFile, $errLine, $funcName)
     {
@@ -99,14 +99,15 @@ class Error
     }
 
     /**
-     * @param \Exception $e
+     * @param \Exception $exception
      */
-    public function exceptionCatcher(\Exception $e)
+    public function exceptionCatcher(\Exception $exception)
     {
         $errorID = $this->generateErrorID();
-        $this->errorToFile(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine(), 'exceptionCatcher', 500, true, $errorID);
-        echo PHPJet::$app->router->errorPage500();
-        PHPJet::$app->exit();
+        if ($exception) {
+            $this->errorToFile(get_class($exception), $exception->getMessage(), $exception->getFile(), $exception->getLine(), 'exceptionCatcher', 500, true, $errorID);
+        }
+        $this->shutDown();
     }
 
     /**
@@ -115,9 +116,22 @@ class Error
     public function fatalErrorCatcher(): void
     {
         $errorID = $this->generateErrorID();
-        if ($error = error_get_last() AND $error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
+        $error = error_get_last();
+        if ($error['type'] & (E_ERROR | E_PARSE | E_COMPILE_ERROR | E_CORE_ERROR)) {
             $this->errorToFile($error['type'], $error['message'], $error['file'], $error['line'], 'fatalErrorCatcher', 500, true, $errorID);
-//            echo PHPJet::$app->router->errorPage500();
+        }
+        $this->shutDown();
+    }
+
+    /**
+     * @param string $message
+     */
+    private function shutDown(string $message = ''): void
+    {
+        if (PHPJet::$app->router) { // because route could not be included in some particular cases
+            PHPJet::$app->router->errorPage(500, $message, 'error', true);
+        } else {
+            PHPJet::$app->exit($message);
         }
     }
 
