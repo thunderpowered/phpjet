@@ -20,57 +20,30 @@ class Field
     private const FIELD_FOREIGN_KEY_TYPE_CASCADE = 'FIELD_FOREIGN_KEY_TYPE_CASCADE';
     private const FIELD_FOREIGN_KEY_TYPE_RESTRICT = 'FIELD_FOREIGN_KEY_TYPE_RESTRICT';
     /**
-     * @var string
+     * @var _FieldType
      */
     private $type;
-    /**
-     * @var int
-     */
-    private $maxLength;
-    /**
-     * @var int
-     */
-    private $minlength;
-    /**
-     * @var string
-     */
-    private $index;
-    /**
-     * @var bool
-     */
-    private $primary;
-    /**
-     * @var bool
-     */
-    private $autoIncrement;
-    /**
-     * @var self
-     */
-    private $foreignKeyField;
-    /**
-     * @var string
-     */
-    private $foreignKeyType;
-    /**
-     * @var bool
-     */
-    private $notNull = true; // always true
     /**
      * @var mixed
      */
     private $_value;
+    /**
+     * @var _FieldAttributes
+     */
+    private $attribues;
+    /**
+     * @var _FieldIndex
+     */
+    private $index;
 
     /**
      * Field constructor.
-     * @param string $type
-     * @param int $minlength
-     * @param int $maxLength
+     * @param _FieldType $type
      */
-    public function __construct(string $type, int $minlength, int $maxLength)
+    public function __construct(_FieldType $type)
     {
         $this->type = $type;
-        $this->minlength = $minlength;
-        $this->maxLength = $maxLength;
+        $this->attribues = new _FieldAttributes();
     }
 
     /**
@@ -79,7 +52,9 @@ class Field
      */
     public static function int(int $maxLength = 11): self
     {
-        return new self(self::FIELD_TYPE_INT . "($maxLength)", 0, $maxLength);
+        return new self(
+            new _FieldType(self::FIELD_TYPE_INT . "($maxLength)", 0, $maxLength)
+        );
     }
 
     /**
@@ -87,7 +62,9 @@ class Field
      */
     public static function bool(): self
     {
-        return new self(self::FIELD_TYPE_BOOL, 0, 1);
+        return new self(
+            new _FieldType(self::FIELD_TYPE_BOOL, 0, 1)
+        );
     }
 
     /**
@@ -96,7 +73,9 @@ class Field
      */
     public static function varchar(int $maxLength = 255): self
     {
-        return new self(self::FIELD_TYPE_VARCHAR . "($maxLength)", 0, $maxLength);
+        return new self(
+            new _FieldType(self::FIELD_TYPE_VARCHAR . "($maxLength)", 0, $maxLength)
+        );
     }
 
     /**
@@ -105,7 +84,9 @@ class Field
      */
     public static function text(int $maxLength = 65536): self
     {
-        return new self(self::FIELD_TYPE_TEXT, 0, $maxLength);
+        return new self(
+            new _FieldType(self::FIELD_TYPE_TEXT, 0, $maxLength)
+        );
     }
 
     /**
@@ -113,7 +94,9 @@ class Field
      */
     public static function dateTime(): self
     {
-        return new self(self::FIELD_TYPE_DATETIME, 0, 32);
+        return new self(
+            new _FieldType(self::FIELD_TYPE_DATETIME, 0, 32)
+        );
     }
 
     /**
@@ -122,7 +105,7 @@ class Field
      */
     public function setIndex(string $type = self::FIELD_INDEX_TYPE_BTREE): self
     {
-        $this->index = $type;
+        $this->index->index = $type;
         return $this;
     }
 
@@ -132,8 +115,8 @@ class Field
      */
     public function setPrimary(bool $autoIncrement = true): self
     {
-        $this->primary = true;
-        $this->autoIncrement = $autoIncrement;
+        $this->index->primary = true;
+        $this->attribues->autoIncrement = $autoIncrement;
         return $this;
     }
 
@@ -144,8 +127,8 @@ class Field
      */
     public function setForeignKey(_FieldType $field, string $type = self::FIELD_FOREIGN_KEY_TYPE_CASCADE): self
     {
-        $this->foreignKeyField = $field;
-        $this->foreignKeyType = $type;
+        $this->index->foreignKeyField = $field;
+        $this->index->foreignKeyType = $type;
         return $this;
     }
 
@@ -166,11 +149,27 @@ class Field
     }
 
     /**
-     * @return string
+     * @return _FieldType
      */
-    public function _getType(): string
+    public function _getType(): _FieldType
     {
         return $this->type;
+    }
+
+    /**
+     * @return _FieldAttributes
+     */
+    public function _getAttributes(): _FieldAttributes
+    {
+        return $this->attribues;
+    }
+
+    /**
+     * @return _FieldIndex
+     */
+    public function _getIndex(): _FieldIndex
+    {
+        return $this->index;
     }
 
     /**

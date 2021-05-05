@@ -274,10 +274,18 @@ abstract class Table
             if ($this->isSystemProperty($field)) {
                 continue;
             }
+
+            if (!($this->$field instanceof Field)) {
+                throw new CoreException("Property '$field' of table '$tableName' is not instance of 'Field'");
+            }
+
             $type = $this->getFieldType($field);
+            $attributes = $this->getFieldAttributes($field);
+            $index = $this->getFieldIndex($field);
             if (
                 !isset($structure[$type->field])
                 || $structure[$type->field]['Type'] !== strtolower($type->type)
+                || !($structure[$type->field]['Null'] === 'NO') != $attributes->notNull
             ) {
                 return 1;
             }
@@ -411,17 +419,31 @@ abstract class Table
     /**
      * @param string $fieldName
      * @return _FieldType
-     * @throws CoreException
      */
     private function getFieldType(string $fieldName): _FieldType
     {
-        $type = new _FieldType();
-        $type->table = get_class($this);
-        if (!($this->$fieldName instanceof Field)) {
-            throw new CoreException("Property '$fieldName' in class '$type->table' is not instance of 'Field'");
-        }
+        $table = get_class($this);
+        $type = $this->$fieldName->_getType();
+        $type->table = $table;
         $type->field = $fieldName;
-        $type->type = $this->$fieldName->_getType();
         return $type;
+    }
+
+    /**
+     * @param string $fieldName
+     * @return _FieldAttributes
+     */
+    private function getFieldAttributes(string $fieldName): _FieldAttributes
+    {
+        return $this->$fieldName->_getAttributes();
+    }
+
+    /**
+     * @param string $fieldName
+     * @return _FieldIndex
+     */
+    private function getFieldIndex(string $fieldName): _FieldIndex
+    {
+        return $this->$fieldName->_getIndex();
     }
 }
