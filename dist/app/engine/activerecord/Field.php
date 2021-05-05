@@ -30,7 +30,7 @@ class Field
     /**
      * @var _FieldAttributes
      */
-    private $attribues;
+    private $attributes;
     /**
      * @var _FieldIndex
      */
@@ -43,7 +43,8 @@ class Field
     public function __construct(_FieldType $type)
     {
         $this->type = $type;
-        $this->attribues = new _FieldAttributes();
+        $this->attributes = new _FieldAttributes();
+        $this->index = new _FieldIndex();
     }
 
     /**
@@ -116,7 +117,7 @@ class Field
     public function setPrimary(bool $autoIncrement = true): self
     {
         $this->index->primary = true;
-        $this->attribues->autoIncrement = $autoIncrement;
+        $this->attributes->autoIncrement = $autoIncrement;
         return $this;
     }
 
@@ -161,7 +162,7 @@ class Field
      */
     public function _getAttributes(): _FieldAttributes
     {
-        return $this->attribues;
+        return $this->attributes;
     }
 
     /**

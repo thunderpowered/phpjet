@@ -14,31 +14,31 @@ use Jet\App\Engine\ActiveRecord\Table;
 class Authority extends Table
 {
     /**
-     * @var int
+     * @var Field
      */
     protected $id;
     /**
-     * @var string
+     * @var Field
      */
     protected $username;
     /**
-     * @var string
+     * @var Field
      */
     protected $email;
     /**
-     * @var string
+     * @var Field
      */
     protected $password;
     /**
-     * @var bool
+     * @var Field
      */
     protected $two_factor_auth;
     /**
-     * @var string
+     * @var Field
      */
     protected $session_token;
     /**
-     * @var string
+     * @var Field
      */
     protected $last_login;
 

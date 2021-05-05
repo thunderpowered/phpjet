@@ -4,6 +4,7 @@
 namespace Jet\App\Database;
 
 
+use Jet\App\Engine\ActiveRecord\Field;
 use Jet\App\Engine\ActiveRecord\Table;
 
 /**
@@ -15,21 +16,35 @@ class Category extends Table
     /**
      * @var int
      */
-    public $id;
+    protected $id;
     /**
      * @var string
      */
-    public $name;
+    protected $name;
     /**
      * @var string
      */
-    public $url;
+    protected $url;
     /**
      * @var string
      */
-    public $description;
+    protected $description;
     /**
      * @var string
      */
-    public $cover;
+    protected $image;
+
+    /**
+     * Category constructor.
+     * @param bool $loaded
+     */
+    public function __construct(bool $loaded = false)
+    {
+        parent::__construct($loaded);
+        $this->id = Field::int()->setPrimary();
+        $this->name = Field::varchar()->setIndex();
+        $this->url = Field::varchar()->setIndex();
+        $this->description = Field::text();
+        $this->image = Field::varchar();
+    }
 }

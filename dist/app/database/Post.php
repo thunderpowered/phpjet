@@ -44,8 +44,4 @@ class Post extends Table
      * @var string
      */
     public $description;
-    /**
-     * @var string
-     */
-    public $since;
 }

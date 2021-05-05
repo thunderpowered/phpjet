@@ -12,7 +12,7 @@ class _FieldAttributes
     /**
      * @var bool
      */
-    public $notNull = true; // always true
+    public $null = false; // always true
     /**
      * @var bool
      */

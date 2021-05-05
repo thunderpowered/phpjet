@@ -13,6 +13,10 @@ use Jet\App\Engine\ActiveRecord\Table;
 class Taxonomy extends Table
 {
     /**
+     * @var bool
+     */
+    protected $_ignore = true;
+    /**
      * @var int
      */
     public $id;

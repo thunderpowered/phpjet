@@ -37,21 +37,25 @@ abstract class Table
      */
     protected $_primaryKey = 'id';
     /**
-     * @var int
+     * @var Field
      */
     protected $_config_id;
     /**
-     * @var string
+     * @var Field
      */
     protected $_created;
     /**
-     * @var string
+     * @var Field
      */
     protected $_deleted;
     /**
      * @var bool
      */
     protected $_has_data = false;
+    /**
+     * @var bool
+     */
+    protected $_ignore;
 
     /**
      * Table constructor.
@@ -256,21 +260,26 @@ abstract class Table
     }
 
     /**
-     * 0 - table does not exist
-     * 1 - table exists, yet outdated
-     * 2 - table exists and up to date
+     * 0 - table ignored
+     * 1 - table does not exist
+     * 2 - table exists, yet outdated
+     * 3 - table exists and up to date
      * @return int
      * @throws CoreException
      */
     public function returnStatus(): int
     {
-        $tableName = self::convertClassNameIntoTableName(get_class($this));
-        if (!PHPJet::$app->store->doesTableExist($tableName)) {
+        if ($this->_ignore) {
             return 0;
         }
 
+        $tableName = self::convertClassNameIntoTableName(get_class($this));
+        if (!PHPJet::$app->store->doesTableExist($tableName)) {
+            return 1;
+        }
+
         $structure = PHPJet::$app->store->getTableStructure($tableName, true);
-        foreach ($this as $field => &$type) {
+        foreach ($this as $field => $type) {
             if ($this->isSystemProperty($field)) {
                 continue;
             }
@@ -282,16 +291,17 @@ abstract class Table
             $type = $this->getFieldType($field);
             $attributes = $this->getFieldAttributes($field);
             $index = $this->getFieldIndex($field);
+            // todo make it a bit more elegant
             if (
                 !isset($structure[$type->field])
                 || $structure[$type->field]['Type'] !== strtolower($type->type)
-                || !($structure[$type->field]['Null'] === 'NO') != $attributes->notNull
+                || !($structure[$type->field]['Null'] === 'NO') !== $attributes->null
             ) {
-                return 1;
+                return 2;
             }
         }
 
-        return 2;
+        return 3;
     }
 
     /**
@@ -388,7 +398,6 @@ abstract class Table
     /**
      * @param string $fieldName
      * @return null|mixed
-     * @throws CoreException
      */
     public function __get(string $fieldName)
     {

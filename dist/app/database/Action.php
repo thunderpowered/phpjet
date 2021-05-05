@@ -14,41 +14,41 @@ use Jet\App\Engine\ActiveRecord\Table;
 class Action extends Table
 {
     /**
-     * @var int
+     * @var Field
      */
-    public $id;
+    protected $id;
     /**
-     * @var string
+     * @var Field
      */
-    public $method;
+    protected $method;
     /**
-     * @var string
+     * @var Field
      */
-    public $url;
+    protected $url;
     /**
-     * @var
+     * @var Field
      */
-    public $type;
+    protected $type;
     /**
-     * @var
+     * @var Field
      */
-    public $details;
+    protected $details;
     /**
-     * @var string
+     * @var Field
      */
-    public $referer;
+    protected $referer;
     /**
-     * @var string
+     * @var Field
      */
-    public $ip;
+    protected $ip;
     /**
-     * @var string
+     * @var Field
      */
-    public $user_agent;
+    protected $user_agent;
     /**
-     * @var string
+     * @var Field
      */
-    public $post;
+    protected $post;
 
     /**
      * Action constructor.

@@ -14,6 +14,10 @@ use Jet\App\Engine\ActiveRecord\Table;
 class PageBuilder extends Table
 {
     /**
+     * @var bool
+     */
+    protected $_ignore = true;
+    /**
      * @var int
      */
     public $id;
