@@ -279,6 +279,7 @@ abstract class Table
         }
 
         $structure = PHPJet::$app->store->getTableStructure($tableName, true);
+        $indexes = PHPJet::$app->store->getTableIndexes($tableName, true);
         foreach ($this as $field => $type) {
             if ($this->isSystemProperty($field)) {
                 continue;
@@ -288,9 +289,9 @@ abstract class Table
                 throw new CoreException("Property '$field' of table '$tableName' is not instance of 'Field'");
             }
 
+            // step 1: check field type and attributes
             $type = $this->getFieldType($field);
             $attributes = $this->getFieldAttributes($field);
-            $index = $this->getFieldIndex($field);
             // todo make it a bit more elegant
             if (
                 !isset($structure[$type->field])
@@ -299,6 +300,13 @@ abstract class Table
             ) {
                 return 2;
             }
+
+            // step 2: check indexes
+            $index = $this->getFieldIndex($field);
+            // todo
+
+            // step 3: check foreign keys
+            // todo
         }
 
         return 3;

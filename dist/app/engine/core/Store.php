@@ -477,6 +477,20 @@ class Store
     }
 
     /**
+     * @param string $tableName
+     * @param bool $assoc
+     * @return array
+     */
+    public function getTableIndexes(string $tableName, bool $assoc = false): array
+    {
+        if (!$this->doesTableExist($tableName)) {
+            return [];
+        }
+
+        // todo
+    }
+
+    /**
      * @param string $table
      * @param array $join
      * @param array $updateFields
@@ -764,8 +778,9 @@ class Store
     /**
      * @param array $orderBy
      * @param string $table
+     * @param bool $dieIfIncorrect
      * @return array
-     * @throws Exception
+     * @throws CoreException
      */
     private function prepareOrderBy(array $orderBy = [], string $table = '', bool $dieIfIncorrect = false): array
     {
@@ -793,8 +808,9 @@ class Store
     /**
      * @param array $condition
      * @param string $table
+     * @param bool $dieIfIncorrect
      * @return array
-     * @throws Exception
+     * @throws CoreException
      */
     private function prepareCondition(array $condition = [], string $table = '', bool $dieIfIncorrect = false): array
     {
