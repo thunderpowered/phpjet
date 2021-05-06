@@ -7,6 +7,7 @@ use Exception;
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
+use PDO;
 
 /**
  * Class Store2
@@ -31,9 +32,13 @@ class Store
      */
     private $fields = [];
     /**
-     * @var \PDO
+     * @var PDO
      */
     private $db;
+    /**
+     * @var string
+     */
+    private $dbname;
     /**
      * @var
      */
@@ -151,7 +156,7 @@ class Store
     /**
      * @return string
      */
-    public function getPartitionColumnName()
+    public function getPartitionColumnName(): string
     {
         return $this->partitionColumnName;
     }
@@ -174,11 +179,13 @@ class Store
     }
 
     /**
-     * @param \PDO $db
+     * @param PDO $db
+     * @param string $dbname
      */
-    public function setDB(\PDO $db)
+    public function setDB(PDO $db, string $dbname)
     {
         $this->db = $db;
+        $this->dbname = $dbname;
         $this->setDate();
     }
 
@@ -270,8 +277,7 @@ class Store
         }
 
         // returns true or false anyway
-        $result = $PDOStatement->execute($params);
-        return $result;
+        return $PDOStatement->execute($params);
     }
 
     /**
@@ -458,14 +464,14 @@ class Store
      * @param string $tableName
      * @param bool $assoc
      * @return array
+     * @throws Exception
      */
     public function getTableStructure(string $tableName, bool $assoc = false): array
     {
         if (!$this->doesTableExist($tableName)) {
             return [];
         }
-
-        $result = $this->execGet("DESCRIBE $tableName");
+        $result = $this->execGet("DESCRIBE `$tableName`");
         if ($assoc) {
             foreach ($result as $key => $structure) {
                 $result[$structure['Field']] = $structure;
@@ -480,14 +486,21 @@ class Store
      * @param string $tableName
      * @param bool $assoc
      * @return array
+     * @throws Exception
      */
     public function getTableIndexes(string $tableName, bool $assoc = false): array
     {
         if (!$this->doesTableExist($tableName)) {
             return [];
         }
-
-        // todo
+        $result = $this->execGet("SHOW INDEX FROM `$tableName` FROM `$this->dbname`;");
+        if ($assoc) {
+            foreach ($result as $key => $index) {
+                $result[$index['Column_name']] = $index;
+                unset ($result[$key]);
+            }
+        }
+        return $result;
     }
 
     /**
@@ -892,16 +905,16 @@ class Store
      */
     public function prepareTable(string $table, bool $dieIfIncorrect = false): string
     {
-        // whitelisting table
-        if (!in_array($table, $this->tables)) {
-            $this->throwException("TABLE: The specified table does not exist", $dieIfIncorrect);
+        if (!$this->doesTableExist($table)) {
+            throw new CoreException("TABLE: The specified table does not exist");
         }
 
         // check view
+        // todo remove all this stuff and move it to migrations
         $viewName = $table . $this->postfix;
         if (!in_array($viewName, $this->views)) {
             // if view does not exist -> let's try to create it
-            $sql = "CREATE VIEW {$viewName} AS SELECT * FROM {$table} WHERE {$this->partitionColumnName} = {$this->partitionFunction}()";
+            $sql = "CREATE VIEW $viewName AS SELECT * FROM $table WHERE $this->partitionColumnName = $this->partitionFunction()";
             $result = $this->dangerouslySendQueryWithoutPreparation($sql);
             if (!$result) {
                 $this->throwException("TABLE: View does not exist and it's impossible to create one", $dieIfIncorrect);
@@ -914,10 +927,10 @@ class Store
         // check triggers
         $triggerName = $table . $this->triggerPostfix;
         if (!in_array($triggerName, $this->triggers)) {
-            $sql = "CREATE TRIGGER {$triggerName}
-                      BEFORE INSERT ON {$table} 
+            $sql = "CREATE TRIGGER $triggerName
+                      BEFORE INSERT ON $table 
                       FOR EACH ROW
-                      SET new._config_id = {$this->partitionFunction}()";
+                      SET new._config_id = $this->partitionFunction()";
             $result = $this->dangerouslySendQueryWithoutPreparation($sql);
             if (!$result) {
                 $this->throwException("TABLE: Trigger does not exist and it's impossible to create one", $dieIfIncorrect);
@@ -943,7 +956,7 @@ class Store
         $user = Config::$db['username'];
         $fileName = realpath($this->dumpFileLocation) . "/{$database}_backup_" . time() . '.sql';
         // i don't know, this code looks unsafe to me
-        exec("mysqldump --user=$user --password=$password --host=$host $database > \"$fileName\"");
+        @exec("mysqldump --user=$user --password=$password --host=$host $database > \"$fileName\"");
         if (!file_exists($fileName)) {
             $this->throwException('Unable to dump database. See docs here: https://phpjet.org/docs/database');
         }
@@ -1075,9 +1088,9 @@ class Store
 
     /**
      * @param bool $return
-     * @return array
+     * @return void
      */
-    private function showTables(bool $return = false)
+    private function showTables(bool $return = false): void
     {
         $rows = $this->execGet("show full tables");
         $rowKey = 'Tables_in_' . Config::$db['database'];
@@ -1089,16 +1102,9 @@ class Store
                 $this->views[] = $value[$rowKey];
             }
         }
-
-        if ($return) {
-            return [
-                'tables' => $this->tables,
-                'views' => $this->views
-            ];
-        }
     }
 
-    private function showTriggers()
+    private function showTriggers(): void
     {
         $rows = $this->execGet("show triggers");
 
@@ -1120,6 +1126,7 @@ class Store
      * @param string $message
      * @param bool $die
      * @throws CoreException
+     * @deprecated
      */
     private function throwException(string $message, bool $die = false)
     {

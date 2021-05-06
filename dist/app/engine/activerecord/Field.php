@@ -102,11 +102,13 @@ class Field
 
     /**
      * @param string $type
+     * @param bool $unique
      * @return $this
      */
-    public function setIndex(string $type = self::FIELD_INDEX_TYPE_BTREE): self
+    public function setIndex(string $type = self::FIELD_INDEX_TYPE_BTREE, bool $unique = false): self
     {
         $this->index->index = $type;
+        $this->index->unique = $unique;
         return $this;
     }
 

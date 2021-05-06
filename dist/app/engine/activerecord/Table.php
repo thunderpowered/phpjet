@@ -266,6 +266,7 @@ abstract class Table
      * 3 - table exists and up to date
      * @return int
      * @throws CoreException
+     * @throws Exception
      */
     public function returnStatus(): int
     {
@@ -280,6 +281,7 @@ abstract class Table
 
         $structure = PHPJet::$app->store->getTableStructure($tableName, true);
         $indexes = PHPJet::$app->store->getTableIndexes($tableName, true);
+        var_dump($indexes);
         foreach ($this as $field => $type) {
             if ($this->isSystemProperty($field)) {
                 continue;
@@ -293,17 +295,32 @@ abstract class Table
             $type = $this->getFieldType($field);
             $attributes = $this->getFieldAttributes($field);
             // todo make it a bit more elegant
+            // todo and return more information (required for soft update)
+            // maybe make another component for this, or function at least
             if (
                 !isset($structure[$type->field])
-                || $structure[$type->field]['Type'] !== strtolower($type->type)
-                || !($structure[$type->field]['Null'] === 'NO') !== $attributes->null
+                ||
+                $structure[$type->field]['Type'] !== strtolower($type->type)
+                ||
+                !($structure[$type->field]['Null'] === 'NO') !== $attributes->null
             ) {
                 return 2;
             }
 
             // step 2: check indexes
             $index = $this->getFieldIndex($field);
-            // todo
+
+            if (
+                (!!$index !== isset($indexes[$field]))
+                ||
+                $index->index !== $indexes[$field]['Index_type']
+                ||
+                $index->primary !== ($index[$field]['Key_name'] === 'PRIMARY')
+                ||
+                !$index->unique !== (bool)$indexes[$field]['Non_unique']
+            ) {
+                return 2;
+            }
 
             // step 3: check foreign keys
             // todo
@@ -427,7 +444,7 @@ abstract class Table
     public function __set(string $fieldName, $value)
     {
         if (!isset($this->$fieldName) || !($this->$fieldName instanceof Field)) {
-            trigger_error("Property $fieldName does not exist in '".get_class($this)."'", E_USER_NOTICE);
+            trigger_error("Property $fieldName does not exist in '" . get_class($this) . "'", E_USER_NOTICE);
         } else {
             $this->$fieldName->_setValue($value);
         }

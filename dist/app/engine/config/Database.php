@@ -2,6 +2,7 @@
 
 namespace Jet\App\Engine\Config;
 
+use Exception;
 use PDO;
 
 /**
@@ -54,21 +55,17 @@ class Database
     public static function getInstance(): PDO
     {
         if (!Database::$_db) {
-
             try {
-
                 Database::$_db = new PDO(
                     "mysql:host=" . Database::$config['host'] . ";dbname=" . Database::$config['database'] . ";charset=utf8mb4",
                     Database::$config['username'],
                     Database::$config['password'],
                     self::$opt
                 );
-            } catch (\Exception $e) {
-
+            } catch (Exception $e) {
                 die("Unable to connect to Database");
             }
         }
-
         return Database::$_db;
     }
 

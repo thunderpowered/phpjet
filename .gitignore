@@ -80,3 +80,6 @@
 
 # sql files
 *.sql
+
+# lock
+*.lock

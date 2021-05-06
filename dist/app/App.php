@@ -99,7 +99,7 @@ class App
     {
         // prepare class Store
         Database::setConfig(Config::$db);
-        $this->store->setDB(Database::getInstance());
+        $this->store->setDB(Database::getInstance(), Config::$db['database']);
         $this->store->prepareTables();
 
         // Set the config
@@ -122,7 +122,7 @@ class App
             // prepare database
             Selector::__legacySelect();
             Database::setConfig(Config::$db);
-            $this->store->setDB(Database::getInstance());
+            $this->store->setDB(Database::getInstance(), Config::$db['database']);
             $this->store->prepareTables();
 
             try {

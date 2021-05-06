@@ -16,6 +16,10 @@ class _FieldIndex
     /**
      * @var bool
      */
+    public $unique;
+    /**
+     * @var bool
+     */
     public $primary;
     /**
      * @var Field

@@ -34,13 +34,15 @@ class Urls
      * @param string $actionName
      * @param array $params
      * @param bool $checkToken
+     * @param bool $auth
      */
-    public function setAction(string $controllerName, string $url, string $actionName, array $params = [], bool $checkToken = true): void
+    public function setAction(string $controllerName, string $url, string $actionName, array $params = [], bool $checkToken = true, bool $auth = true): void
     {
         $this->urls[$controllerName]['actions'][$actionName] = [
             'url' => $url,
             'params' => $params,
-            'token' => $checkToken
+            'token' => $checkToken,
+            'auth' => $auth
         ];
     }
 
