@@ -16,7 +16,7 @@ class _TableStatus
     /**
      * @var bool
      */
-    public $doesNotExist;
+    public $exists;
     /**
      * @var array
      */
@@ -29,4 +29,8 @@ class _TableStatus
      * @var array
      */
     public $foreignKey;
+    /**
+     * @var array
+     */
+    public $fields;
 }

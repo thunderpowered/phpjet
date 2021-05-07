@@ -4,6 +4,7 @@
 namespace Jet\App\Engine\ActiveRecord\Utils;
 
 use Exception;
+use Jet\App\Engine\ActiveRecord\_FieldAttributes;
 use Jet\App\Engine\ActiveRecord\_FieldIndex;
 use Jet\App\Engine\ActiveRecord\_FieldType;
 use Jet\App\Engine\ActiveRecord\Table;
@@ -23,6 +24,7 @@ class Checker
      * @var Store
      */
     private $store;
+
     /**
      * Checker constructor.
      */
@@ -38,79 +40,101 @@ class Checker
      */
     public function returnTableStatus(): _TableStatus
     {
-        $status = new _TableStatus();
-        /*
-         * Same classes may not participate in the process, they're marked with the '_ignored' flag
-         */
+        $tableStatus = new _TableStatus();
+
         if ($this->table->_ignore) {
-            $status->ignored = true;
-            return $status;
+            $tableStatus->ignored = true;
+            return $tableStatus;
         }
-        /**
-         * Quick check if table exists
-         */
+
         $tableName = $this->table->_returnDatabaseName();
-        if (!$this->store->doesTableExist($tableName)) {
-            $status->doesNotExist = true;
-            return $status;
+        if ($this->store->doesTableExist($tableName)) {
+            $tableStatus->exists = true;
+        } else {
+            $tableStatus->exists = false;
+            // no need to check anything else at this point
+            return $tableStatus;
         }
-        /**
-         * Actual check
-         */
+
         $fields = $this->table->_returnAllFields();
-        // contains information about fields and data types
+
         $structure = $this->store->getTableStructure($tableName, true);
-        // contains information about indexes including primary keys
         $indexes = $this->store->getTableIndexes($tableName, true);
-        // contains information about foreign keys (orly?)
         $foreignKeys = $this->store->getTableForeignKeys($tableName, true);
 
         foreach ($fields as $field) {
-            /**
-             * step 1. check field type
-             */
-            $fieldType = $this->table->_getFieldType($field);
-            $status->type = $this->checkFieldType($fieldType, $structure[$field]);
-            /**
-             * step 2. check indexes
-             */
-            $index = $this->table->_getFieldIndex($field);
-            $status->index = $this->checkIndex($index, $indexes[$field]);
-            /**
-             * step 3. check foreign keys
-             */
-            $status->foreignKey = $this->checkForeignKeys($index, $foreignKeys[$field]);
-            /**
-             * step 4. todo add more deep checks and combine indexes/foreign keys into single constraint type
-             */
+            $fieldStatus = new _FieldStatus();
+
+            if (isset($structure[$field]) && is_array($structure[$field])) {
+                $fieldStatus->exists = true;
+
+                $fieldType = $this->table->_getFieldType($field);
+                $fieldAttributes = $this->table->_getFieldAttributes($field);
+                $fieldStatus = $this->checkFieldType($fieldType, $fieldAttributes, $structure[$field], $fieldStatus);
+
+                $index = $this->table->_getFieldIndex($field);
+                if (!!$index !== isset($indexes[$field])) {
+                    $fieldStatus->index = false;
+                } else {
+                    $fieldStatus = $this->checkIndex($index, $indexes[$field], $fieldStatus);
+                }
+
+                if (!$foreignKeys[$field]) {
+//                    $fieldStatus->foreignKey
+                    // todo implement foreign key check
+                }
+
+                $fieldStatus = $this->checkForeignKeys($index, $foreignKeys[$field], $fieldStatus);
+                // todo add more deep checks and combine indexes/foreign keys into single constraint type
+            } else {
+                $tableStatus->exists = false;
+            }
+
+            $tableStatus->fields[$field] = $fieldStatus;
         }
-        return $status;
+        return $tableStatus;
     }
 
     /**
      * @param _FieldType $fieldType
+     * @param _FieldAttributes $fieldAttributes
      * @param array $dbFieldType
-     * @return array
+     * @param _FieldStatus $fieldStatus
+     * @return _FieldStatus
      */
-    private function checkFieldType(_FieldType $fieldType, array $dbFieldType): array
+    private function checkFieldType(_FieldType $fieldType, _FieldAttributes $fieldAttributes, array $dbFieldType, _FieldStatus $fieldStatus): _FieldStatus
     {
-        return [];
+        // quick note: true/false means match/mismatch of parameters
+        // if something mismatches -> just rewrite db params with active-record params
+        $fieldStatus->type = $fieldType->type === $dbFieldType['Type'];
+        $fieldStatus->NULL = $fieldAttributes->null === !($dbFieldType['Null'] === 'NO');
+        return $fieldStatus;
     }
 
     /**
      * @param _FieldIndex $index
      * @param array $dbIndex
-     * @return array
+     * @param _FieldStatus $fieldStatus
+     * @return _FieldStatus
      */
-    private function checkIndex(_FieldIndex $index, array $dbIndex): array
+    private function checkIndex(_FieldIndex $index, array $dbIndex, _FieldStatus $fieldStatus): _FieldStatus
     {
-        return [];
+        // todo unite 'index' and 'primary' properties
+        $fieldStatus->index = $index->index === $dbIndex['Index_type'] && $index->primary === ($dbIndex['Key_name'] === 'PRIMARY');
+        // this may be not obvious, since in PHPJet we use 'unique' field, but in MySQL schema there's 'non-unique'
+        // so if these params match, they actually mismatch
+        // more obvious line - !(!$index->unique !== (bool)$dbIndex['Non_unique'])
+        $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['Non_unique'];
+        return $fieldStatus;
     }
 
     /**
-     *
+     * @param _FieldIndex $index
+     * @param array $dbForeignKey
+     * @param _FieldStatus $fieldStatus
+     * @return _FieldStatus
      */
-    private function checkForeignKeys(_FieldIndex $index, array $dbForeignKey): array
+    private function checkForeignKeys(_FieldIndex $index, array $dbForeignKey, _FieldStatus $fieldStatus): _FieldStatus
     {
         return [];
     }
