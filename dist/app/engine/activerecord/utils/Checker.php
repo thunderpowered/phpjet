@@ -9,6 +9,7 @@ use Jet\App\Engine\ActiveRecord\_FieldIndex;
 use Jet\App\Engine\ActiveRecord\_FieldType;
 use Jet\App\Engine\ActiveRecord\Table;
 use Jet\App\Engine\Core\Store;
+use Jet\App\Engine\Exceptions\CoreException;
 
 /**
  * Class Checker
@@ -36,7 +37,7 @@ class Checker
 
     /**
      * @return _TableStatus
-     * @throws Exception
+     * @throws CoreException
      */
     public function returnTableStatus(): _TableStatus
     {
@@ -44,6 +45,7 @@ class Checker
 
         if ($this->table->_ignore) {
             $tableStatus->ignored = true;
+            $tableStatus->status = 0;
             return $tableStatus;
         }
 
@@ -52,6 +54,7 @@ class Checker
             $tableStatus->exists = true;
         } else {
             $tableStatus->exists = false;
+            $tableStatus->status = 1;
             // no need to check anything else at this point
             return $tableStatus;
         }
@@ -59,8 +62,15 @@ class Checker
         $fields = $this->table->_returnAllFields();
         $structure = $this->store->getTableStructure($tableName, true);
 
+        // assume that everything is up to date, until proven otherwise
+        $tableStatus->status = 3;
+
         foreach ($fields as $field) {
             $fieldStatus = new _FieldStatus();
+
+            if (!($this->table->$field instanceof _FieldType)) {
+                throw new CoreException("Field '$field' in '$tableName' is not instance of 'Field'");
+            }
 
             if (isset($structure[$field]) && is_array($structure[$field])) {
                 $fieldStatus->exists = true;
@@ -77,9 +87,26 @@ class Checker
                 $tableStatus->exists = false;
             }
 
+            $isUpToDate = $this->isFieldUpToDate($fieldStatus);
+            if (!$isUpToDate) {
+                $tableStatus->status = 2;
+            }
             $tableStatus->fields[$field] = $fieldStatus;
         }
         return $tableStatus;
+    }
+
+    /**
+     *
+     */
+    private function isFieldUpToDate(_FieldStatus $fieldStatus): bool
+    {
+        foreach ($fieldStatus as $parameterValue) {
+            if (!$parameterValue) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -93,7 +120,7 @@ class Checker
     {
         // quick note: true/false means match/mismatch of parameters
         // if something mismatches -> just rewrite db params with active-record params
-        $fieldStatus->type = $fieldType->type === $dbFieldType['COLUMN_TYPE'];
+        $fieldStatus->type = strtolower($fieldType->type) === $dbFieldType['COLUMN_TYPE'];
         $fieldStatus->NULL = $fieldAttributes->null === !($dbFieldType['IS_NULLABLE'] === 'NO');
         return $fieldStatus;
     }
@@ -108,12 +135,13 @@ class Checker
     {
         // todo unite 'index' and 'primary' properties
         $fieldStatus->index = !!$index->index === !!$dbIndex['INDEX_NAME'];
-        $fieldStatus->indexKey = $index->key === $dbIndex['COLUMN_KEY'];
+//        $fieldStatus->indexKey = $index->key === $dbIndex['COLUMN_KEY'];
         $fieldStatus->indexType = $index->type === $dbIndex['INDEX_TYPE'];
+        $fieldStatus->indexPrimary = !!$index->primary === ($dbIndex['CONSTRAINT_NAME'] === 'PRIMARY');
         // this may be not obvious, since in PHPJet we use 'unique' field, but in MySQL schema there's 'non-unique'
         // so if these params match, they actually mismatch
         // more obvious line - !(!$index->unique !== (bool)$dbIndex['Non_unique'])
-        $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['NON_UNIQUE'];
+        $fieldStatus->indexUnique = $index->unique === !$dbIndex['NON_UNIQUE'];
         return $fieldStatus;
     }
 
@@ -126,8 +154,8 @@ class Checker
     private function checkForeignKeys(_FieldIndex $index, array $dbForeignKey, _FieldStatus $fieldStatus): _FieldStatus
     {
         $fieldStatus->foreignKey = !!$index->foreignKey === ($dbForeignKey['REFERENCED_COLUMN_NAME'] && $dbForeignKey['REFERENCED_TABLE_NAME'] && $dbForeignKey['REFERENCED_TABLE_SCHEMA']);
-        $fieldStatus->foreignKeyTable = $index->foreignKeyField->table === $dbForeignKey['REFERENCED_TABLE_NAME'];
-        $fieldStatus->foreignKeyField = $index->foreignKeyField->field === $dbForeignKey['REFERENCED_COLUMN_NAME'];
+        $fieldStatus->foreignKeyTable = (string)$index->foreignKeyField->table === $dbForeignKey['REFERENCED_TABLE_NAME'];
+        $fieldStatus->foreignKeyField = (string)$index->foreignKeyField->field === $dbForeignKey['REFERENCED_COLUMN_NAME'];
         return $fieldStatus;
     }
 }

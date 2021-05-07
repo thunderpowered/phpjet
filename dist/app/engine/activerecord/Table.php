@@ -273,63 +273,6 @@ abstract class Table
     {
         $checker = new Checker($this, PHPJet::$app->store);
         return $checker->returnTableStatus();
-
-        if ($this->_ignore) {
-            return 0;
-        }
-
-        $tableName = self::convertClassNameIntoTableName(get_class($this));
-        if (!PHPJet::$app->store->doesTableExist($tableName)) {
-            return 1;
-        }
-
-        $structure = PHPJet::$app->store->getTableStructure($tableName, true);
-        $indexes = PHPJet::$app->store->getTableIndexes($tableName, true);
-        $foreignKeys = PHPJet::$app->store->getTableForeignKeys($tableName, true);
-        foreach ($this as $field => $type) {
-            if ($this->isSystemProperty($field)) {
-                continue;
-            }
-
-            if (!($this->$field instanceof Field)) {
-                throw new CoreException("Property '$field' of table '$tableName' is not instance of 'Field'");
-            }
-
-            // step 1: check field type and attributes
-            $type = $this->_getFieldType($field);
-            $attributes = $this->_getFieldAttributes($field);
-            // todo make it a bit more elegant
-            // todo and return more information (required for soft update)
-            // maybe make another component for this, or function at least
-            if (
-                !isset($structure[$type->field])
-                ||
-                $structure[$type->field]['Type'] !== strtolower($type->type)
-                ||
-                !($structure[$type->field]['Null'] === 'NO') !== $attributes->null
-            ) {
-                return 2;
-            }
-
-            // step 2: check indexes
-            $index = $this->_getFieldIndex($field);
-            if (
-                (!!$index !== isset($indexes[$field]))
-                ||
-                $index->index !== $indexes[$field]['Index_type']
-                ||
-                $index->primary !== ($index[$field]['Key_name'] === 'PRIMARY')
-                ||
-                !$index->unique !== (bool)$indexes[$field]['Non_unique']
-            ) {
-                return 2;
-            }
-
-            // step 3: check foreign keys
-            // todo
-        }
-
-        return 3;
     }
 
     /**

@@ -24,13 +24,10 @@ class _TableStatus
     /**
      * @var array
      */
-    public $index;
-    /**
-     * @var array
-     */
-    public $foreignKey;
-    /**
-     * @var array
-     */
     public $fields;
+    /**
+     * @var int
+     * @description 0 - ignored, 1 - does not exist, 2 - needs to be updated, 3 - up to date
+     */
+    public $status;
 }

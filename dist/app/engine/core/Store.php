@@ -464,7 +464,6 @@ class Store
      * @param string $tableName
      * @param bool $assoc
      * @return array
-     * @throws Exception
      */
     public function getTableStructure(string $tableName, bool $assoc = false): array
     {

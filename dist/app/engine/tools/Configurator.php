@@ -16,7 +16,7 @@ class Configurator
     /**
      * @var array
      */
-    private $argv;
+    private $argv = [];
     /**
      * @var string
      */
@@ -68,9 +68,11 @@ class Configurator
         if (!$this->debug) {
             throw new CoreException('Migrations are disabled for production mode. See more information here: https://phpjet.org/docs/configure');
         }
-        // backup is available in backups/database/
-        if (in_array('--save', $argv)) {
-            $this->migrateBackup($argv);
+        $this->argv = $argv;
+        // backup is
+        // available in backups/database/
+        if (in_array('--save', $this->argv)) {
+            $this->migrateBackup($this->argv);
         }
 
         $tablesToUpdate = $this->migrateCheckTables();
@@ -78,9 +80,9 @@ class Configurator
             return "Everything is up to date\n";
         }
 
-        if (in_array('--hard', $argv)) {
+        if (in_array('--hard', $this->argv)) {
             $this->migrateHard($tablesToUpdate);
-        } else if (in_array('--soft', $argv)) {
+        } else if (in_array('--soft', $this->argv)) {
             $this->migrateSoft($tablesToUpdate);
         }
 
@@ -183,17 +185,43 @@ class Configurator
     }
 
     /**
-     * returns array of tables that have to be updated
+     * @param array $tables
      * @return array
-     * @throws CoreException
+     * temporary
+     */
+    private function migrateSummarizeStatuses(array $tables): array
+    {
+        $results = [];
+        foreach ($tables as $table) {
+            $status = $table['status']->status;
+            if (isset($results[$status])) {
+                $results[$status]++;
+            } else {
+                $results[$status] = 1;
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * returns array of tables that have to be updated
+     * @param array $argv
+     * @return array
      */
     private function migrateCheckTables(): array
     {
         $tables = $this->_parseTables("", false, false, true);
-        foreach ($tables as $key => $table) {
-            echo $table['status'] . " " . $table['name'] . "\n";
+        $summary = $this->migrateSummarizeStatuses($tables);
+        // todo make argv global or property of the class
+        if (in_array('-p', $this->argv)) {
+            print (
+            (isset($summary[0]) ? "Tables ignored: $summary[0]\n" : "") .
+            (isset($summary[1]) ? "Tables to be created: $summary[1]\n" : "") .
+            (isset($summary[2]) ? "Tables to be updated: $summary[2]\n" : "") .
+            (isset($summary[3]) ? "Tables that are up-to-date: $summary[3]\n" : "")
+            );
         }
-        return [];
+        return $tables;
     }
 
     /**
@@ -225,6 +253,7 @@ class Configurator
      */
     private function migrateSoft(array $tables)
     {
+        print ("let's make a fucking update!!!\n");
         // todo do something
     }
 

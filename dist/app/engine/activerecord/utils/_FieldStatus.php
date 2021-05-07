@@ -28,7 +28,7 @@ class _FieldStatus
     /**
      * @var bool
      */
-    public $indexKey;
+//    public $indexKey;
     /**
      * @var bool
      */
@@ -37,6 +37,10 @@ class _FieldStatus
      * @var bool
      */
     public $indexUnique;
+    /**
+     * @var
+     */
+    public $indexPrimary;
     /**
      * @var bool
      */
@@ -52,5 +56,4 @@ class _FieldStatus
     /**
      * @var bool
      */
-    public $oreignKeyType;
 }

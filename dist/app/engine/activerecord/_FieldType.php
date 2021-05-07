@@ -10,11 +10,11 @@ namespace Jet\App\Engine\ActiveRecord;
 class _FieldType
 {
     /**
-     * @var string
+     * @var string|null
      */
     public $table; // table name
     /**
-     * @var string
+     * @var string|null
      */
     public $field; // field name
     /**

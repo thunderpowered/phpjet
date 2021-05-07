@@ -14,7 +14,7 @@ class Field
     public const FIELD_INDEX_KEY_MULTI = 'MUL';
     public const FIELD_INDEX_KEY_UNIQUE = 'UNI';
 
-    public const FIELD_INDEX_TYPE_BTREE = 'FIELD_INDEX_TYPE_BTREE';
+    public const FIELD_INDEX_TYPE_BTREE = 'BTREE';
 
     private const FIELD_TYPE_BOOL = 'TINYINT(1)';
     private const FIELD_TYPE_INT = 'INT';
@@ -110,7 +110,7 @@ class Field
      * @param bool $unique
      * @return $this
      */
-    public function setIndex(string $type = self::FIELD_INDEX_TYPE_BTREE, bool $unique = false): self
+    public function setIndex(bool $unique = false, string $type = self::FIELD_INDEX_TYPE_BTREE): self
     {
         // that's a bit messy
         $this->index->index = true;

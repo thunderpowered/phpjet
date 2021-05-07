@@ -50,7 +50,7 @@ class Authority extends Table
     {
         parent::__construct($loaded);
         $this->id = Field::int()->setPrimary();
-        $this->username = Field::varchar()->setIndex();
+        $this->username = Field::varchar()->setIndex(true);
         $this->email = Field::varchar()->setIndex();
         $this->password = Field::varchar();
         $this->two_factor_auth = Field::bool();
