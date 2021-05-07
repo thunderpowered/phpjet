@@ -6,11 +6,9 @@ use Jet\App\Engine\Config\Config;
 use Jet\PHPJet;
 
 /**
- *
- * Component: ShopEngine Request
- * Description: Pretreatment of POST, GET and SESSION.
- * TODO: this class is needed to be refactored
- *
+ * Class Request
+ * @package Jet\App\Engine\System
+ * @description Pretreatment of POST, GET, SESSION and COOKIE
  */
 class Request
 {
@@ -44,18 +42,19 @@ class Request
      * @var array
      */
     private $files;
-
-    // 60*60*24*30*6 = 180 days = ~half a year;
+    /**
+     * @var int
+     * @description 60*60*24*30*6 = 180 days = ~half a year;
+     */
     private $cookieDefaultExpires = 15552000;
-
     /**
      * @var string
-     * @todo important note: there's Form class that generates forms, should be agreed with it
+     * todo important note: there's Form class that generates forms, should be agreed with it
      */
     private $CSRFTokenKey = '__csrf';
-
     /**
      * @var bool
+     * @deprecated
      */
     private $CSRFAlreadyChecked = false;
     /**
@@ -65,7 +64,7 @@ class Request
     /**
      * @var string
      */
-    private $sessionIDPrefix = 'mw-';
+    private $sessionIDPrefix = 'pj-';
     /**
      * @var int
      */
@@ -85,7 +84,7 @@ class Request
 
     /**
      * Request constructor.
-     * The main goal was to give a monopoly on the use of this data to this class. But is it necessary?
+     * @description The main goal was to preprocess and validate all the data before it gets into Controller
      */
     public function __construct()
     {
@@ -100,13 +99,13 @@ class Request
         $this->cookie = $_COOKIE;
 
         $this->post = $_POST;
-        unset($_POST);
+        unset($_POST); // clear $_POST array to force using this class
 
         $this->get = $_GET;
-        unset($_GET);
+        unset($_GET); // same
 
         $this->server = $_SERVER;
-        unset($_SERVER);
+        unset($_SERVER); // ...
 
         $this->files = $_FILES;
         unset($_FILES);
@@ -302,7 +301,8 @@ class Request
         if (isset($this->cookie[$name])) {
             return $this->cookie[$name];
         }
-
+        // quick reflection - bool is yes/no datatype, it's suitable for questioning like 'is it so?'.
+        // but if we expected to find a thing, but didn't find anything, what should we get?
         return false;
     }
 
@@ -313,7 +313,7 @@ class Request
      * @param bool $httpOnly
      * @return bool
      */
-    public function setCookie(string $name, string $value = '', bool $secure = true, bool $httpOnly = true)
+    public function setCookie(string $name, string $value = '', bool $secure = true, bool $httpOnly = true): bool
     {
         return setcookie($name, $value, time() + $this->cookieDefaultExpires, '/', Config::$config['domain'], $secure, $httpOnly);
     }
@@ -321,6 +321,8 @@ class Request
     /**
      * @param bool $dieOnFalse
      * @return bool
+     * @deprecated
+     * All the csrf-things are deprecated now, class Auth handles it
      */
     public function checkCSRFToken(bool $dieOnFalse = false): bool
     {
@@ -376,10 +378,11 @@ class Request
     {
         ini_set('session.use_strict_mode', 1);
         ini_set('session.use_only_cookies', 1);
-        // todo enable on production
-//        ini_set('session.cookie_secure', 1);
         ini_set('session.cookie_httponly', 1);
         ini_set('session.cookie_samesite', 'Strict');
+        if (Config::$secure['httpsOnly']) {
+            ini_set('session.cookie_secure', 1);
+        }
     }
 
     private function sessionStart()

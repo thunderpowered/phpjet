@@ -209,7 +209,7 @@ class Widget
      * The same as for setStyle()
      * todo these two function almost identical, implode them to single function
      */
-    public function setScript(string $script)
+    public function setScript(string $script): bool
     {
         if (!$this->parent) {
             return false;

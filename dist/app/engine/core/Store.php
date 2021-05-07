@@ -471,11 +471,18 @@ class Store
         if (!$this->doesTableExist($tableName)) {
             return [];
         }
-        //SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='modware.ru' AND TABLE_NAME='_config' ORDER BY ORDINAL_POSITION;
-        $result = $this->execGet("DESCRIBE `$tableName`");
+
+        // todo select specific fields, since they're just rewriting each other, not good
+        $result = $this->execGet("
+            SELECT * FROM INFORMATION_SCHEMA.COLUMNS COLUMNS
+            LEFT JOIN INFORMATION_SCHEMA.STATISTICS STATISTICS ON COLUMNS.COLUMN_NAME = STATISTICS.COLUMN_NAME AND COLUMNS.TABLE_SCHEMA = STATISTICS.TABLE_SCHEMA AND COLUMNS.TABLE_NAME = STATISTICS.TABLE_NAME 
+            LEFT JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CUSAGE ON COLUMNS.COLUMN_NAME = CUSAGE.COLUMN_NAME AND COLUMNS.TABLE_SCHEMA = CUSAGE.TABLE_SCHEMA AND COLUMNS.TABLE_NAME = CUSAGE.TABLE_NAME 
+            WHERE COLUMNS.TABLE_SCHEMA = :dbname AND COLUMNS.TABLE_NAME = :tableName ORDER BY COLUMNS.ORDINAL_POSITION;
+        ", [':dbname' => $this->dbname, ':tableName' => $tableName]);
+
         if ($assoc) {
             foreach ($result as $key => $structure) {
-                $result[$structure['Field']] = $structure;
+                $result[$structure['COLUMN_NAME']] = $structure;
                 unset ($result[$key]);
             }
         }
@@ -488,6 +495,7 @@ class Store
      * @param bool $assoc
      * @return array
      * @throws Exception
+     * @deprecated $this->getTableStructure() returns information about indexes as well
      */
     public function getTableIndexes(string $tableName, bool $assoc = false): array
     {
@@ -508,6 +516,7 @@ class Store
      * @param string $tableName
      * @param bool $assoc
      * @return array
+     * @deprecated $this->getTableStructure() returns information about foreign keys as well
      */
     public function getTableForeignKeys(string $tableName, bool $assoc = false): array
     {

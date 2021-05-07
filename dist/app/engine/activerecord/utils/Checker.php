@@ -73,11 +73,7 @@ class Checker
                 $fieldStatus = $this->checkFieldType($fieldType, $fieldAttributes, $structure[$field], $fieldStatus);
 
                 $index = $this->table->_getFieldIndex($field);
-                if (!!$index !== isset($indexes[$field])) {
-                    $fieldStatus->index = false;
-                } else {
-                    $fieldStatus = $this->checkIndex($index, $indexes[$field], $fieldStatus);
-                }
+                $fieldStatus = $this->checkIndex($index, $structure[$field], $fieldStatus);
 
                 if (!$foreignKeys[$field]) {
 //                    $fieldStatus->foreignKey
@@ -120,11 +116,13 @@ class Checker
     private function checkIndex(_FieldIndex $index, array $dbIndex, _FieldStatus $fieldStatus): _FieldStatus
     {
         // todo unite 'index' and 'primary' properties
-        $fieldStatus->index = $index->index === $dbIndex['Index_type'] && $index->primary === ($dbIndex['Key_name'] === 'PRIMARY');
+        $fieldStatus->index = !!$index->index === !!$dbIndex['INDEX_NAME'];
+        $fieldStatus->indexKey = $index->key === $dbIndex['COLUMN_KEY'];
+        $fieldStatus->indexType = $index->type === $dbIndex['INDEX_TYPE'];
         // this may be not obvious, since in PHPJet we use 'unique' field, but in MySQL schema there's 'non-unique'
         // so if these params match, they actually mismatch
         // more obvious line - !(!$index->unique !== (bool)$dbIndex['Non_unique'])
-        $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['Non_unique'];
+         $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['NON_UNIQUE'];
         return $fieldStatus;
     }
 

@@ -28,6 +28,10 @@ class _FieldStatus
     /**
      * @var bool
      */
+    public $indexKey;
+    /**
+     * @var bool
+     */
     public $indexType;
     /**
      * @var bool

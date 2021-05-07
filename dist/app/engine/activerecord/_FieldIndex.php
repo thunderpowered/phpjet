@@ -10,9 +10,17 @@ namespace Jet\App\Engine\ActiveRecord;
 class _FieldIndex
 {
     /**
-     * @var string
+     * @var bool
      */
     public $index;
+    /**
+     * @var string
+     */
+    public $key;
+    /**
+     * @var string
+     */
+    public $type;
     /**
      * @var bool
      */

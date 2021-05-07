@@ -762,7 +762,7 @@ class Router
                         if (method_exists(PHPJet::$app->tool->validator, $validatorMethod)) {
                             $validated = call_user_func([PHPJet::$app->tool->validator, $validatorMethod], $value);
                             if (!$validated) {
-                                // todo return more information to users
+                                // todo return more information
                                 // i suppose validator should return nothing if everything is fine and string with info if there are errors
                                 throw new WrongDataException("parameter '$key' has invalid format");
                             }

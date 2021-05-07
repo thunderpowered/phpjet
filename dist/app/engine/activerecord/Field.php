@@ -9,13 +9,18 @@ namespace Jet\App\Engine\ActiveRecord;
  */
 class Field
 {
+    // i didn't want to make them public, but i need it in Checked and Builder classes
+    public const FIELD_INDEX_KEY_PRIMARY = 'PRI';
+    public const FIELD_INDEX_KEY_MULTI = 'MUL';
+    public const FIELD_INDEX_KEY_UNIQUE = 'UNI';
+
+    public const FIELD_INDEX_TYPE_BTREE = 'FIELD_INDEX_TYPE_BTREE';
+
     private const FIELD_TYPE_BOOL = 'TINYINT(1)';
     private const FIELD_TYPE_INT = 'INT';
     private const FIELD_TYPE_VARCHAR = 'VARCHAR';
     private const FIELD_TYPE_TEXT = 'LONGTEXT';
     private const FIELD_TYPE_DATETIME = 'DATETIME';
-
-    private const FIELD_INDEX_TYPE_BTREE = 'FIELD_INDEX_TYPE_BTREE';
 
     private const FIELD_FOREIGN_KEY_TYPE_CASCADE = 'FIELD_FOREIGN_KEY_TYPE_CASCADE';
     private const FIELD_FOREIGN_KEY_TYPE_RESTRICT = 'FIELD_FOREIGN_KEY_TYPE_RESTRICT';
@@ -107,7 +112,9 @@ class Field
      */
     public function setIndex(string $type = self::FIELD_INDEX_TYPE_BTREE, bool $unique = false): self
     {
-        $this->index->index = $type;
+        // that's a bit messy
+        $this->index->index = true;
+        $this->index->type = $type;
         $this->index->unique = $unique;
         return $this;
     }
@@ -118,7 +125,9 @@ class Field
      */
     public function setPrimary(bool $autoIncrement = true): self
     {
+        $this->index->index = true;
         $this->index->primary = true;
+        $this->index->unique = true; // actually primary keys are always unique, there's no need to mark it explicitly, so it is just for consistency
         $this->attributes->autoIncrement = $autoIncrement;
         return $this;
     }
