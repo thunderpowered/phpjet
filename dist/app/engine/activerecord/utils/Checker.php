@@ -57,10 +57,7 @@ class Checker
         }
 
         $fields = $this->table->_returnAllFields();
-
         $structure = $this->store->getTableStructure($tableName, true);
-        $indexes = $this->store->getTableIndexes($tableName, true);
-        $foreignKeys = $this->store->getTableForeignKeys($tableName, true);
 
         foreach ($fields as $field) {
             $fieldStatus = new _FieldStatus();
@@ -75,13 +72,7 @@ class Checker
                 $index = $this->table->_getFieldIndex($field);
                 $fieldStatus = $this->checkIndex($index, $structure[$field], $fieldStatus);
 
-                if (!$foreignKeys[$field]) {
-//                    $fieldStatus->foreignKey
-                    // todo implement foreign key check
-                }
-
-                $fieldStatus = $this->checkForeignKeys($index, $foreignKeys[$field], $fieldStatus);
-                // todo add more deep checks and combine indexes/foreign keys into single constraint type
+                $fieldStatus = $this->checkForeignKeys($index, $structure[$field], $fieldStatus);
             } else {
                 $tableStatus->exists = false;
             }
@@ -102,8 +93,8 @@ class Checker
     {
         // quick note: true/false means match/mismatch of parameters
         // if something mismatches -> just rewrite db params with active-record params
-        $fieldStatus->type = $fieldType->type === $dbFieldType['Type'];
-        $fieldStatus->NULL = $fieldAttributes->null === !($dbFieldType['Null'] === 'NO');
+        $fieldStatus->type = $fieldType->type === $dbFieldType['COLUMN_TYPE'];
+        $fieldStatus->NULL = $fieldAttributes->null === !($dbFieldType['IS_NULLABLE'] === 'NO');
         return $fieldStatus;
     }
 
@@ -122,7 +113,7 @@ class Checker
         // this may be not obvious, since in PHPJet we use 'unique' field, but in MySQL schema there's 'non-unique'
         // so if these params match, they actually mismatch
         // more obvious line - !(!$index->unique !== (bool)$dbIndex['Non_unique'])
-         $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['NON_UNIQUE'];
+        $fieldStatus->indexUnique = $index->unique === (bool)$dbIndex['NON_UNIQUE'];
         return $fieldStatus;
     }
 
@@ -134,6 +125,9 @@ class Checker
      */
     private function checkForeignKeys(_FieldIndex $index, array $dbForeignKey, _FieldStatus $fieldStatus): _FieldStatus
     {
-        return [];
+        $fieldStatus->foreignKey = !!$index->foreignKey === ($dbForeignKey['REFERENCED_COLUMN_NAME'] && $dbForeignKey['REFERENCED_TABLE_NAME'] && $dbForeignKey['REFERENCED_TABLE_SCHEMA']);
+        $fieldStatus->foreignKeyTable = $index->foreignKeyField->table === $dbForeignKey['REFERENCED_TABLE_NAME'];
+        $fieldStatus->foreignKeyField = $index->foreignKeyField->field === $dbForeignKey['REFERENCED_COLUMN_NAME'];
+        return $fieldStatus;
     }
 }

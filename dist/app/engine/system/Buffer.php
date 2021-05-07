@@ -3,15 +3,6 @@
 namespace Jet\App\Engine\System;
 
 /**
- *
- * Component: ShopEngine Buffer
- * Description: ShopEngine automatically compress the HTML. It helps to increase speed of loading page.
- *
- * Comment: I'll give you choose (if you don't want to use it) in next updates.
- *
- */
-
-/**
  * Class Buffer
  * @package Jet\App\Engine\System
  */
@@ -26,7 +17,6 @@ class Buffer
         '/(\s)+/s',
         '/<!--(.*?)-->/'
     ];
-
     /**
      * @var array
      */

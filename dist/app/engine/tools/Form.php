@@ -5,11 +5,10 @@ namespace Jet\App\Engine\Tools;
 use Jet\App\Engine\Core\Component;
 
 /**
- *
- * Component: ShopEngine Form
- * Description: none
- *
- *
+ * Class Form
+ * @package Jet\App\Engine\Tools
+ * @description this component automatically creates and validates forms
+ * @deprecated
  */
 class Form extends Component
 {

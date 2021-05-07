@@ -29,6 +29,7 @@ class Token
      * @var string
      */
     public $headerCSRFTokenKey = 'X_CSRF_TOKEN';
+
     /**
      * Token constructor.
      */
@@ -50,7 +51,7 @@ class Token
     }
 
     /**
-     * @param $token
+     * @param string $token
      * @return bool
      */
     public function validateToken(string $token): bool

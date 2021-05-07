@@ -3,6 +3,8 @@
 
 namespace Jet\App\Engine\Tools;
 
+use Jet\PHPJet;
+
 /**
  * Class Cache
  * @package Jet\App\Engine\Tools
@@ -12,7 +14,7 @@ class Cache
     /**
      * @var string
      */
-    private $cacheDirectory = './../cache/';
+    private $cacheDirectory = ROOT . 'cache/';
     /**
      * @var int
      */
@@ -46,7 +48,6 @@ class Cache
             return '';
         }
 
-        // check date
         $isCacheStillAlive = $this->isCacheStillAlive($cacheLocation);
         if (!$isCacheStillAlive) {
             $this->deleteCacheFile($cacheLocation);
@@ -58,7 +59,6 @@ class Cache
 
     /**
      * @return bool
-     * @todo
      */
     public function manageCache(): bool
     {
@@ -84,11 +84,11 @@ class Cache
 
     /**
      * @param string $cacheLocation
-     * @return bool
+     * @return void
      */
-    private function deleteCacheFile(string $cacheLocation)
+    private function deleteCacheFile(string $cacheLocation): void
     {
-        return unlink($cacheLocation);
+        unlink($cacheLocation);
     }
 
     /**
@@ -110,12 +110,17 @@ class Cache
      * @param string $page
      * @return string
      */
-    private function getCacheDirectory(string $page)
+    private function getCacheDirectory(string $page): string
     {
         $dirName = $this->hashName($page);
         return $this->cacheDirectory . '/' . $dirName;
     }
 
+    /**
+     * @param string $page
+     * @param string $identifier
+     * @return string
+     */
     private function getCacheLocation(string $page, string $identifier): string
     {
         // dir structure:
@@ -143,6 +148,6 @@ class Cache
      */
     private function hashName(string $dirOrFileName): string
     {
-        return hash('sha256', $dirOrFileName);
+        return PHPJet::$app->system->token->hashString($dirOrFileName);
     }
 }

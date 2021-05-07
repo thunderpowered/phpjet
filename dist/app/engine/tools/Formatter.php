@@ -3,7 +3,6 @@
 
 namespace Jet\App\Engine\Tools;
 
-use Jet\App\Engine\System\Settings;
 use Jet\PHPJet;
 
 /**

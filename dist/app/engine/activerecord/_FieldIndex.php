@@ -30,7 +30,11 @@ class _FieldIndex
      */
     public $primary;
     /**
-     * @var Field
+     * @var bool
+     */
+    public $foreignKey;
+    /**
+     * @var _FieldType
      */
     public $foreignKeyField;
     /**

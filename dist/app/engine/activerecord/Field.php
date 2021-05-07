@@ -139,6 +139,7 @@ class Field
      */
     public function setForeignKey(_FieldType $field, string $type = self::FIELD_FOREIGN_KEY_TYPE_CASCADE): self
     {
+        $this->index->foreignKey = true;
         $this->index->foreignKeyField = $field;
         $this->index->foreignKeyType = $type;
         return $this;

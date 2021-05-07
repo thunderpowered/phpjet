@@ -41,4 +41,16 @@ class _FieldStatus
      * @var bool
      */
     public $foreignKey;
+    /**
+     * @var bool
+     */
+    public $foreignKeyTable;
+    /**
+     * @var bool
+     */
+    public $foreignKeyField;
+    /**
+     * @var bool
+     */
+    public $oreignKeyType;
 }
