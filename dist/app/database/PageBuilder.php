@@ -16,7 +16,7 @@ class PageBuilder extends Table
     /**
      * @var bool
      */
-    protected $_ignore = true;
+    public $_ignore = true;
     /**
      * @var int
      */

@@ -9,6 +9,9 @@
 namespace Jet\App\Engine\ActiveRecord;
 
 use Exception;
+use Jet\App\Engine\ActiveRecord\utils\_TableStatus;
+use Jet\app\engine\activerecord\utils\Builder;
+use Jet\App\Engine\ActiveRecord\utils\Checker;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 use stdClass;
@@ -24,6 +27,10 @@ abstract class Table
      * using only for migrations
      */
     public $_status;
+    /**
+     * @var bool
+     */
+    public $_ignore;
     /**
      * @var string
      */
@@ -52,10 +59,6 @@ abstract class Table
      * @var bool
      */
     protected $_has_data = false;
-    /**
-     * @var bool
-     */
-    protected $_ignore;
 
     /**
      * Table constructor.
@@ -69,13 +72,12 @@ abstract class Table
         }
         // _class contains the name of the class
         $this->_class = get_class($this);
-
         // _loaded means that row was loaded from database, not created by user
         $this->_loaded = $loaded;
-
-        set_exception_handler([$this, 'exceptionHandler']);
-
         $this->_config_id = Field::int();// todo set foreign key
+
+        // temporary solution, local exception handler
+        set_exception_handler([$this, 'exceptionHandler']);
     }
 
     /**
@@ -264,12 +266,14 @@ abstract class Table
      * 1 - table does not exist
      * 2 - table exists, yet outdated
      * 3 - table exists and up to date
-     * @return int
+     * @return _TableStatus
      * @throws CoreException
-     * @throws Exception
      */
-    public function returnStatus(): int
+    public function returnStatus(): _TableStatus
     {
+        $checker = new Checker($this, PHPJet::$app->store);
+        return $checker->returnTableStatus();
+
         if ($this->_ignore) {
             return 0;
         }
@@ -281,7 +285,7 @@ abstract class Table
 
         $structure = PHPJet::$app->store->getTableStructure($tableName, true);
         $indexes = PHPJet::$app->store->getTableIndexes($tableName, true);
-        var_dump($indexes);
+        $foreignKeys = PHPJet::$app->store->getTableForeignKeys($tableName, true);
         foreach ($this as $field => $type) {
             if ($this->isSystemProperty($field)) {
                 continue;
@@ -292,8 +296,8 @@ abstract class Table
             }
 
             // step 1: check field type and attributes
-            $type = $this->getFieldType($field);
-            $attributes = $this->getFieldAttributes($field);
+            $type = $this->_getFieldType($field);
+            $attributes = $this->_getFieldAttributes($field);
             // todo make it a bit more elegant
             // todo and return more information (required for soft update)
             // maybe make another component for this, or function at least
@@ -308,8 +312,7 @@ abstract class Table
             }
 
             // step 2: check indexes
-            $index = $this->getFieldIndex($field);
-
+            $index = $this->_getFieldIndex($field);
             if (
                 (!!$index !== isset($indexes[$field]))
                 ||
@@ -433,7 +436,7 @@ abstract class Table
         if ($this->$fieldName->_hasValue()) {
             return $this->$fieldName->_getValue();
         } else {
-            return $this->getFieldType($fieldName);
+            return $this->_getFieldType($fieldName);
         }
     }
 
@@ -451,10 +454,33 @@ abstract class Table
     }
 
     /**
+     * @return string
+     */
+    public function _returnDatabaseName(): string
+    {
+        return self::convertClassNameIntoTableName(get_class($this));
+    }
+
+    /**
+     * @return array
+     */
+    public function _returnAllFields(): array
+    {
+        $fields = [];
+        foreach ($this as $fieldName => $fieldValue) {
+            if ($this->isSystemProperty($fieldName)) {
+                continue;
+            }
+            $fields[] = $fieldName;
+        }
+        return $fields;
+    }
+
+    /**
      * @param string $fieldName
      * @return _FieldType
      */
-    private function getFieldType(string $fieldName): _FieldType
+    public function _getFieldType(string $fieldName): _FieldType
     {
         $table = get_class($this);
         $type = $this->$fieldName->_getType();
@@ -467,7 +493,7 @@ abstract class Table
      * @param string $fieldName
      * @return _FieldAttributes
      */
-    private function getFieldAttributes(string $fieldName): _FieldAttributes
+    public function _getFieldAttributes(string $fieldName): _FieldAttributes
     {
         return $this->$fieldName->_getAttributes();
     }
@@ -476,7 +502,7 @@ abstract class Table
      * @param string $fieldName
      * @return _FieldIndex
      */
-    private function getFieldIndex(string $fieldName): _FieldIndex
+    public function _getFieldIndex(string $fieldName): _FieldIndex
     {
         return $this->$fieldName->_getIndex();
     }

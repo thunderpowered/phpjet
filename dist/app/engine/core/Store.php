@@ -471,6 +471,7 @@ class Store
         if (!$this->doesTableExist($tableName)) {
             return [];
         }
+        //SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='modware.ru' AND TABLE_NAME='_config' ORDER BY ORDINAL_POSITION;
         $result = $this->execGet("DESCRIBE `$tableName`");
         if ($assoc) {
             foreach ($result as $key => $structure) {
@@ -497,6 +498,35 @@ class Store
         if ($assoc) {
             foreach ($result as $key => $index) {
                 $result[$index['Column_name']] = $index;
+                unset ($result[$key]);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @param string $tableName
+     * @param bool $assoc
+     * @return array
+     */
+    public function getTableForeignKeys(string $tableName, bool $assoc = false): array
+    {
+        if (!$this->doesTableExist($tableName)) {
+            return [];
+        }
+        $result = $this->execGet("
+            SELECT 
+                TABLE_NAME, TABLE_SCHEMA, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+            FROM 
+                INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+            WHERE 
+                TABLE_SCHEMA = :dbname AND
+                TABLE_NAME   = :tableName AND
+                REFERENCED_TABLE_NAME IS NOT NULL;
+        ", [':dbname' => $this->dbname, ':tableName' => $tableName]);
+        if ($assoc) {
+            foreach ($result as $key => $value) {
+                $result[$value['COLUMN_NAME']] = $value;
                 unset ($result[$key]);
             }
         }
