@@ -3,6 +3,7 @@
 
 namespace Jet\App\Engine\Core;
 
+use Jet\App\Engine\Tools\Action;
 use Jet\App\Engine\Tools\Cache;
 use Jet\App\Engine\Tools\Configurator;
 use Jet\App\Engine\Tools\FileManager;
@@ -24,6 +25,7 @@ use Jet\App\Engine\Tools\Validator;
  * @property FileManager $fileManager
  * @property Validator $validator
  * @property Configurator $configurator
+ * @property Action $action
  */
 class Tool
 {
@@ -59,6 +61,10 @@ class Tool
      * @var Configurator
      */
     private $configurator;
+    /**
+     * @var Action
+     */
+    private $action;
 
     /**
      * Tool constructor.
