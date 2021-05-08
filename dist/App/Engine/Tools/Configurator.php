@@ -51,10 +51,7 @@ class Configurator
      */
     public function migrate(array $argv = []): string
     {
-        // prevent migrations if debug is off
-        // this is essential thing, because migrations can really kill the entire database and data in it
-        // it can be dangerous to perform it in production mode
-        // don't do it
+        // disabled for production mode
         if (!$this->debug) {
             throw new CoreException('Migrations are disabled for production mode. See more information here: ' . Docs::returnDocLink('configure', 'migrations'));
         }
@@ -70,10 +67,10 @@ class Configurator
         }
 
         if ($result) {
-            return "Migration completed\n";
+            return "Migration completed";
         } else {
             // maybe add a bit more information?
-            return "Migration failed\n";
+            return "Migration failed";
         }
     }
 

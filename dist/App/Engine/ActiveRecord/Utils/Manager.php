@@ -62,6 +62,10 @@ class Manager
      */
     public function migrate(string $mode = self::MIGRATE_MODE_HARD, bool $save = true): bool
     {
+        // prevent migrations if debug is off
+        // this is essential thing, because migrations can really destroy the entire database and data in it
+        // it can be dangerous to perform it in production mode
+        // don't do it
         if (!$this->debug) {
             throw new CoreException('Migrations are disabled for production mode. See more information here: ' . Docs::returnDocLink('configure', 'migrations'));
         }
@@ -110,6 +114,7 @@ class Manager
 
     /**
      * @param array $tables
+     * @return bool
      * @throws CoreException
      */
     private function migrateHard(array $tables): bool
@@ -119,10 +124,17 @@ class Manager
                 throw new CoreException('Argument passed into migrateSoft function has incorrect data type. It should be array of Table instances and _TableStatus instances.');
             }
 
+            if ($table['status']->status === Checker::TABLE_STATUS_IGNORED || $table['status']->status === Checker::TABLE_STATUS_UP_TO_DATE) {
+                continue;
+            }
+
+            // otherwise just drop and create
             $builder = new Builder($table['object']);
+            $builder->createTable(true);
         }
-        var_dump($tables[0]);
-        exit();
+
+        // well it returns true all the time, the only reason it doesn't - if error thrown
+        return true;
     }
 
     /**
@@ -130,7 +142,7 @@ class Manager
      */
     private function migrateSoft(array $tables): bool
     {
-
+        // todo
     }
 
     /**

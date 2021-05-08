@@ -24,4 +24,12 @@ class Builder
     {
         $this->table = $table;
     }
+
+    /**
+     * @param bool $dropIfExists
+     */
+    public function createTable(bool $dropIfExists = false): bool
+    {
+
+    }
 }

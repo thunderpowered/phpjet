@@ -70,7 +70,7 @@ class App
         spl_autoload_register(array($this, "configLoader"));
 
         // load components
-        $this->store = new Store();
+        $this->store = new Store(Engine\Config\Config::$dev['debug']);
         $this->tool = new Tool();
         $this->configManager = new ConfigManager();
 

@@ -144,6 +144,19 @@ class Store
      * @var string
      */
     private $dumpFileLocation = ROOT . 'backups/database/';
+    /**
+     * @var bool
+     */
+    private $debug;
+
+    /**
+     * Store constructor.
+     * @param bool $debug
+     */
+    public function __construct(bool $debug)
+    {
+        $this->debug = $debug;
+    }
 
     /**
      * @return string
@@ -184,6 +197,7 @@ class Store
      */
     public function setDB(PDO $db, string $dbname)
     {
+        // why not move this into Constructor?
         $this->db = $db;
         $this->dbname = $dbname;
         $this->setDate();
@@ -438,17 +452,61 @@ class Store
 
     /**
      * @param string $tableName
-     * @return array
+     * @param array $tableParams
+     * @param bool $dropIfExist
+     * @return bool
+     * @throws CoreException
      */
-    public function dangerouslyGetListOfTables(string $tableName = ''): array
+    public function createTable(string $tableName, array $tableParams, bool $dropIfExist = false): bool
     {
-        if (!$tableName) {
-            return $this->tables;
-        } else {
-            return array_filter($this->tables, function ($element) use ($tableName) {
-                return $element === $tableName;
-            });
+        if (!$this->debug) {
+            $this->throwException("'createTable' is disabled for production mode");
         }
+        if ($dropIfExist) {
+            $this->dropTable($tableName);
+        }
+
+        /**
+         * structure:
+         * tableParams = [
+         *      'fields' => [
+         *          'name' => [
+         *              'datatype', 'NULL', [...EXTRA]
+         *          ],
+         *          ...
+         *      ],
+         *      'primary' = 'name',
+         *      'indexes' => [
+         *          'name' => [
+         *              [...fields], unique, 'type'
+         *          ],
+         *          ...
+         *      ],
+         *      'foreignKeys' => [
+         *          'name' => [
+         *              'field', 'ref_table', 'ref_field'
+         *          ],
+         *          ...
+         *      ]
+         * ]
+         */
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     * @throws CoreException
+     */
+    public function dropTable(string $tableName): bool
+    {
+        if (!$this->debug) {
+            $this->throwException("'dropTable' is disabled for production mode");
+        }
+        if (!$this->doesTableExist($tableName)) {
+            return false;
+        }
+
+        // todo
     }
 
     /**
@@ -1196,7 +1254,7 @@ class Store
      */
     private function throwException(string $message, bool $die = false)
     {
-        if (!Config::$dev['debug']) {
+        if (!$this->debug) {
             // do not show any information about internal structure on production
             $message = $this->defaultErrorMessage;
         }

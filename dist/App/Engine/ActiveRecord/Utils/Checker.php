@@ -17,6 +17,10 @@ use Jet\App\Engine\Exceptions\CoreException;
  */
 class Checker
 {
+    public const TABLE_STATUS_IGNORED = 0;
+    public const TABLE_STATUS_DOES_NOT_EXIST = 1;
+    public const TABLE_STATUS_OUTDATED = 2;
+    public const TABLE_STATUS_UP_TO_DATE = 3;
     /**
      * @var Table
      */
@@ -45,7 +49,7 @@ class Checker
 
         if ($this->table->_ignore) {
             $tableStatus->ignored = true;
-            $tableStatus->status = 0;
+            $tableStatus->status = self::TABLE_STATUS_IGNORED;
             return $tableStatus;
         }
 
@@ -54,7 +58,7 @@ class Checker
             $tableStatus->exists = true;
         } else {
             $tableStatus->exists = false;
-            $tableStatus->status = 1;
+            $tableStatus->status = self::TABLE_STATUS_DOES_NOT_EXIST;
             // no need to check anything else at this point
             return $tableStatus;
         }
@@ -63,7 +67,7 @@ class Checker
         $structure = $this->store->getTableStructure($tableName, true);
 
         // assume that everything is up to date, until proven otherwise
-        $tableStatus->status = 3;
+        $tableStatus->status = self::TABLE_STATUS_UP_TO_DATE;
 
         foreach ($fields as $field) {
             $fieldStatus = new _FieldStatus();
@@ -89,7 +93,7 @@ class Checker
 
             $isUpToDate = $this->isFieldUpToDate($fieldStatus);
             if (!$isUpToDate) {
-                $tableStatus->status = 2;
+                $tableStatus->status = self::TABLE_STATUS_OUTDATED;
             }
             $tableStatus->fields[$field] = $fieldStatus;
         }
