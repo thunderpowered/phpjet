@@ -86,7 +86,7 @@ class Builder
         }
 
         // let Store deal with other stuff
-        return PHPJet::$app->store->createTable($this->tableName, [
+        return PHPJet::$app->store->createTable($this->table->_returnDatabaseName(), [
             'fields' => $fields,
             'primary' => $primary,
             'indexes' => $indexes,

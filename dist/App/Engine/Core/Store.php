@@ -498,7 +498,50 @@ class Store
          * ]
          */
 
-        var_dump($tableParams);
+        // step 1: proceed fields
+        if (!$tableParams['fields']) {
+            $this->throwException("Required parameter 'fields' is missing");
+        }
+        foreach ($tableParams['fields'] as $fieldName => $fieldParameters) {
+            $tableParams['fields'][$fieldName] = "`{$this->returnValidIdentifier($fieldName)}` {$this->returnValidIdentifier($fieldParameters[0])}" . ($fieldParameters[1] ? ' NULL' : ' NOT NULL') . ($fieldParameters[2] ? ' AUTO_INCREMENT' : '');
+        }
+
+        // step 2: proceed primary key
+        if (!$tableParams['primary']) {
+            $this->throwException("Required parameter 'primary' is missing");
+        }
+        $tableParams['primary'] = ["PRIMARY KEY (`{$this->returnValidIdentifier($tableParams['primary'])}`)"];
+
+        // step 3: proceed indexes
+        foreach ($tableParams['indexes'] as $fieldName => $indexParams) {
+            $indexField = $this->returnValidIdentifier($fieldName);
+            $tableParams['indexes'][$fieldName] = $indexParams[1] ? "UNIQUE " : "" . "KEY `{$indexField}_IDX` (`$indexField`) USING $indexParams[2]";
+        }
+
+        // step 4: proceed foreign keys
+        foreach ($tableParams['foreignKeys'] as $fieldName => $foreignKeyParams) {
+            $foreignKeyField = $this->returnValidIdentifier($fieldName);
+            $tableParams['foreignKeys'][$fieldName] = "CONSTRAINT `{$foreignKeyField}_FK` FOREIGN KEY (`$foreignKeyField`) REFERENCES `{$this->returnValidIdentifier($foreignKeyParams[0])}` (`{$this->returnValidIdentifier($foreignKeyParams[1])}`)";
+        }
+
+        // step 5: implode everything
+        foreach ($tableParams as $key => $param) {
+            if (!$param) {
+                unset($tableParams[$key]);
+                continue;
+            }
+            if (is_array($param)) {
+                $tableParams[$key] = implode(", ", $param);
+            }
+        }
+        $tableParams = implode(", ", $tableParams);
+
+        // step 6: wrap it into CREATE TABLE statement
+        $finalStatement = "CREATE TABLE `{$this->returnValidIdentifier($tableName)}` (
+            $tableParams
+         ) ENGINE={$this->dbconfig['params']['engine']} AUTO_INCREMENT=2 DEFAULT CHARSET={$this->dbconfig['params']['charset']}";
+
+        var_dump($finalStatement);
         exit();
     }
 
@@ -1216,9 +1259,8 @@ class Store
     private function returnValidIdentifier(string $rawString): string
     {
         $string = trim($rawString);
-        $string = preg_replace('/[^A-Za-z0-9_]/', '', $string);
-        $string = strtolower($string);
-        return $string;
+        $string = preg_replace('/[^A-Za-z0-9_()]/', '', $string);
+        return strtolower($string);
     }
 
     /**

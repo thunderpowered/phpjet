@@ -413,6 +413,7 @@ abstract class Table
 
     /**
      * @return string
+     * @deprecated returns name in db-like style (lowercase, without namespaces etc.)
      */
     public function _returnDatabaseName(): string
     {
