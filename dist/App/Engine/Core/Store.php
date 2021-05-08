@@ -502,16 +502,16 @@ class Store
                 $this->dropTable($tableName, $createView, $createTrigger);
             }
             $result = $this->dangerouslySendQueryWithoutPreparation($SQLCreate);
-            if (!$result) {
+            if ($result) {
                 $this->createView($tableName);
                 $this->createTrigger($tableName);
             } else {
                 // need to provide more information somehow
-                $this->throwException('Unable to create a table');
+                $this->throwException("Unable to create a table '$tableName'");
             }
-        } catch (CoreException $e) {
-            $this->dangerouslySendQueryWithoutPreparation("ROLLBACK TRANSACTION;");
-            $this->throwException($e->getNotes());
+        } catch (Exception $e) {
+            $this->dangerouslySendQueryWithoutPreparation("ROLLBACK;");
+            $this->throwException($e->getMessage() . ", ($tableName)");
         }
 
         // feels like everything is fine
@@ -544,13 +544,13 @@ class Store
         // step 3: proceed indexes
         foreach ($tableParams['indexes'] as $fieldName => $indexParams) {
             $indexField = $this->returnValidIdentifier($fieldName);
-            $tableParams['indexes'][$fieldName] = $indexParams[1] ? "UNIQUE " : "" . "KEY `{$indexField}_IDX` (`$indexField`) USING $indexParams[2]";
+            $tableParams['indexes'][$fieldName] = ($indexParams[1] ? "UNIQUE " : "") . "KEY `{$tableName}_{$indexField}_IDX` (`$indexField`) USING $indexParams[2]";
         }
 
         // step 4: proceed foreign keys
         foreach ($tableParams['foreignKeys'] as $fieldName => $foreignKeyParams) {
             $foreignKeyField = $this->returnValidIdentifier($fieldName);
-            $tableParams['foreignKeys'][$fieldName] = "CONSTRAINT `{$foreignKeyField}_FK` FOREIGN KEY (`$foreignKeyField`) REFERENCES `{$this->returnValidIdentifier($foreignKeyParams[0])}` (`{$this->returnValidIdentifier($foreignKeyParams[1])}`)";
+            $tableParams['foreignKeys'][$fieldName] = "CONSTRAINT `{$tableName}_{$foreignKeyField}_FK` FOREIGN KEY (`$foreignKeyField`) REFERENCES `{$this->returnValidIdentifier($foreignKeyParams[0])}` (`{$this->returnValidIdentifier($foreignKeyParams[1])}`)";
         }
 
         // step 5: implode everything
@@ -675,7 +675,7 @@ class Store
         $sql = "CREATE VIEW $viewName AS SELECT * FROM $tableName WHERE $this->partitionColumnName = $this->partitionFunction()";
         $result = $this->dangerouslySendQueryWithoutPreparation($sql);
         if (!$result) {
-            $this->throwException("TABLE: View does not exist and it's impossible to create one", false);
+            $this->throwException("TABLE: View does not exist and it's impossible to create one");
         }
         // by-effect
         $this->views[] = $viewName;

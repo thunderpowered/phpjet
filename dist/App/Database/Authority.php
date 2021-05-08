@@ -9,7 +9,6 @@ use Jet\App\Engine\ActiveRecord\Table;
 /**
  * Class Authority
  * @package Jet\App\Database
- * @deprecated
  */
 class Authority extends Table
 {
@@ -51,7 +50,7 @@ class Authority extends Table
         parent::__construct($loaded);
         $this->id = Field::int()->setPrimary();
         $this->username = Field::varchar()->setIndex(true);
-        $this->email = Field::varchar()->setIndex();
+        $this->email = Field::varchar()->setIndex(true);
         $this->password = Field::varchar();
         $this->two_factor_auth = Field::bool();
         $this->session_token = Field::varchar();
