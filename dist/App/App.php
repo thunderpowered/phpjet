@@ -167,6 +167,8 @@ class App
     {
         if (file_exists($fileName) && !is_dir($fileName)) {
             require_once $fileName;
+        } else {
+            trigger_error("File '$fileName' not found", E_USER_WARNING);
         }
     }
 
@@ -193,14 +195,14 @@ class App
         $file = array_pop($path);
 
         // lower every part
-        foreach ($path as $key => $value) {
-            $path[$key] = strtolower($value);
-        }
+//        foreach ($path as $key => $value) {
+//            $path[$key] = strtolower($value);
+//        }
 
         // as i mentioned before, first part of namespace should contain root namespace name
         $first = $path[0];
-        $nameSpaceRoot = strtolower(NAMESPACE_ROOT);
-        if ($first !== $nameSpaceRoot) {
+//        $nameSpaceRoot = strtolower(NAMESPACE_ROOT);
+        if ($first !== NAMESPACE_ROOT) {
             return false;
         };
 

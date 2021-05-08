@@ -83,5 +83,5 @@
 # sql files
 *.sql
 
-# lock
+# lock (auto-generated files)
 *.lock
