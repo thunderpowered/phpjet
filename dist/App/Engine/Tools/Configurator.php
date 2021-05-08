@@ -33,7 +33,7 @@ class Configurator
     {
         $this->debug = Config::$dev['debug'];
         // use local exception handler
-        set_exception_handler([$this, 'exceptionHandler']);
+//        set_exception_handler([$this, 'exceptionHandler']);
     }
 
     /**
@@ -58,9 +58,9 @@ class Configurator
 
         $manager = new Manager(true);
         $save = in_array('--save', $argv);
-        if (in_array('--hard', $this->argv)) {
+        if (in_array('--hard', $argv)) {
             $result = $manager->migrate(Manager::MIGRATE_MODE_HARD, $save);
-        } else if (in_array('--soft', $this->argv)) {
+        } else if (in_array('--soft', $argv)) {
             $result = $manager->migrate(Manager::MIGRATE_MODE_SOFT, $save);
         } else {
             throw new CoreException("Invalid migration mode. Most likely you forgot to include --soft or --hard flags. See more info here: " . Docs::returnDocLink('configure', 'migrations'));
@@ -107,6 +107,16 @@ class Configurator
         $twoFactorAuth = in_array('--2f', $argv);
 
         // todo do something special
+    }
+
+    /**
+     * @param array $argv
+     * @return string
+     */
+    public function views(array $argv = []): string
+    {
+        // todo
+        return '';
     }
 
     /**

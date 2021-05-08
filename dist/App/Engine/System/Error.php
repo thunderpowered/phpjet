@@ -42,7 +42,7 @@ class Error
         register_shutdown_function([$this, 'fatalErrorCatcher']);
 
         //set exception handler
-        set_exception_handler([$this, 'exceptionCatcher']);
+//        set_exception_handler([$this, 'exceptionCatcher']);
     }
 
     /**

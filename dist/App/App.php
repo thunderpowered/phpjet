@@ -2,13 +2,6 @@
 
 namespace Jet\App;
 
-/*
- *
- * Startup file.
- * Loading all components and start the engine.
- *
- */
-
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Config\ConfigManager;
 use Jet\App\Engine\Config\Database;
@@ -17,13 +10,13 @@ use Jet\App\Engine\Core\Selector;
 use Jet\App\Engine\Core\Store;
 use Jet\App\Engine\Core\System;
 use Jet\App\Engine\Core\Tool;
+use Jet\App\Engine\Exceptions\CoreException;
 use Jet\App\Engine\System\Error;
 use Jet\App\Engine\System\PageBuilder;
 use Jet\PHPJet;
-use mysql_xdevapi\Exception;
 
 /**
- * Class Startup
+ * Class App
  * @package Jet\App\Engine
  */
 class App
@@ -69,6 +62,12 @@ class App
         // Set config loader, because configs may be located in different directories
         spl_autoload_register(array($this, "configLoader"));
 
+        // Select the config (deprecated, since for now all the information about different apps is in database)
+        // So there's no need to manage specific config selection
+        // todo just remove config selection
+        $configSelector = new Selector();
+        $configSelector->select();
+
         // load components
         $this->store = new Store(Engine\Config\Config::$dev['debug']);
         $this->tool = new Tool();
@@ -84,12 +83,7 @@ class App
             // there were different options, now is only one
         }
 
-        // Set up the error handler
         $this->error = new Error();
-
-        // Select the config
-        $configSelector = new Selector();
-        $configSelector->select();
     }
 
     /**
@@ -99,7 +93,7 @@ class App
     {
         // prepare class Store
         Database::setConfig(Config::$db);
-        $this->store->setDB(Database::getInstance(), Config::$db['database']);
+        $this->store->setDB(Database::getInstance(), Config::$db);
         $this->store->prepareTables();
 
         // Set the config
@@ -117,18 +111,16 @@ class App
     {
         $functionName = $argv[2] ?? null;
         if ($functionName
-            && substr($functionName, 0, 1) !== '_'
+            && substr($functionName, 0, 1) !== '_' // old specific solution, it can be removed
             && method_exists($this->tool->configurator, $functionName)) {
-            // prepare database
-            Selector::__legacySelect();
             Database::setConfig(Config::$db);
-            $this->store->setDB(Database::getInstance(), Config::$db['database']);
+            $this->store->setDB(Database::getInstance(), Config::$db);
             $this->store->prepareTables();
 
             try {
-                return call_user_func([$this->tool->configurator, $functionName], $argv);
-            } catch (Exception $exception) {
-                $this->exit($exception->getMessage());
+                return $this->tool->configurator->$functionName($argv);
+            } catch (CoreException $exception) {
+                $this->exit($exception->getNotes());
             }
         } else {
             return "Unable to configure: method does not exist";
@@ -141,7 +133,7 @@ class App
      */
     public function exit(string $message = '', bool $showTitle = false)
     {
-        if (PHPJet::$app->system) { // can be disabled in configure mode
+        if (PHPJet::$app->system) { // can be null in configuration mode
             PHPJet::$app->system->buffer->clearBuffer();
         }
         if ($message && $showTitle) {

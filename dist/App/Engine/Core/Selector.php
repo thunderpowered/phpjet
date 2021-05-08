@@ -34,7 +34,7 @@ class Selector
      */
     public function __construct()
     {
-        if ( PHPJet::$app->system) {
+        if (PHPJet::$app && PHPJet::$app->system) {
             $this->site = PHPJet::$app->system->request->getSERVER('HTTP_HOST');
         } else {
             $this->site = 'default';

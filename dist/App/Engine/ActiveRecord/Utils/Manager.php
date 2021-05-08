@@ -139,10 +139,12 @@ class Manager
 
     /**
      * @param array $tables
+     * @return bool
      */
     private function migrateSoft(array $tables): bool
     {
         // todo
+        return false;
     }
 
     /**
@@ -224,7 +226,7 @@ class Manager
     {
         $backupFilename = PHPJet::$app->store->dump();
         if ($this->printEverything) {
-            print "Backup file save to $backupFilename\n";
+            print "Backup file saved to $backupFilename\n";
         }
     }
 

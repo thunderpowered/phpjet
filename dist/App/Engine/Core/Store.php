@@ -42,6 +42,10 @@ class Store
     /**
      * @var
      */
+    private $dbconfig;
+    /**
+     * @var
+     */
     private $timestamp;
     /**
      * @var array
@@ -195,11 +199,12 @@ class Store
      * @param PDO $db
      * @param string $dbname
      */
-    public function setDB(PDO $db, string $dbname)
+    public function setDB(PDO $db, array $dbConfig)
     {
         // why not move this into Constructor?
         $this->db = $db;
-        $this->dbname = $dbname;
+        $this->dbconfig = $dbConfig;
+        $this->dbname = $dbConfig['database'];
         $this->setDate();
     }
 
@@ -454,10 +459,12 @@ class Store
      * @param string $tableName
      * @param array $tableParams
      * @param bool $dropIfExist
+     * @param bool $createView
+     * @param bool $createTrigger
      * @return bool
      * @throws CoreException
      */
-    public function createTable(string $tableName, array $tableParams, bool $dropIfExist = false): bool
+    public function createTable(string $tableName, array $tableParams, bool $dropIfExist = false, bool $createView = false, bool $createTrigger = false): bool
     {
         if (!$this->debug) {
             $this->throwException("'createTable' is disabled for production mode");
@@ -490,6 +497,9 @@ class Store
          *      ]
          * ]
          */
+
+        var_dump($tableParams);
+        exit();
     }
 
     /**

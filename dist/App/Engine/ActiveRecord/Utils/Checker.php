@@ -69,17 +69,13 @@ class Checker
         // assume that everything is up to date, until proven otherwise
         $tableStatus->status = self::TABLE_STATUS_UP_TO_DATE;
 
-        foreach ($fields as $field) {
+        foreach ($fields as $field => $fieldType) {
             $fieldStatus = new _FieldStatus();
-
-            if (!($this->table->$field instanceof _FieldType)) {
-                throw new CoreException("Field '$field' in '$tableName' is not instance of 'Field'");
-            }
 
             if (isset($structure[$field]) && is_array($structure[$field])) {
                 $fieldStatus->exists = true;
 
-                $fieldType = $this->table->_getFieldType($field);
+//                $fieldType = $this->table->_getFieldType($field);
                 $fieldAttributes = $this->table->_getFieldAttributes($field);
                 $fieldStatus = $this->checkFieldType($fieldType, $fieldAttributes, $structure[$field], $fieldStatus);
 

@@ -9,6 +9,7 @@
 namespace Jet\App\Engine\ActiveRecord;
 
 use Exception;
+use Jet\App\Engine\ActiveRecord\Tables\_Config;
 use Jet\App\Engine\ActiveRecord\utils\_TableStatus;
 use Jet\app\engine\activerecord\utils\Builder;
 use Jet\App\Engine\ActiveRecord\utils\Checker;
@@ -54,6 +55,10 @@ abstract class Table
     /**
      * @var Field
      */
+    protected $_updated;
+    /**
+     * @var Field
+     */
     protected $_deleted;
     /**
      * @var bool
@@ -74,7 +79,17 @@ abstract class Table
         $this->_class = get_class($this);
         // _loaded means that row was loaded from database, not created by user
         $this->_loaded = $loaded;
-        $this->_config_id = Field::int();// todo set foreign key
+
+        // system fields
+        if ($this->_returnDatabaseName() !== '_config') {
+            // because _config_id field points to _config table
+            $this->_config_id = Field::int()->setForeignKey(
+                (new _Config())->_getFieldType('id')
+            );
+        }
+        $this->_created = Field::dateTime();
+        $this->_updated = Field::dateTime();
+        $this->_deleted = Field::dateTime();
 
         // temporary solution, local exception handler
         set_exception_handler([$this, 'exceptionHandler']);
@@ -411,10 +426,10 @@ abstract class Table
     {
         $fields = [];
         foreach ($this as $fieldName => $fieldValue) {
-            if ($this->isSystemProperty($fieldName)) {
+            if (!($this->$fieldName instanceof Field)) {
                 continue;
             }
-            $fields[] = $fieldName;
+            $fields[$fieldName] = $this->_getFieldType($fieldName);
         }
         return $fields;
     }
@@ -425,7 +440,7 @@ abstract class Table
      */
     public function _getFieldType(string $fieldName): _FieldType
     {
-        $table = get_class($this);
+        $table = $this->_returnDatabaseName();
         $type = $this->$fieldName->_getType();
         $type->table = $table;
         $type->field = $fieldName;
