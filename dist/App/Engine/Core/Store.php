@@ -10,7 +10,7 @@ use Jet\PHPJet;
 use PDO;
 
 /**
- * Class Store2
+ * Class Store
  * @package Jet\App\Engine\Core
  */
 class Store
@@ -583,6 +583,7 @@ class Store
 
         // unfortunately it's just impossible to turn off without destroying everything
         if ($validateEverything && true) {
+            // or i can just move it to draw{type} functions
             $join = $this->prepareJoin($join, $table);
             $condition = $this->prepareCondition($condition, $table);
             $updateFields = $this->prepareCondition($updateFields, $table);
@@ -615,6 +616,7 @@ class Store
      * @param string $table
      * @param array $condition
      * @return string
+     * @description should not be called directly, only through drawSQLString
      */
     private function drawDelete(string $table, array $condition): string
     {
@@ -627,6 +629,7 @@ class Store
      * @param array $fields
      * @param array $condition
      * @return string
+     * @description should not be called directly, only through drawSQLString
      */
     private function drawUpdate(string $table, array $fields, array $condition): string
     {
@@ -639,6 +642,7 @@ class Store
      * @param string $table
      * @param array $condition
      * @return string
+     * @description should not be called directly, only through drawSQLString
      */
     private function drawInsert(string $table, array $condition): string
     {
@@ -655,6 +659,7 @@ class Store
      * @param array $join
      * @return string
      * @throws Exception
+     * @description should not be called directly, only through drawSQLString
      */
     private function drawSelect(string $table, array $join, array $condition, array $orderBy, array $limit, bool $count = false): string
     {
@@ -821,6 +826,7 @@ class Store
 
     /**
      * @param array $array
+     * @param string $table
      * @return string
      */
     private function drawWhere(array $array, string $table): string
@@ -967,7 +973,7 @@ class Store
     public function prepareTable(string $table, bool $dieIfIncorrect = false): string
     {
         if (!$this->doesTableExist($table)) {
-            throw new CoreException("TABLE: The specified table does not exist");
+            $this->throwException("TABLE: The specified table does not exist");
         }
 
         // check view
@@ -1187,11 +1193,11 @@ class Store
      * @param string $message
      * @param bool $die
      * @throws CoreException
-     * @deprecated
      */
     private function throwException(string $message, bool $die = false)
     {
         if (!Config::$dev['debug']) {
+            // do not show any information about internal structure on production
             $message = $this->defaultErrorMessage;
         }
         if ($die) {

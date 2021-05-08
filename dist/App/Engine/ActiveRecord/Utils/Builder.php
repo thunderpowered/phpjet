@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Jet\app\engine\activerecord\utils;
+namespace Jet\App\Engine\Activerecord\Utils;
 
 use Jet\App\Engine\ActiveRecord\Table;
 
