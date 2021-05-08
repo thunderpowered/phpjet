@@ -9,6 +9,7 @@ use Jet\PHPJet;
 /**
  * Class Tracker
  * @package Jet\App\Engine\System
+ * @deprecated
  */
 class Tracker
 {

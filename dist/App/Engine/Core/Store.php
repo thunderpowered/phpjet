@@ -469,10 +469,6 @@ class Store
         if (!$this->debug) {
             $this->throwException("'createTable' is disabled for production mode");
         }
-        if ($dropIfExist) {
-            $this->dropTable($tableName);
-        }
-
         /**
          * structure:
          * tableParams = [
@@ -498,6 +494,39 @@ class Store
          * ]
          */
 
+        $SQLCreate = $this->drawCreate($tableName, $tableParams);
+
+        $this->dangerouslySendQueryWithoutPreparation("START TRANSACTION;");
+        try {
+            if ($dropIfExist) {
+                $this->dropTable($tableName, $createView, $createTrigger);
+            }
+            $result = $this->dangerouslySendQueryWithoutPreparation($SQLCreate);
+            if (!$result) {
+                $this->createView($tableName);
+                $this->createTrigger($tableName);
+            } else {
+                // need to provide more information somehow
+                $this->throwException('Unable to create a table');
+            }
+        } catch (CoreException $e) {
+            $this->dangerouslySendQueryWithoutPreparation("ROLLBACK TRANSACTION;");
+            $this->throwException($e->getNotes());
+        }
+
+        // feels like everything is fine
+        return $this->dangerouslySendQueryWithoutPreparation('COMMIT;');
+    }
+
+    /**
+     * @param string $tableName
+     * @param array $tableParams
+     * @return string
+     * @throws CoreException
+     */
+    private function drawCreate(string $tableName, array $tableParams): string
+    {
+        // todo and also validate all data properly
         // step 1: proceed fields
         if (!$tableParams['fields']) {
             $this->throwException("Required parameter 'fields' is missing");
@@ -537,20 +566,19 @@ class Store
         $tableParams = implode(", ", $tableParams);
 
         // step 6: wrap it into CREATE TABLE statement
-        $finalStatement = "CREATE TABLE `{$this->returnValidIdentifier($tableName)}` (
+        return "CREATE TABLE `{$this->returnValidIdentifier($tableName)}` (
             $tableParams
          ) ENGINE={$this->dbconfig['params']['engine']} AUTO_INCREMENT=2 DEFAULT CHARSET={$this->dbconfig['params']['charset']}";
-
-        var_dump($finalStatement);
-        exit();
     }
 
     /**
      * @param string $tableName
+     * @param bool $dropView
+     * @param bool $dropTrigger
      * @return bool
      * @throws CoreException
      */
-    public function dropTable(string $tableName): bool
+    public function dropTable(string $tableName, bool $dropView = true, bool $dropTrigger = true): bool
     {
         if (!$this->debug) {
             $this->throwException("'dropTable' is disabled for production mode");
@@ -558,8 +586,100 @@ class Store
         if (!$this->doesTableExist($tableName)) {
             return false;
         }
+        if ($dropTrigger) {
+            $this->dropTrigger($tableName);
+        }
+        if ($dropView) {
+            $this->dropView($tableName);
+        }
+        $result = $this->dangerouslySendQueryWithoutPreparation("DROP TABLE IF EXISTS `$tableName`;");
+        if (!$result) {
+            $this->throwException('Unable to drop the table, even though it does exist');
+        }
+        return true;
+    }
 
-        // todo
+    // todo these two functions below are almost identical, is there any way to unite them?
+
+    /**
+     * @param string $tableName
+     * @return bool
+     * @throws CoreException
+     */
+    private function dropTrigger(string $tableName): bool
+    {
+        if (!$this->doesTriggerExists($tableName)) {
+            return false;
+        }
+        $triggerName = $tableName . $this->triggerPostfix;
+        $result = $this->dangerouslySendQueryWithoutPreparation("DROP TRIGGER IF EXISTS `$triggerName`;");
+        if (!$result) {
+            $this->throwException('Unable to drop the trigger, even though it does exist');
+        }
+        return true;
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     * @throws CoreException
+     */
+    private function dropView(string $tableName): bool
+    {
+        if (!$this->doesViewExists($tableName)) {
+            return false;
+        }
+        $viewName = $tableName . $this->postfix;
+        $result = $this->dangerouslySendQueryWithoutPreparation("DROP VIEW IF EXISTS `$viewName`;");
+        if (!$result) {
+            $this->throwException('Unable to drop the view, even though it does exist');
+        }
+        return true;
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     * @throws CoreException
+     */
+    private function createTrigger(string $tableName): bool
+    {
+        if ($this->doesTriggerExists($tableName) || !$this->doesTableExist($tableName)) {
+            return false;
+        }
+        $triggerName = $tableName . $this->triggerPostfix;
+        $sql = "CREATE TRIGGER $triggerName
+                  BEFORE INSERT ON $tableName 
+                  FOR EACH ROW
+                  SET new._config_id = $this->partitionFunction()";
+        $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+        if (!$result) {
+            $this->throwException("TABLE: Trigger does not exist and it's impossible to create one");
+        }
+        // by-effect
+        $this->triggers[] = $triggerName;
+        return true;
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     * @throws CoreException
+     */
+    private function createView(string $tableName): bool
+    {
+        if ($this->doesViewExists($tableName) || !$this->doesTableExist($tableName)) {
+            return false;
+        }
+        $viewName = $tableName . $this->postfix;
+        $sql = "CREATE VIEW $viewName AS SELECT * FROM $tableName WHERE $this->partitionColumnName = $this->partitionFunction()";
+        $result = $this->dangerouslySendQueryWithoutPreparation($sql);
+        if (!$result) {
+            $this->throwException("TABLE: View does not exist and it's impossible to create one", false);
+        }
+        // by-effect
+        $this->views[] = $viewName;
+        return true;
     }
 
     /**
@@ -569,6 +689,24 @@ class Store
     public function doesTableExist(string $tableName): bool
     {
         return in_array($tableName, $this->tables);
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     */
+    public function doesTriggerExists(string $tableName): bool
+    {
+        return in_array($tableName . $this->triggerPostfix, $this->triggers);
+    }
+
+    /**
+     * @param string $tableName
+     * @return bool
+     */
+    public function doesViewExists(string $tableName): bool
+    {
+        return in_array($tableName . $this->postfix, $this->views);
     }
 
     /**
@@ -1088,36 +1226,19 @@ class Store
         }
 
         // check view
-        // todo remove all this stuff and move it to migrations
-        $viewName = $table . $this->postfix;
-        if (!in_array($viewName, $this->views)) {
-            // if view does not exist -> let's try to create it
-            $sql = "CREATE VIEW $viewName AS SELECT * FROM $table WHERE $this->partitionColumnName = $this->partitionFunction()";
-            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
-            if (!$result) {
-                $this->throwException("TABLE: View does not exist and it's impossible to create one", $dieIfIncorrect);
-            }
-
-            // everything is fine
-            $this->views[] = $viewName;
+        // triggers and views are creating during migrations
+        // is there any necessity to check it here?
+        if (!$this->doesViewExists($table)) {
+            $this->createView($table);
         }
 
         // check triggers
-        $triggerName = $table . $this->triggerPostfix;
-        if (!in_array($triggerName, $this->triggers)) {
-            $sql = "CREATE TRIGGER $triggerName
-                      BEFORE INSERT ON $table 
-                      FOR EACH ROW
-                      SET new._config_id = $this->partitionFunction()";
-            $result = $this->dangerouslySendQueryWithoutPreparation($sql);
-            if (!$result) {
-                $this->throwException("TABLE: Trigger does not exist and it's impossible to create one", $dieIfIncorrect);
-            }
-            $this->triggers[] = $triggerName;
+        if (!$this->doesTriggerExists($table)) {
+            $this->createTrigger($table);
         }
 
         // If everything is fine
-        return $viewName;
+        return $table . $this->postfix;
     }
 
     /**
