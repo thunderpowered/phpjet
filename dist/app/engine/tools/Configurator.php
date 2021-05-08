@@ -212,7 +212,7 @@ class Configurator
     {
         $tables = $this->_parseTables("", false, false, true);
         $summary = $this->migrateSummarizeStatuses($tables);
-        // todo make argv global or property of the class
+
         if (in_array('-p', $this->argv)) {
             print (
             (isset($summary[0]) ? "Tables ignored: $summary[0]\n" : "") .
@@ -221,6 +221,7 @@ class Configurator
             (isset($summary[3]) ? "Tables that are up-to-date: $summary[3]\n" : "")
             );
         }
+
         return $tables;
     }
 

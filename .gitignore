@@ -1,15 +1,17 @@
 # src
 /src/theme/**/node_modules/
 
+# config files
+/dist/**/Config.php
+
 # dist (auto-generated files)
-/dist/app/engine/config/default/*
 /dist/vendor/*
 /dist/cache/*
 /dist/backups/*
 
 # misc
-/.idea/
-/.git/
+/.idea
+/.git
 
 # JPEG
 *.jpg

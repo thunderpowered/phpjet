@@ -1,0 +1,159 @@
+<?php
+
+namespace Jet\App\Engine\Config;
+
+/**
+ * Class Config
+ * @package Jet\App\Engine\Config
+ * Be aware that all config properties MUST be read-only
+ */
+class Config
+{
+    /**
+     * @var array
+     */
+    public static $db = [
+        'host' => 'localhost',
+        'username' => 'username',
+        'database' => 'database',
+        'password' => '',
+        'charset' => 'utf8mb4',
+        'engine' => 'InnoDB'
+    ];
+    /**
+     * @var array
+     * @todo restructure it
+     */
+    public static $config = [
+        'developer_email' => 'dev@phpjet.org',
+        'admin_email' => 'admin@phpjet.org',
+        'service_email' => 'service@phpjet.org',
+        'controllers' => [
+            'client' => [
+                'Main',
+                'Search',
+                'Page',
+
+                // todo: these controllers should be entirely redone
+                'errorpage',
+                'sitemap',
+                'robots'
+            ],
+            'admin' => [
+                'Main',
+                'Auth',
+                'Admin',
+                'Record',
+
+                // deprecated
+                'misc',
+                'info',
+                'statistics',
+                'pages'
+            ]
+        ],
+        'protocol' => 'http://',
+        'widgets' => [
+            // todo also separate it by client and admin
+            // todo and maybe do it like in Tool class -> dynamically load classes if needed, it'd be much better
+            'client' => [
+                'WidgetLogotype',
+                'WidgetTheme',
+                'WidgetSEO',
+                'WidgetBanner',
+                'WidgetHot',
+                'WidgetMenu',
+            ],
+            'admin' => [
+                'WidgetMisc'
+            ]
+        ],
+        'site_id' => 0,
+        'site_name' => 'Default',
+        'admin' => false
+    ];
+    /**
+     * @var array
+     */
+    public static $page = [
+        'default_page_title' => 'Demo'
+    ];
+    /**
+     * @var array
+     */
+    public static $pageBuilder = [
+        'client' => [
+            'active' => false
+        ],
+        'admin' => [
+            // should always be false
+            'active' => false
+        ]
+    ];
+    /**
+     * @var array
+     */
+    public static $availableThemes = [
+        'admin' => [
+            'default' => [
+                'layout' => 'phpjetdesktop',
+                'views' => 'phpjetdesktop',
+                'mail' => 'phpjetdesktop',
+                'static' => 'phpjetdesktop',
+                'parts' => 'phpjetdesktop',
+                // should always be false for admin
+                // themes for admin panel are not supported yet
+                'pagebuilder' => false,
+                'SPA' => true
+            ]
+        ],
+        'client' => [
+            // default theme should not be deleted
+            'default' => [
+                'layout' => 'default',
+                'views' => 'default',
+                'mail' => 'default',
+                'static' => 'default',
+                'parts' => 'default',
+                'pagebuilder' => false,
+                'SPA' => false
+            ]
+        ]
+    ];
+    /**
+     * @var array
+     */
+    public static $mail = [
+        'email' => 'robot@phpjet.org',
+        'password' => '1234'
+    ];
+    /**
+     * @var array
+     */
+    public static $dev = [
+        // should be disabled on production
+        'debug' => true
+    ];
+    /**
+     * @var array
+     */
+    public static $secure = [
+        // should be enabled on production
+        'httpsOnly' => false
+    ];
+    /**
+     * @var array
+     */
+    public static $urlRules = [
+        // subdomain => sector
+        'admin' => 'admin',
+        'common' => 'common',
+        '' => 'client'
+    ];
+    /**
+     * @var string[]
+     */
+    public static $uploads = [
+        'max_file_size' => '16M'
+    ];
+}
