@@ -109,6 +109,10 @@ class Manager
             );
         }
 
+        if (!isset($summary[1]) && !isset($summary[2]) && $this->printEverything) {
+            print "Nothing to update\n";
+        }
+
         return $tables;
     }
 

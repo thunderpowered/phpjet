@@ -53,7 +53,4 @@ class _FieldStatus
      * @var bool
      */
     public $foreignKeyField;
-    /**
-     * @var bool
-     */
 }

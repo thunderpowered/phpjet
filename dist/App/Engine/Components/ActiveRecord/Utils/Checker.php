@@ -134,14 +134,12 @@ class Checker
     private function checkIndex(_FieldIndex $index, array $dbIndex, _FieldStatus $fieldStatus): _FieldStatus
     {
         // todo unite 'index' and 'primary' properties
-        $fieldStatus->index = !!$index->index === !!$dbIndex['INDEX_NAME'];
-//        $fieldStatus->indexKey = $index->key === $dbIndex['COLUMN_KEY'];
-        $fieldStatus->indexType = $index->type === $dbIndex['INDEX_TYPE'];
+        $fieldStatus->index = (!!$index->index === !!$dbIndex['INDEX_NAME']);
+        $fieldStatus->indexType = (!$index->type && !$dbIndex['INDEX_TYPE']) || $index->type === $dbIndex['INDEX_TYPE'];
         $fieldStatus->indexPrimary = !!$index->primary === ($dbIndex['CONSTRAINT_NAME'] === 'PRIMARY');
-        // this may be not obvious, since in PHPJet we use 'unique' field, but in MySQL schema there's 'non-unique'
-        // so if these params match, they actually mismatch
-        // more obvious line - !(!$index->unique !== (bool)$dbIndex['Non_unique'])
-        $fieldStatus->indexUnique = $index->unique === !$dbIndex['NON_UNIQUE'];
+        // Unique only when NON_UNIQUE === 0, it also can be 1 and not set at all, which also means non-unique
+        $fieldStatus->indexUnique = !!$index->unique === ($dbIndex['NON_UNIQUE'] === "0");
+//        $fieldStatus->indexUnique = !!$index->unique !== !$dbIndex['NON_UNIQUE'];
         return $fieldStatus;
     }
 

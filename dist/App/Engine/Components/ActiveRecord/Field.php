@@ -3,6 +3,8 @@
 
 namespace Jet\App\Engine\Components\ActiveRecord;
 
+use Jet\App\Engine\Exceptions\CoreException;
+
 /**
  * Class Field
  * @package Jet\App\Engine\Components\ActiveRecord
@@ -120,28 +122,41 @@ class Field
     }
 
     /**
-     * @param bool $autoIncrement
-     * @return $this
-     */
-    public function setPrimary(bool $autoIncrement = true): self
-    {
-        $this->index->index = true;
-        $this->index->primary = true;
-        $this->index->unique = true; // actually primary keys are always unique, there's no need to mark it explicitly, so it is just for consistency
-        $this->attributes->autoIncrement = $autoIncrement;
-        return $this;
-    }
-
-    /**
      * @param _FieldType $field
      * @param string $type
      * @return $this
      */
     public function setForeignKey(_FieldType $field, string $type = self::FIELD_FOREIGN_KEY_TYPE_CASCADE): self
     {
+        // foreign key requires index
+        // actually if we just create a new foreign key, MySQL automatically creates an index
+        // so there's actually no need to create it explicitly
+        // but since we want to store complete state of the table in class properties, there's situation when states of actual table in database and class are different which complicates the comparison and may cause other unwanted effects
+        // so i think it's better to set index, not a big deal anyway
+        $this->index->index = true;
+        $this->index->type = self::FIELD_INDEX_TYPE_BTREE;
+
         $this->index->foreignKey = true;
         $this->index->foreignKeyField = $field;
         $this->index->foreignKeyType = $type;
+        return $this;
+    }
+
+    /**
+     * @param bool $autoIncrement
+     * @return $this
+     */
+    public function setPrimary(bool $autoIncrement = true): self
+    {
+        // almost the same story as with foreign key
+        // we have either make an additional check for primary while comparing, or just set the index
+        // for me this method seems more accurate and simple, since primary key is formally an index
+        $this->index->index = true;
+        $this->index->type = self::FIELD_INDEX_TYPE_BTREE;
+
+        $this->index->primary = true;
+        $this->index->unique = true;
+        $this->attributes->autoIncrement = $autoIncrement;
         return $this;
     }
 
