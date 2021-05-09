@@ -20,7 +20,6 @@ class MenuContainer extends React.Component {
     }
 
     render() {
-        console.log(this.props.list);
         const {list, mode, opened} = this.props;
         if (opened || mode === PANEL_MODE_CLASSIC) { // show anyway in classic mode
             return (

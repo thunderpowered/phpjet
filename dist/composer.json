@@ -1,0 +1,19 @@
+{
+    "name": "phpjet/phpjet",
+    "description": "Light yet powerful php-framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander G.",
+            "email": "developer@phpjet.org"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "firebase/php-jwt": "^5.2",
+        "ext-pdo": "*",
+        "ext-json": "*",
+        "phpmailer/phpmailer": "^6.4",
+        "aws/aws-sdk-php": "^3.180"
+    }
+}

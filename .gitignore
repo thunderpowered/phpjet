@@ -1,14 +1,17 @@
 # src
 /src/theme/**/node_modules/
 
-# dist
-/dist/app/engine/config/default/*
+# config files
+/dist/**/Config.php
+
+# dist (auto-generated files)
 /dist/vendor/*
 /dist/cache/*
+/dist/backups/*
 
 # misc
-/.idea/
-/.git/
+/.idea
+/.git
 
 # JPEG
 *.jpg
@@ -76,3 +79,9 @@
 
 # log files
 *.log
+
+# sql files
+*.sql
+
+# lock (auto-generated files)
+*.lock
