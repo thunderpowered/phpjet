@@ -2,10 +2,10 @@
 
 namespace Jet\App\Engine\Tools;
 
-use Jet\App\Engine\ActiveRecord\Table;
-use Jet\App\Engine\ActiveRecord\Utils\_TableStatus;
-use Jet\App\Engine\Activerecord\Utils\Builder;
-use Jet\App\Engine\Activerecord\Utils\Manager;
+use Jet\App\Engine\Components\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\Utils\_TableStatus;
+use Jet\App\Engine\Components\ActiveRecord\Utils\Builder;
+use Jet\App\Engine\Components\ActiveRecord\Utils\Manager;
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Config\Docs;
 use Jet\App\Engine\Exceptions\CoreException;

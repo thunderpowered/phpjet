@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Jet\app\engine\activerecord\utils;
+namespace Jet\app\Engine\Components\ActiveRecord\utils;
 
 /**
  * Class _FieldStatus
- * @package Jet\app\engine\activerecord\utils
+ * @package Jet\app\Engine\Components\ActiveRecord\utils
  */
 class _FieldStatus
 {

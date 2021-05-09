@@ -6,13 +6,13 @@
  * Thanks @mixtech911 for the idea.
  */
 
-namespace Jet\App\Engine\ActiveRecord;
+namespace Jet\App\Engine\Components\ActiveRecord;
 
 use Exception;
-use Jet\App\Engine\ActiveRecord\Tables\_Config;
-use Jet\App\Engine\ActiveRecord\utils\_TableStatus;
-use Jet\app\engine\activerecord\utils\Builder;
-use Jet\App\Engine\ActiveRecord\utils\Checker;
+use Jet\App\Engine\Components\ActiveRecord\Tables\_Config;
+use Jet\App\Engine\Components\ActiveRecord\utils\_TableStatus;
+use Jet\App\Engine\Components\ActiveRecord\Utils\Builder;
+use Jet\App\Engine\Components\ActiveRecord\Utils\Checker;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 use stdClass;

@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord;
+namespace Jet\App\Engine\Components\ActiveRecord;
 
 /**
  * Class Field
- * @package Jet\App\Engine\ActiveRecord
+ * @package Jet\App\Engine\Components\ActiveRecord
  */
 class Field
 {

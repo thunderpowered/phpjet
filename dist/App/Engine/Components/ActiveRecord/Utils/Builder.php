@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Jet\App\Engine\Activerecord\Utils;
+namespace Jet\App\Engine\Components\ActiveRecord\Utils;
 
-use Jet\App\Engine\ActiveRecord\_FieldType;
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\_FieldType;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 use Jet\App\Engine\Exceptions\CoreException;
 use Jet\PHPJet;
 
 /**
  * Class Builder
- * @package Jet\app\engine\activerecord\Utils
+ * @package Jet\app\Engine\Components\ActiveRecord\Utils
  */
 class Builder
 {

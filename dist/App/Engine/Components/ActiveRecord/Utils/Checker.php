@@ -1,19 +1,19 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord\Utils;
+namespace Jet\App\Engine\Components\ActiveRecord\Utils;
 
 use Exception;
-use Jet\App\Engine\ActiveRecord\_FieldAttributes;
-use Jet\App\Engine\ActiveRecord\_FieldIndex;
-use Jet\App\Engine\ActiveRecord\_FieldType;
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\_FieldAttributes;
+use Jet\App\Engine\Components\ActiveRecord\_FieldIndex;
+use Jet\App\Engine\Components\ActiveRecord\_FieldType;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 use Jet\App\Engine\Core\Store;
 use Jet\App\Engine\Exceptions\CoreException;
 
 /**
  * Class Checker
- * @package Jet\App\Engine\ActiveRecord
+ * @package Jet\App\Engine\Components\ActiveRecord
  */
 class Checker
 {

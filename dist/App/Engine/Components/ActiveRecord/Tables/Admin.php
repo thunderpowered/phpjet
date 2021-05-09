@@ -1,16 +1,16 @@
 <?php
 
 
-namespace Jet\App\Database;
+namespace Jet\App\Engine\Components\ActiveRecord\Tables;
 
 use Jet\App\Engine\Components\ActiveRecord\Field;
 use Jet\App\Engine\Components\ActiveRecord\Table;
 
 /**
- * Class Authority
- * @package Jet\App\Database
+ * Class Admin
+ * @package Jet\App\Engine\Components\ActiveRecord\Tables
  */
-class Authority extends Table
+class Admin extends Table
 {
     /**
      * @var Field
@@ -34,6 +34,7 @@ class Authority extends Table
     protected $two_factor_auth;
     /**
      * @var Field
+     * @deprecated
      */
     protected $session_token;
     /**
@@ -42,7 +43,7 @@ class Authority extends Table
     protected $last_login;
 
     /**
-     * Authority constructor.
+     * Admin constructor.
      * @param bool $loaded
      */
     public function __construct(bool $loaded = false)

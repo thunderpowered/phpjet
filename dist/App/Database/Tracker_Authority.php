@@ -4,7 +4,7 @@
 namespace Jet\App\Database;
 
 
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 
 /**
  * Class Tracker_Authority

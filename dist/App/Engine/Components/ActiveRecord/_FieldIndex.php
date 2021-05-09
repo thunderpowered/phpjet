@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Jet\App\Engine\ActiveRecord;
+namespace Jet\App\Engine\Components\ActiveRecord;
 
 /**
  * Class _FieldIndex
- * @package Jet\App\Engine\ActiveRecord
+ * @package Jet\App\Engine\Components\ActiveRecord
  */
 class _FieldIndex
 {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Jet\App\Engine\ActiveRecord\Tables;
+namespace Jet\App\Engine\Components\ActiveRecord\Tables;
 
-use Jet\App\Engine\ActiveRecord\Field;
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\Field;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 
 /**
  * Class _Config
- * @package Jet\App\Engine\ActiveRecord\Tables
+ * @package Jet\App\Engine\Components\ActiveRecord\Tables
  */
 class _Config extends Table
 {

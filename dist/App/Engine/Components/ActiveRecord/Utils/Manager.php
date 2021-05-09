@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Jet\App\Engine\Activerecord\Utils;
+namespace Jet\App\Engine\Components\ActiveRecord\Utils;
 
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 use Jet\App\Engine\Config\Config;
 use Jet\App\Engine\Config\Docs;
 use Jet\App\Engine\Exceptions\CoreException;
@@ -11,7 +11,7 @@ use Jet\PHPJet;
 
 /**
  * Class Manager
- * @package Jet\app\engine\activerecord\utils
+ * @package Jet\app\Engine\Components\ActiveRecord\utils
  */
 class Manager
 {

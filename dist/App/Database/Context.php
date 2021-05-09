@@ -3,8 +3,8 @@
 
 namespace Jet\App\Database;
 
-use Jet\App\Engine\ActiveRecord\Field;
-use Jet\App\Engine\ActiveRecord\Table;
+use Jet\App\Engine\Components\ActiveRecord\Field;
+use Jet\App\Engine\Components\ActiveRecord\Table;
 
 /**
  * Class Context
