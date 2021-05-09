@@ -183,31 +183,18 @@ class App
         // and more important note: all namespaces should start with NAMESPACE_ROOT value
         $path = explode("\\", $className);
 
-        // take last
         $file = array_pop($path);
-
-        // lower every part
-//        foreach ($path as $key => $value) {
-//            $path[$key] = strtolower($value);
-//        }
-
         // as i mentioned before, first part of namespace should contain root namespace name
         $first = $path[0];
-//        $nameSpaceRoot = strtolower(NAMESPACE_ROOT);
         if ($first !== NAMESPACE_ROOT) {
             return false;
         };
 
-        // and remove first element
         array_shift($path);
-
         // and implode it into string
         $path = implode('/', $path);
 
-        // create filename
         $file = $file . ".php";
-
-        // return created filepath
         return $path . '/' . $file;
     }
 

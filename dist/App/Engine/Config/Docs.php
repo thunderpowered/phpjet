@@ -16,10 +16,9 @@ class Docs
         'url' => 'https://phpjet.org/docs'
     ];
     public static $docs = [
-        [
-            'configure' => ['/configure', [
-                    'migrations' => '/migrations'
-                ]
+        'configure' => [
+            '/configure', [
+                'migrations' => '/migrations'
             ]
         ]
     ];

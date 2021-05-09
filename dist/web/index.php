@@ -16,11 +16,11 @@ const ROOT = __DIR__ . '/../';
 // Web (static) directory
 const WEB = ROOT . 'web/';
 // Application directory
-const APP = ROOT . 'app/';
+const APP = ROOT . 'App/';
 // Home directory
-const MVC = ROOT . 'app/mvc/';
+const MVC = ROOT . 'App/MVC/';
 // Engine directory
-const ENGINE = ROOT . 'app/engine/';
+const ENGINE = ROOT . 'App/Engine/';
 // Images
 const IMAGES = 'storage/';
 // thumbnails
@@ -28,11 +28,11 @@ const THUMBNAILS = 'storage/thumbnails/';
 
 // Engine Core
 require_once(ROOT . 'PHPJet.php');
-require_once(ROOT . 'app/App.php');
+require_once(ROOT . 'App/App.php');
 // Load Composer's components
 require_once(ROOT . 'vendor/autoload.php');
 // Engine version
-require_once ENGINE . 'config/version.php';
+require_once ENGINE . 'Config/version.php';
 
 // todo allow this only in development mode
 $functionName = isset($argv) && !empty($argv[1]) ? $argv[1] : 'start';

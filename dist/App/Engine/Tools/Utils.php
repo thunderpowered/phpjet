@@ -28,6 +28,13 @@ use Jet\PHPJet;
 class Utils
 {
     /**
+     * @var string[] =
+     */
+    private $scanDirIgnore = [
+        '.', '..'
+    ];
+
+    /**
      * @return string
      */
     public static function generateToken()
@@ -952,5 +959,50 @@ class Utils
     public function removeGETVariableFromURL(string $url, string $varName): string
     {
         return preg_replace('/([?&])' . $varName . '=[^&]+(&|$)/', '', $url);
+    }
+
+    /**
+     * @param string $realPath
+     * @return string
+     */
+    public function convertFilePathToNameSpace(string $realPath): string
+    {
+        $rootRealPath = realpath(ROOT);
+        if (strpos($realPath, $rootRealPath) === false) {
+            return '';
+        }
+        $path = str_replace($rootRealPath, '', $realPath);
+        if (strpos($path, '\\') === 0) {
+            $path = substr($path, 1);
+        }
+        $pathArray = explode('\\', $path);
+        $rootPath = str_replace(NAMESPACE_ROOT, '', NAMESPACE_APP);
+        $rootPath = str_replace('\\', '', $rootPath);
+        if (!count($pathArray) || $pathArray[0] !== $rootPath) {
+            return '';
+        }
+        array_walk($pathArray, function(&$element) {
+            $element = ucfirst($element);
+        });
+        return NAMESPACE_ROOT . '\\' . implode('\\', $pathArray);
+    }
+
+    /**
+     * @param string $directory
+     * @param bool $returnRealPath
+     * @return array
+     */
+    public function returnListOfFilesInDirectory(string $directory, bool $returnRealPath = true): array
+    {
+        if (!file_exists($directory)) {
+            return [];
+        }
+        $files = scandir($directory);
+        $files = array_diff($files, $this->scanDirIgnore);
+        array_walk($files, function (&$file) use ($directory, $returnRealPath) {
+             $tempFile = $directory . $file;
+             $file = $returnRealPath ? realpath($tempFile) : $tempFile;
+        });
+        return $files;
     }
 }

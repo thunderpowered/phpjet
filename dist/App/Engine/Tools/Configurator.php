@@ -59,9 +59,9 @@ class Configurator
         $manager = new Manager(true);
         $save = in_array('--save', $argv);
         if (in_array('--hard', $argv)) {
-            $result = $manager->migrate(Manager::MIGRATE_MODE_HARD, $save);
+            $result = $manager->migrate(Manager::MIGRATE_MODE_HARD, $save, in_array('--sys', $argv));
         } else if (in_array('--soft', $argv)) {
-            $result = $manager->migrate(Manager::MIGRATE_MODE_SOFT, $save);
+            $result = $manager->migrate(Manager::MIGRATE_MODE_SOFT, $save, in_array('--sys', $argv));
         } else {
             throw new CoreException("Invalid migration mode. Most likely you forgot to include --soft or --hard flags. See more info here: " . Docs::returnDocLink('configure', 'migrations'));
         }

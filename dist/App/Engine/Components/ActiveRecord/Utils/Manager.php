@@ -25,13 +25,14 @@ class Manager
     /**
      * @var string
      */
+    private $systemDatabasePath = __DIR__ . '/../Tables/';
+    /**
+     * @var string
+     */
     private $databaseNamespace = NAMESPACE_APP . 'Database\\';
     /**
      * @var string[]
      */
-    private $remove = [
-        '.', '..'
-    ];
     /**
      * @var bool
      */
@@ -57,10 +58,11 @@ class Manager
     /**
      * @param string $mode
      * @param bool $save
+     * @param bool $systemTables
      * @return bool
      * @throws CoreException
      */
-    public function migrate(string $mode = self::MIGRATE_MODE_HARD, bool $save = true): bool
+    public function migrate(string $mode = self::MIGRATE_MODE_HARD, bool $save = true, bool $systemTables = false): bool
     {
         // prevent migrations if debug is off
         // this is essential thing, because migrations can really destroy the entire database and data in it
@@ -69,19 +71,16 @@ class Manager
         if (!$this->debug) {
             throw new CoreException('Migrations are disabled for production mode. See more information here: ' . Docs::returnDocLink('configure', 'migrations'));
         }
-
         if ($save) {
             $this->databaseBackup();
         }
-
-        $tablesToUpdate = $this->checkTableStatuses();
+        $tablesToUpdate = $this->checkTableStatuses($systemTables);
         if (!$tablesToUpdate) {
             if ($this->printEverything) {
                 print "Everything is up to date\n";
             }
             return false;
         }
-
         switch ($mode) {
             case self::MIGRATE_MODE_HARD:
                 return $this->migrateHard($tablesToUpdate);
@@ -93,13 +92,13 @@ class Manager
     }
 
     /**
+     * @param bool $systemTables
      * @return array
      */
-    public function checkTableStatuses(): array
+    private function checkTableStatuses(bool $systemTables = false): array
     {
-        $tables = $this->parseTables("", false, false, true);
+        $tables = $this->parseTables("", false, false, true, $systemTables);
         $summary = $this->summarizeStatuses($tables);
-
         if ($this->printEverything) {
             print (
                 (isset($summary[0]) ? "Tables ignored: $summary[0]\n" : "") .
@@ -108,11 +107,9 @@ class Manager
                 (isset($summary[3]) ? "Tables that are up-to-date: $summary[3]\n" : "")
             );
         }
-
         if (!isset($summary[1]) && !isset($summary[2]) && $this->printEverything) {
             print "Nothing to update\n";
         }
-
         return $tables;
     }
 
@@ -127,16 +124,13 @@ class Manager
             if (!($table['status'] instanceof _TableStatus) || (!($table['object'] instanceof Table))) {
                 throw new CoreException('Argument passed into migrateSoft function has incorrect data type. It should be array of Table instances and _TableStatus instances.');
             }
-
             if ($table['status']->status === Checker::TABLE_STATUS_IGNORED || $table['status']->status === Checker::TABLE_STATUS_UP_TO_DATE) {
                 continue;
             }
-
             // otherwise just drop and create
             $builder = new Builder($table['object']);
             $builder->createTable(true);
         }
-
         // well it returns true all the time, the only reason it doesn't - if error thrown
         return true;
     }
@@ -175,16 +169,27 @@ class Manager
      * @param bool $includeStructure
      * @param bool $includeData
      * @param bool $checkStatus
+     * @param bool $includeSystemTables
      * @return array
      */
-    private function parseTables(string $filterBy = '', bool $includeStructure = false, bool $includeData = false, bool $checkStatus = false): array
+    private function parseTables(string $filterBy = '', bool $includeStructure = false, bool $includeData = false, bool $checkStatus = false, bool $includeSystemTables = false): array
     {
         // temp solution, i have an idea, but have no time
-        $tables = scandir($this->databasePath);
-        $tables = array_diff($tables, $this->remove);
+        $tables = PHPJet::$app->tool->utils->returnListOfFilesInDirectory($this->databasePath);
+        if ($includeSystemTables) {
+            // there's no need to synchronize system tables, since most likely they never change
+            $sysTables = PHPJet::$app->tool->utils->returnListOfFilesInDirectory($this->systemDatabasePath);
+            sort($sysTables, SORT_STRING | SORT_FLAG_CASE);
+            $tables = array_merge($sysTables, $tables);
+        }
         array_walk($tables, function (&$element) {
+            $fileName = explode('.', $element);
+            if (count($fileName) < 2 || end($fileName) !== 'php') {
+                unset ($element);
+                return;
+            }
             $element = [
-                'name' => substr($element, 0, strpos($element, '.'))
+                'name' => $fileName[0],
             ];
         });
 
@@ -204,7 +209,7 @@ class Manager
 
         if ($checkStatus) {
             foreach ($tables as &$table) {
-                $className = $this->databaseNamespace . $table['name'];
+                $className = PHPJet::$app->tool->utils->convertFilePathToNameSpace($table['name']);
                 /**
                  * @var Table $object
                  */
