@@ -6,6 +6,7 @@ namespace Jet\App\Engine\Config;
  * Class Config
  * @package Jet\App\Engine\Config
  * Be aware that all config properties MUST be read-only
+ * Do not change the config file after building! If you want to make changes - change Config.php.build in the 'install' directory then build again.
  */
 class Config
 {
@@ -13,21 +14,31 @@ class Config
      * @var array
      */
     public static $db = [
-        'host' => 'localhost',
-        'username' => 'username',
-        'database' => 'database',
+        // authorization data
+        // you can set it up to use environmental variables
+        'host' => '',
+        'username' => '',
+        'database' => '',
         'password' => '',
-        'charset' => 'utf8mb4',
-        'engine' => 'InnoDB'
+
+        // connection params
+        'params' => [
+            'charset' => 'utf8mb4',
+            'engine' => 'InnoDB',
+            // if true, PHPJet will not actually delete files,
+            // it will just mark is as 'deleted' and ignore while selecting/updating etc.
+            // but keep in mind that this feature uses 'views', so you most likely have to update views after changing this value
+            // just run php index.php configure views --update
+            'emulate_deletion' => true
+        ]
     ];
     /**
      * @var array
-     * @todo restructure it
      */
     public static $config = [
-        'developer_email' => 'dev@phpjet.org',
-        'admin_email' => 'admin@phpjet.org',
-        'service_email' => 'service@phpjet.org',
+        'developer_email' => 'dev@modware.ru',
+        'admin_email' => 'admin@modware.ru',
+        'service_email' => 'service@modware.ru',
         'controllers' => [
             'client' => [
                 'Main',
@@ -117,14 +128,14 @@ class Config
                 'parts' => 'default',
                 'pagebuilder' => false,
                 'SPA' => false
-            ]
+            ],
         ]
     ];
     /**
      * @var array
      */
     public static $mail = [
-        'email' => 'robot@phpjet.org',
+        'email' => 'robot@modware.ru',
         'password' => '1234'
     ];
     /**
